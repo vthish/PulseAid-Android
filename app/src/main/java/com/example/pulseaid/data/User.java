@@ -1,4 +1,4 @@
-package com.example.pulseaid.viewmodel;
+package com.example.pulseaid.data;
 
 public class User {
     private String uid;
