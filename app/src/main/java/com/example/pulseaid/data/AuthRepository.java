@@ -14,7 +14,6 @@ public class AuthRepository {
         db = FirebaseFirestore.getInstance();
     }
 
-    // Interface for callbacks
     public interface AuthCallback {
         void onSuccess(User user);
         void onError(String message);
@@ -33,16 +32,21 @@ public class AuthRepository {
     }
 
     private void fetchUserDetails(String uid, AuthCallback callback) {
-        // Assuming your users are stored in a "users" collection with doc ID = uid
-        db.collection("users").document(uid)
+        // මෙතන "Users" කියලා Capital 'U' එකෙන් තියෙන්න ඕනේ Database එකේ හැටියට
+        db.collection("Users").document(uid)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {
-                            // Convert Firestore document to User object
+
                             User user = document.toObject(User.class);
-                            callback.onSuccess(user);
+
+                            if (user != null) {
+                                callback.onSuccess(user);
+                            } else {
+                                callback.onError("Failed to map user data.");
+                            }
                         } else {
                             callback.onError("User record not found in database.");
                         }
