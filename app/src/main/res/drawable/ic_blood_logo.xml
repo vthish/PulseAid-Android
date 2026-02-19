@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+
+    <!-- Red Blood Drop Background -->
+    <path
+        android:fillColor="#D32F2F"
+        android:pathData="M12,2c-5.33,4.55-8,8.48-8,11.8c0,4.98,3.8,8.2,8,8.2s8-3.22,8-8.2C20,10.48,17.33,6.55,12,2z" />
+
+    <!-- White Plus Sign - Vertical Bar -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M11,8.5h2v6h-2z" />
+
+    <!-- White Plus Sign - Horizontal Bar -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8.5,10.5h7v2h-7z" />
+
+    <!-- White Underline -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M8.5,16h7v1.5h-7z" />
+</vector>
