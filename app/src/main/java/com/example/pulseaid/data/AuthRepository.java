@@ -1,8 +1,11 @@
 package com.example.pulseaid.data;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
 public class AuthRepository {
 
@@ -24,6 +27,7 @@ public class AuthRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String uid = mAuth.getCurrentUser().getUid();
+                        Log.d("PULSEAID_DEBUG", "Login UID: " + uid);
                         fetchUserDetails(uid, callback);
                     } else {
                         callback.onError(task.getException().getMessage());
@@ -32,9 +36,9 @@ public class AuthRepository {
     }
 
     private void fetchUserDetails(String uid, AuthCallback callback) {
-        // මෙතන "Users" කියලා Capital 'U' එකෙන් තියෙන්න ඕනේ Database එකේ හැටියට
+        // Force Firebase to fetch from the server, ignoring the offline cache
         db.collection("Users").document(uid)
-                .get()
+                .get(Source.SERVER)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
