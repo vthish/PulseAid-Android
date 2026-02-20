@@ -1,8 +1,11 @@
 package com.example.pulseaid.data;
 
+import android.util.Log;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Source;
 
 public class AuthRepository {
 
@@ -14,7 +17,6 @@ public class AuthRepository {
         db = FirebaseFirestore.getInstance();
     }
 
-    // Interface for callbacks
     public interface AuthCallback {
         void onSuccess(User user);
         void onError(String message);
@@ -25,6 +27,7 @@ public class AuthRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         String uid = mAuth.getCurrentUser().getUid();
+                        Log.d("PULSEAID_DEBUG", "Login UID: " + uid);
                         fetchUserDetails(uid, callback);
                     } else {
                         callback.onError(task.getException().getMessage());
@@ -33,16 +36,21 @@ public class AuthRepository {
     }
 
     private void fetchUserDetails(String uid, AuthCallback callback) {
-        // Assuming your users are stored in a "users" collection with doc ID = uid
-        db.collection("users").document(uid)
-                .get()
+        // Force Firebase to fetch from the server, ignoring the offline cache
+        db.collection("Users").document(uid)
+                .get(Source.SERVER)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
                         if (document != null && document.exists()) {
-                            // Convert Firestore document to User object
+
                             User user = document.toObject(User.class);
-                            callback.onSuccess(user);
+
+                            if (user != null) {
+                                callback.onSuccess(user);
+                            } else {
+                                callback.onError("Failed to map user data.");
+                            }
                         } else {
                             callback.onError("User record not found in database.");
                         }

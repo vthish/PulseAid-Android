@@ -81,7 +81,7 @@
                 app:layout_constraintBottom_toTopOf="@id/registerRow"
                 app:layout_constraintVertical_bias="0.43">
 
-                <!-- Focus anchor (IMPORTANT for keyboard/scroll) -->
+                <!-- Focus anchor (keyboard/scroll friendly) -->
                 <View
                     android:layout_width="0dp"
                     android:layout_height="1dp"
@@ -113,7 +113,7 @@
                     android:layout_marginTop="4dp"
                     android:layout_marginBottom="14dp" />
 
-                <!-- Email (hint inside) -->
+                <!-- Email -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/emailInputLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -132,7 +132,7 @@
                         android:id="@+id/emailEditText"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Enter a your email"
+                        android:hint="Enter your email"
                         android:inputType="textEmailAddress"
                         android:textColor="#000000"
                         android:textColorHint="#9E9E9E"
@@ -141,7 +141,7 @@
                         android:paddingBottom="14dp" />
                 </com.google.android.material.textfield.TextInputLayout>
 
-                <!-- Password (hint inside) -->
+                <!-- Password + eye icon -->
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/passwordInputLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
@@ -151,8 +151,10 @@
                     app:hintEnabled="false"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
                     app:startIconTint="#757575"
-                    app:passwordToggleEnabled="true"
+
+                    app:endIconMode="password_toggle"
                     app:endIconTint="#757575"
+
                     app:boxStrokeColor="#BDBDBD"
                     app:boxCornerRadiusTopStart="30dp"
                     app:boxCornerRadiusTopEnd="30dp"
