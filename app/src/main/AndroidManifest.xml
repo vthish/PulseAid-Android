@@ -11,11 +11,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
-
+        <activity
+            android:name=".ui.admin.ManageHospitalsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.ManageBloodBanksActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.ManageDonorsActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.admin.AdminDashboardActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true"

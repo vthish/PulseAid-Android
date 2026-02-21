@@ -210,7 +210,7 @@
                         <ImageView
                             android:layout_width="32dp"
                             android:layout_height="32dp"
-                            android:src="@android:drawable/ic_menu_manage"
+                            android:src="@android:drawable/ic_menu_save"
                             app:tint="#D32F2F" />
 
                         <TextView

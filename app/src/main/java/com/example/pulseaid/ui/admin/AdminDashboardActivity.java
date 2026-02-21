@@ -62,11 +62,26 @@ public class AdminDashboardActivity extends AppCompatActivity {
             finish();
         });
 
-        // Dashboard Card Click Listeners
-        cardManageDonors.setOnClickListener(v -> Toast.makeText(this, "Opening Donors Module...", Toast.LENGTH_SHORT).show());
-        cardManageBloodBanks.setOnClickListener(v -> Toast.makeText(this, "Opening Blood Banks Module...", Toast.LENGTH_SHORT).show());
-        cardManageHospitals.setOnClickListener(v -> Toast.makeText(this, "Opening Hospitals Module...", Toast.LENGTH_SHORT).show());
-        cardBloodRequests.setOnClickListener(v -> Toast.makeText(this, "Opening Requests Module...", Toast.LENGTH_SHORT).show());
+        // Dashboard Card Click Listeners for Navigation
+        cardManageDonors.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, ManageDonorsActivity.class);
+            startActivity(intent);
+        });
+
+        cardManageBloodBanks.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, ManageBloodBanksActivity.class);
+            startActivity(intent);
+        });
+
+        cardManageHospitals.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, ManageHospitalsActivity.class);
+            startActivity(intent);
+        });
+
+//        cardBloodRequests.setOnClickListener(v -> {
+//            Intent intent = new Intent(AdminDashboardActivity.this, BloodRequestsActivity.class);
+//            startActivity(intent);
+//        });
 
         // Setup Bottom Navigation Bar Clicks
         bottomNavigation.setOnItemSelectedListener(item -> {
