@@ -68,11 +68,11 @@ public class AdminDashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-//        cardManageBloodBanks.setOnClickListener(v -> {
-//            Intent intent = new Intent(AdminDashboardActivity.this, ManageBloodBanksActivity.class);
-//            startActivity(intent);
-//        });
-//
+        cardManageBloodBanks.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, ManageBloodBanksActivity.class);
+            startActivity(intent);
+        });
+
 //        cardManageHospitals.setOnClickListener(v -> {
 //            Intent intent = new Intent(AdminDashboardActivity.this, ManageHospitalsActivity.class);
 //            startActivity(intent);
