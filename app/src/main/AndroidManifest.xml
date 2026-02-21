@@ -14,9 +14,7 @@
         <activity
             android:name=".ui.admin.AdminDashboardActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.admin.AdminDashboard"
-            android:exported="false" />
+
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true"
