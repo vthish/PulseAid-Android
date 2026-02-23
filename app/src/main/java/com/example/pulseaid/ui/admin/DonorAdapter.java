@@ -40,6 +40,14 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
         holder.tvDonorName.setText(donor.getName());
         holder.tvDonorEmail.setText(donor.getEmail());
 
+        // Update the blood group dynamically from the database
+        String bloodGroup = donor.getBloodGroup();
+        if (bloodGroup != null && !bloodGroup.isEmpty()) {
+            holder.tvBloodGroup.setText(bloodGroup);
+        } else {
+            holder.tvBloodGroup.setText("?"); // Show ? if blood group is somehow missing
+        }
+
         holder.btnDeleteDonor.setOnClickListener(v -> {
             if (listener != null) listener.onDeleteClick(donor);
         });
@@ -51,13 +59,14 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
     }
 
     public static class DonorViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDonorName, tvDonorEmail;
+        TextView tvDonorName, tvDonorEmail, tvBloodGroup;
         ImageView btnDeleteDonor;
 
         public DonorViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDonorName = itemView.findViewById(R.id.tvDonorName);
             tvDonorEmail = itemView.findViewById(R.id.tvDonorEmail);
+            tvBloodGroup = itemView.findViewById(R.id.tvBloodGroup);
             btnDeleteDonor = itemView.findViewById(R.id.btnDeleteDonor);
         }
     }

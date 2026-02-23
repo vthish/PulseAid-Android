@@ -22,16 +22,19 @@
             android:layout_height="56dp"
             app:cardBackgroundColor="#FFEBEE"
             app:cardCornerRadius="28dp"
-            app:cardElevation="0dp">
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
 
             <TextView
-                android:id="@+id/tvBloodType"
+                android:id="@+id/tvBloodGroup"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
+                android:gravity="center"
+                android:includeFontPadding="false"
                 android:text="A+"
                 android:textColor="#D32F2F"
-                android:textSize="18sp"
+                android:textSize="23sp"
                 android:textStyle="bold" />
         </com.google.android.material.card.MaterialCardView>
 
@@ -46,7 +49,6 @@
                 android:id="@+id/tvDonorName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Donor Name"
                 android:textColor="#1E293B"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -56,7 +58,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="donor@email.com"
                 android:textColor="#64748B"
                 android:textSize="14sp" />
         </LinearLayout>
