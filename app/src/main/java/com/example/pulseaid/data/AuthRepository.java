@@ -35,6 +35,22 @@ public class AuthRepository {
                 });
     }
 
+    public void registerUser(User user, String password, AuthCallback callback) {
+        mAuth.createUserWithEmailAndPassword(user.getEmail(), password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        String uid = mAuth.getCurrentUser().getUid();
+                        user.setUid(uid);
+
+                        db.collection("Users").document(uid).set(user)
+                                .addOnSuccessListener(aVoid -> callback.onSuccess(user))
+                                .addOnFailureListener(e -> callback.onError(e.getMessage()));
+                    } else {
+                        callback.onError(task.getException().getMessage());
+                    }
+                });
+    }
+
     private void fetchUserDetails(String uid, AuthCallback callback) {
         // Force Firebase to fetch from the server, ignoring the offline cache
         db.collection("Users").document(uid)
