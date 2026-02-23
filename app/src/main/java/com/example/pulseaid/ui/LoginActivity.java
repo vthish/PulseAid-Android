@@ -132,7 +132,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(adminIntent);
                 finish();
                 break;
-            case "blood_bank":
+            case "blood staff":
                 Toast.makeText(this, "Redirecting to Blood Bank Dashboard...", Toast.LENGTH_SHORT).show();
                 break;
             case "hospital":
