@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.ui.donor.DonorRegisterActivity;
 import com.example.pulseaid.viewmodel.LoginViewModel;
 import com.example.pulseaid.data.User;
 import com.example.pulseaid.ui.admin.AdminDashboardActivity;
@@ -62,6 +63,8 @@ public class LoginActivity extends AppCompatActivity {
         registerText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent registerIntent = new Intent(LoginActivity.this, DonorRegisterActivity.class);
+                startActivity(registerIntent);
             }
         });
 
