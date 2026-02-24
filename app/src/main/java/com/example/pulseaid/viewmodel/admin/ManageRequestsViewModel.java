@@ -6,11 +6,11 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.pulseaid.data.admin.BloodRequest;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 public class ManageRequestsViewModel extends ViewModel {
@@ -32,7 +32,6 @@ public class ManageRequestsViewModel extends ViewModel {
     private void loadPendingRequests() {
         db.collection("BloodRequests")
                 .whereEqualTo("status", "Pending")
-                .orderBy("requestDate", Query.Direction.DESCENDING)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) return;
                     if (value != null) {
@@ -42,16 +41,17 @@ public class ManageRequestsViewModel extends ViewModel {
                             req.setId(doc.getId());
                             list.add(req);
                         }
+
+                        Collections.sort(list, (r1, r2) -> Long.compare(r2.getRequestDate(), r1.getRequestDate()));
+
                         pendingRequests.setValue(list);
                     }
                 });
     }
 
     private void loadHistoryRequests() {
-
         db.collection("BloodRequests")
                 .whereIn("status", Arrays.asList("Approved", "Rejected"))
-                .orderBy("requestDate", Query.Direction.DESCENDING)
                 .addSnapshotListener((value, error) -> {
                     if (error != null) return;
                     if (value != null) {
@@ -61,6 +61,9 @@ public class ManageRequestsViewModel extends ViewModel {
                             req.setId(doc.getId());
                             list.add(req);
                         }
+
+                        Collections.sort(list, (r1, r2) -> Long.compare(r2.getRequestDate(), r1.getRequestDate()));
+
                         historyRequests.setValue(list);
                     }
                 });

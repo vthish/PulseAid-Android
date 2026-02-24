@@ -75,9 +75,9 @@ public class ManageRequestsActivity extends AppCompatActivity {
         public Fragment createFragment(int position) {
             switch (position) {
                 case 0:
-                    return new Fragment();
+                    return new PendingRequestsFragment();
                 case 1:
-                    return new Fragment();
+                    return new HistoryRequestsFragment();
                 default:
                     return new Fragment();
             }

@@ -45,7 +45,7 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
         if (bloodGroup != null && !bloodGroup.isEmpty()) {
             holder.tvBloodGroup.setText(bloodGroup);
         } else {
-            holder.tvBloodGroup.setText("?"); // Show ? if blood group is somehow missing
+            holder.tvBloodGroup.setText("?");
         }
 
         holder.btnDeleteDonor.setOnClickListener(v -> {
