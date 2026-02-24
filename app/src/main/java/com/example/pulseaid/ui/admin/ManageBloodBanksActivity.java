@@ -1,5 +1,6 @@
 package com.example.pulseaid.ui.admin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pulseaid.R;
 import com.example.pulseaid.data.admin.BloodBank;
 import com.example.pulseaid.viewmodel.admin.ManageBloodBanksViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ManageBloodBanksActivity extends AppCompatActivity {
 
@@ -27,6 +29,7 @@ public class ManageBloodBanksActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private ManageBloodBanksViewModel viewModel;
     private ImageView btnBack;
+    private FloatingActionButton fabAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,6 @@ public class ManageBloodBanksActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_manage_blood_banks);
 
-        // Handle Window Insets
         View mainView = findViewById(R.id.main);
         if (mainView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
@@ -47,20 +49,27 @@ public class ManageBloodBanksActivity extends AppCompatActivity {
         bloodBanksRecyclerView = findViewById(R.id.bloodBanksRecyclerView);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
+        fabAdd = findViewById(R.id.fabAdd);
 
         bloodBanksRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         viewModel = new ViewModelProvider(this).get(ManageBloodBanksViewModel.class);
 
         progressBar.setVisibility(View.VISIBLE);
-        viewModel.getBloodBanks().observe(this, banks -> {
+        viewModel.getBloodBanks().observe(this, bloodBanks -> {
             progressBar.setVisibility(View.GONE);
 
-            adapter = new BloodBankAdapter(banks, bank -> showDeleteConfirmationDialog(bank));
+            adapter = new BloodBankAdapter(bloodBanks, bank -> showDeleteConfirmationDialog(bank));
             bloodBanksRecyclerView.setAdapter(adapter);
         });
 
         btnBack.setOnClickListener(v -> finish());
+
+        fabAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(ManageBloodBanksActivity.this, AddInstitutionActivity.class);
+            intent.putExtra("ROLE_TYPE", "Blood Staff");
+            startActivity(intent);
+        });
     }
 
     private void showDeleteConfirmationDialog(BloodBank bank) {

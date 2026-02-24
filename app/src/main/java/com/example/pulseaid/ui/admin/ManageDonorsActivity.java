@@ -31,7 +31,6 @@ public class ManageDonorsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_manage_donors);
 
@@ -44,36 +43,31 @@ public class ManageDonorsActivity extends AppCompatActivity {
             });
         }
 
-        // Initialize UI Elements
         donorsRecyclerView = findViewById(R.id.donorsRecyclerView);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
 
         donorsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
-        // Setup ViewModel
         viewModel = new ViewModelProvider(this).get(ManageDonorsViewModel.class);
 
-        // Fetch and observe data
         progressBar.setVisibility(View.VISIBLE);
         viewModel.getDonors().observe(this, donors -> {
             progressBar.setVisibility(View.GONE);
 
-            // Set Adapter with Data and Delete Listener
             adapter = new DonorAdapter(donors, donor -> showDeleteConfirmationDialog(donor));
             donorsRecyclerView.setAdapter(adapter);
         });
 
-        // Back Button functionality
         btnBack.setOnClickListener(v -> finish());
     }
 
     private void showDeleteConfirmationDialog(Donor donor) {
         new AlertDialog.Builder(this)
                 .setTitle("Delete Donor")
-                .setMessage("Are you sure you want to delete " + donor.getName() + " from the system?")
+                .setMessage("Are you sure you want to delete donor " + donor.getName() + " from the system?")
                 .setPositiveButton("Delete", (dialog, which) -> {
-                    viewModel.deleteDonor(donor.getDonorId());
+                    viewModel.deleteDonor(donor.getId());
                     Toast.makeText(ManageDonorsActivity.this, "Donor Deleted", Toast.LENGTH_SHORT).show();
                 })
                 .setNegativeButton("Cancel", null)
