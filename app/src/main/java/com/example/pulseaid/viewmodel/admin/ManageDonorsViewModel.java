@@ -22,7 +22,6 @@ public class ManageDonorsViewModel extends ViewModel {
     }
 
     private void loadDonors() {
-
         db.collection("Users")
                 .whereEqualTo("role", "Donor")
                 .addSnapshotListener((value, error) -> {
@@ -32,7 +31,7 @@ public class ManageDonorsViewModel extends ViewModel {
                         List<Donor> tempRef = new ArrayList<>();
                         for (QueryDocumentSnapshot doc : value) {
                             Donor donor = doc.toObject(Donor.class);
-                            donor.setDonorId(doc.getId());
+                            donor.setId(doc.getId());
                             tempRef.add(donor);
                         }
                         donorList.setValue(tempRef);
@@ -40,11 +39,9 @@ public class ManageDonorsViewModel extends ViewModel {
                 });
     }
 
-    // Method to delete a donor
-    public void deleteDonor(String donorId) {
-        if (donorId != null) {
-
-            db.collection("Users").document(donorId).delete();
+    public void deleteDonor(String id) {
+        if (id != null) {
+            db.collection("Users").document(id).delete();
         }
     }
 }

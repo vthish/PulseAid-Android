@@ -71,7 +71,9 @@ public class LoginActivity extends AppCompatActivity {
         forgotPasswordText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this, "Forgot password clicked", Toast.LENGTH_SHORT).show();
+                // Redirect to ForgotPasswordActivity
+                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -133,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(adminIntent);
                 finish();
                 break;
-            case "blood_bank":
+            case "blood staff":
                 Toast.makeText(this, "Redirecting to Blood Bank Dashboard...", Toast.LENGTH_SHORT).show();
                 break;
             case "hospital":

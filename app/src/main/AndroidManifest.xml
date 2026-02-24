@@ -12,10 +12,16 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
         <activity
-            android:name=".viewmodel.donor.RegisterViewModel"
+            android:name=".ui.donor.DonorRegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.donor.DonorRegisterActivity"
+            android:name=".ui.admin.ManageRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.ForgotPasswordActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AddInstitutionActivity"
             android:exported="false" />
         <activity
             android:name=".ui.admin.ManageHospitalsActivity"
