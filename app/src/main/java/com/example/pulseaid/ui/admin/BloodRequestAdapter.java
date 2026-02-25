@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,8 +22,8 @@ public class BloodRequestAdapter extends RecyclerView.Adapter<BloodRequestAdapte
     private OnRequestActionListener listener;
 
     public interface OnRequestActionListener {
-        void onApprove(BloodRequest request);
-        void onReject(BloodRequest request);
+        void onBroadcast(BloodRequest request);
+        void onResolve(BloodRequest request);
     }
 
     public BloodRequestAdapter(List<BloodRequest> requestList, boolean isPendingTab, OnRequestActionListener listener) {
@@ -47,32 +46,45 @@ public class BloodRequestAdapter extends RecyclerView.Adapter<BloodRequestAdapte
         holder.tvHospitalName.setText(request.getHospitalName());
         holder.tvBloodGroup.setText(request.getBloodGroup());
 
-        // Fixed the terms back to English
+        // Show Quantity and Urgency
         String details = "Quantity: " + request.getQuantity() + " Units | Urgency: " + request.getUrgency();
         holder.tvDetails.setText(details);
 
         holder.tvStatus.setText("Status: " + request.getStatus());
 
-        if ("Approved".equals(request.getStatus())) {
+        // Change text color based on status
+        if ("Resolved".equals(request.getStatus()) || "Approved".equals(request.getStatus())) {
             holder.tvStatus.setTextColor(Color.parseColor("#4CAF50")); // Green
         } else if ("Rejected".equals(request.getStatus())) {
             holder.tvStatus.setTextColor(Color.parseColor("#D32F2F")); // Red
+        } else if ("Broadcasted".equals(request.getStatus())) {
+            holder.tvStatus.setTextColor(Color.parseColor("#E91E63")); // Pink
         } else {
-            holder.tvStatus.setTextColor(Color.parseColor("#FF9800")); // Orange
+            holder.tvStatus.setTextColor(Color.parseColor("#FF9800")); // Orange (Pending)
         }
 
+        // Show buttons only in Pending Tab
         if (isPendingTab) {
             holder.actionButtonsLayout.setVisibility(View.VISIBLE);
+
+            // Disable broadcast button if already broadcasted
+            if ("Broadcasted".equals(request.getStatus())) {
+                holder.btnBroadcast.setEnabled(false);
+                holder.btnBroadcast.setText("Alert Sent");
+            } else {
+                holder.btnBroadcast.setEnabled(true);
+                holder.btnBroadcast.setText("Broadcast Alert");
+            }
         } else {
             holder.actionButtonsLayout.setVisibility(View.GONE);
         }
 
-        holder.btnApprove.setOnClickListener(v -> {
-            if (listener != null) listener.onApprove(request);
+        holder.btnBroadcast.setOnClickListener(v -> {
+            if (listener != null) listener.onBroadcast(request);
         });
 
-        holder.btnReject.setOnClickListener(v -> {
-            if (listener != null) listener.onReject(request);
+        holder.btnResolve.setOnClickListener(v -> {
+            if (listener != null) listener.onResolve(request);
         });
     }
 
@@ -84,7 +96,7 @@ public class BloodRequestAdapter extends RecyclerView.Adapter<BloodRequestAdapte
     public static class RequestViewHolder extends RecyclerView.ViewHolder {
         TextView tvHospitalName, tvDetails, tvBloodGroup, tvStatus;
         LinearLayout actionButtonsLayout;
-        MaterialButton btnApprove, btnReject;
+        MaterialButton btnBroadcast, btnResolve;
 
         public RequestViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -93,8 +105,8 @@ public class BloodRequestAdapter extends RecyclerView.Adapter<BloodRequestAdapte
             tvBloodGroup = itemView.findViewById(R.id.tvBloodGroup);
             tvStatus = itemView.findViewById(R.id.tvStatus);
             actionButtonsLayout = itemView.findViewById(R.id.actionButtonsLayout);
-            btnApprove = itemView.findViewById(R.id.btnApprove);
-            btnReject = itemView.findViewById(R.id.btnReject);
+            btnBroadcast = itemView.findViewById(R.id.btnBroadcast);
+            btnResolve = itemView.findViewById(R.id.btnResolve);
         }
     }
 }

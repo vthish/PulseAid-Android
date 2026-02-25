@@ -9,7 +9,7 @@
         <item name="colorOnPrimary">@color/surface</item>
         <item name="colorOnSecondary">@color/surface</item>
 
-        <!-- Background / surfaces -->
+        <!-- Background -->
         <item name="android:windowBackground">@color/surface</item>
         <item name="colorSurface">@color/surface</item>
 
@@ -17,7 +17,7 @@
         <item name="android:statusBarColor">@color/surface</item>
         <item name="android:windowLightStatusBar">true</item>
 
-        <!-- TextInput (hint/underline focus color) -->
+        <!-- TextInput -->
         <item name="colorControlActivated">@color/pulse_red</item>
 
     </style>

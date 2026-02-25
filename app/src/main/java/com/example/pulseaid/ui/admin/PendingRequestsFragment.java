@@ -52,15 +52,15 @@ public class PendingRequestsFragment extends Fragment {
 
                 adapter = new BloodRequestAdapter(requests, true, new BloodRequestAdapter.OnRequestActionListener() {
                     @Override
-                    public void onApprove(BloodRequest request) {
-                        viewModel.updateRequestStatus(request.getId(), "Approved");
-                        Toast.makeText(getContext(), "Request Approved!", Toast.LENGTH_SHORT).show();
+                    public void onBroadcast(BloodRequest request) {
+                        viewModel.broadcastEmergencyAlert(request);
+                        Toast.makeText(getContext(), "Emergency Alert Broadcasted!", Toast.LENGTH_SHORT).show();
                     }
 
                     @Override
-                    public void onReject(BloodRequest request) {
-                        viewModel.updateRequestStatus(request.getId(), "Rejected");
-                        Toast.makeText(getContext(), "Request Rejected!", Toast.LENGTH_SHORT).show();
+                    public void onResolve(BloodRequest request) {
+                        viewModel.markAsResolved(request.getId());
+                        Toast.makeText(getContext(), "Request Marked as Resolved!", Toast.LENGTH_SHORT).show();
                     }
                 });
                 pendingRecyclerView.setAdapter(adapter);

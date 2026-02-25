@@ -10,6 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
+
         <activity
             android:name=".ui.donor.DonorRegisterActivity"
             android:exported="false" />
