@@ -30,8 +30,9 @@ public class ManageRequestsViewModel extends ViewModel {
     }
 
     private void loadPendingRequests() {
+        // Load both Pending and Broadcasted requests in the Pending Tab
         db.collection("BloodRequests")
-                .whereEqualTo("status", "Pending")
+                .whereIn("status", Arrays.asList("Pending", "Broadcasted"))
                 .addSnapshotListener((value, error) -> {
                     if (error != null) return;
                     if (value != null) {
@@ -50,8 +51,9 @@ public class ManageRequestsViewModel extends ViewModel {
     }
 
     private void loadHistoryRequests() {
+
         db.collection("BloodRequests")
-                .whereIn("status", Arrays.asList("Approved", "Rejected"))
+                .whereIn("status", Arrays.asList("Resolved", "Approved", "Rejected"))
                 .addSnapshotListener((value, error) -> {
                     if (error != null) return;
                     if (value != null) {
@@ -69,7 +71,27 @@ public class ManageRequestsViewModel extends ViewModel {
                 });
     }
 
-    //Admin aprv or rejct karama stts ek updt krn methd ek
+    public void broadcastEmergencyAlert(BloodRequest request) {
+
+        db.collection("BloodRequests").document(request.getId()).update("status", "Broadcasted");
+
+        java.util.Map<String, Object> alert = new java.util.HashMap<>();
+        alert.put("requestId", request.getId());
+        alert.put("hospitalName", request.getHospitalName());
+        alert.put("bloodGroup", request.getBloodGroup());
+        alert.put("quantity", request.getQuantity());
+        alert.put("urgency", request.getUrgency());
+        alert.put("timestamp", System.currentTimeMillis());
+        alert.put("expiresAt", System.currentTimeMillis() + (24 * 60 * 60 * 1000));
+
+        db.collection("EmergencyAlerts").document(request.getId()).set(alert);
+    }
+
+    public void markAsResolved(String requestId) {
+        db.collection("BloodRequests").document(requestId).update("status", "Resolved");
+        db.collection("EmergencyAlerts").document(requestId).delete();
+    }
+
     public void updateRequestStatus(String requestId, String newStatus) {
         if (requestId != null) {
             db.collection("BloodRequests").document(requestId)

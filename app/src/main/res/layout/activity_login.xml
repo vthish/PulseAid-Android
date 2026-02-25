@@ -151,10 +151,8 @@
                     app:hintEnabled="false"
                     app:startIconDrawable="@android:drawable/ic_lock_idle_lock"
                     app:startIconTint="#757575"
-
                     app:endIconMode="password_toggle"
                     app:endIconTint="#757575"
-
                     app:boxStrokeColor="#BDBDBD"
                     app:boxCornerRadiusTopStart="30dp"
                     app:boxCornerRadiusTopEnd="30dp"
