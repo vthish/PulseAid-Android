@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.ui.donor.DonorRegisterActivity;
 import com.example.pulseaid.viewmodel.LoginViewModel;
 import com.example.pulseaid.data.User;
 import com.example.pulseaid.ui.admin.AdminDashboardActivity;
@@ -62,14 +63,17 @@ public class LoginActivity extends AppCompatActivity {
         registerText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: Navigate to Register Activity
+                Intent registerIntent = new Intent(LoginActivity.this, DonorRegisterActivity.class);
+                startActivity(registerIntent);
             }
         });
 
         forgotPasswordText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(LoginActivity.this, "Forgot password clicked", Toast.LENGTH_SHORT).show();
+                // Redirect to ForgotPasswordActivity
+                Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -131,7 +135,7 @@ public class LoginActivity extends AppCompatActivity {
                 startActivity(adminIntent);
                 finish();
                 break;
-            case "blood_bank":
+            case "blood staff":
                 Toast.makeText(this, "Redirecting to Blood Bank Dashboard...", Toast.LENGTH_SHORT).show();
                 break;
             case "hospital":

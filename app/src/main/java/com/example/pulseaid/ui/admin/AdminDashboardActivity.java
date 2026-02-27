@@ -30,7 +30,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_dashboard);
 
-        // Handle Window Insets
         View mainView = findViewById(R.id.main);
         if (mainView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
@@ -52,7 +51,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
         prepareCardsForAnimation();
         animateCardsIn();
 
-        // Logout Click Listener
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
             Toast.makeText(AdminDashboardActivity.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
@@ -62,7 +60,6 @@ public class AdminDashboardActivity extends AppCompatActivity {
             finish();
         });
 
-        // Dashboard Card Click Listeners for Navigation
         cardManageDonors.setOnClickListener(v -> {
             Intent intent = new Intent(AdminDashboardActivity.this, ManageDonorsActivity.class);
             startActivity(intent);
@@ -78,17 +75,16 @@ public class AdminDashboardActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-//        cardBloodRequests.setOnClickListener(v -> {
-//            Intent intent = new Intent(AdminDashboardActivity.this, BloodRequestsActivity.class);
-//            startActivity(intent);
-//        });
+        cardBloodRequests.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, ManageRequestsActivity.class);
+            startActivity(intent);
+        });
 
-        // Setup Bottom Navigation Bar Clicks
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_home) {
-                // Already on Dashboard
+                Toast.makeText(this, "Home clicked", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.nav_alerts) {
                 Toast.makeText(this, "System Alerts clicked", Toast.LENGTH_SHORT).show();

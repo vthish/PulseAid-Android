@@ -18,7 +18,6 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
     private List<Donor> donorList;
     private OnDonorClickListener listener;
 
-    // Interface for handling delete clicks
     public interface OnDonorClickListener {
         void onDeleteClick(Donor donor);
     }
@@ -39,10 +38,16 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
     public void onBindViewHolder(@NonNull DonorViewHolder holder, int position) {
         Donor donor = donorList.get(position);
         holder.tvDonorName.setText(donor.getName());
-        holder.tvBloodType.setText(donor.getBloodType());
         holder.tvDonorEmail.setText(donor.getEmail());
 
-        // Delete button click
+        // Update the blood group dynamically from the database
+        String bloodGroup = donor.getBloodGroup();
+        if (bloodGroup != null && !bloodGroup.isEmpty()) {
+            holder.tvBloodGroup.setText(bloodGroup);
+        } else {
+            holder.tvBloodGroup.setText("?");
+        }
+
         holder.btnDeleteDonor.setOnClickListener(v -> {
             if (listener != null) listener.onDeleteClick(donor);
         });
@@ -54,14 +59,14 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
     }
 
     public static class DonorViewHolder extends RecyclerView.ViewHolder {
-        TextView tvDonorName, tvBloodType, tvDonorEmail;
+        TextView tvDonorName, tvDonorEmail, tvBloodGroup;
         ImageView btnDeleteDonor;
 
         public DonorViewHolder(@NonNull View itemView) {
             super(itemView);
             tvDonorName = itemView.findViewById(R.id.tvDonorName);
-            tvBloodType = itemView.findViewById(R.id.tvBloodType);
             tvDonorEmail = itemView.findViewById(R.id.tvDonorEmail);
+            tvBloodGroup = itemView.findViewById(R.id.tvBloodGroup);
             btnDeleteDonor = itemView.findViewById(R.id.btnDeleteDonor);
         }
     }
