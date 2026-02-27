@@ -1,5 +1,6 @@
 package com.example.pulseaid.ui.admin;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pulseaid.R;
 import com.example.pulseaid.data.admin.Hospital;
 import com.example.pulseaid.viewmodel.admin.ManageHospitalsViewModel;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 public class ManageHospitalsActivity extends AppCompatActivity {
 
@@ -27,6 +29,7 @@ public class ManageHospitalsActivity extends AppCompatActivity {
     private ProgressBar progressBar;
     private ManageHospitalsViewModel viewModel;
     private ImageView btnBack;
+    private FloatingActionButton fabAdd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,6 @@ public class ManageHospitalsActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_manage_hospitals);
 
-        // Handle Window Insets
         View mainView = findViewById(R.id.main);
         if (mainView != null) {
             ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
@@ -47,6 +49,7 @@ public class ManageHospitalsActivity extends AppCompatActivity {
         hospitalsRecyclerView = findViewById(R.id.hospitalsRecyclerView);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
+        fabAdd = findViewById(R.id.fabAdd);
 
         hospitalsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -61,6 +64,11 @@ public class ManageHospitalsActivity extends AppCompatActivity {
         });
 
         btnBack.setOnClickListener(v -> finish());
+
+        fabAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(ManageHospitalsActivity.this, AddInstitutionActivity.class);
+            startActivity(intent);
+        });
     }
 
     private void showDeleteConfirmationDialog(Hospital hospital) {
