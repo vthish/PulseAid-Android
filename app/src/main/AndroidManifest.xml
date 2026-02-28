@@ -26,15 +26,6 @@
             android:name=".ui.admin.AddInstitutionActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.admin.ManageHospitalsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageBloodBanksActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageDonorsActivity"
-            android:exported="false" />
-        <activity
             android:name=".ui.admin.AdminDashboardActivity"
             android:exported="false" />
         <activity
