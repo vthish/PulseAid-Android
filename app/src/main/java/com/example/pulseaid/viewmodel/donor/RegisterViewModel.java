@@ -38,7 +38,7 @@ public class RegisterViewModel extends ViewModel {
         newUser.setName(name);
         newUser.setEmail(email);
         newUser.setRole("Donor");
-        newUser.setBloodType("");
+        newUser.setBloodGroup("");
 
 
         authRepo.registerUser(newUser, password, new AuthRepository.AuthCallback() {
