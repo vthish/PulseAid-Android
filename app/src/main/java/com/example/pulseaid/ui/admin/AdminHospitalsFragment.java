@@ -2,6 +2,8 @@ package com.example.pulseaid.ui.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,18 +19,25 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.data.User;
 import com.example.pulseaid.viewmodel.admin.ManageUsersViewModel;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class AdminHospitalsFragment extends Fragment {
 
     private RecyclerView recyclerView;
     private ProgressBar progressBar;
     private TextView tvEmptyState;
+    private TextInputEditText etSearch;
+
     private HospitalAdapter adapter;
     private ManageUsersViewModel viewModel;
+
+    private List<User> originalUserList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -38,6 +47,7 @@ public class AdminHospitalsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.recyclerViewUsers);
         progressBar = view.findViewById(R.id.progressBar);
         tvEmptyState = view.findViewById(R.id.tvEmptyState);
+        etSearch = view.findViewById(R.id.etSearch);
         FloatingActionButton fabAdd = view.findViewById(R.id.fabAdd);
 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
@@ -56,20 +66,45 @@ public class AdminHospitalsFragment extends Fragment {
             startActivity(intent);
         });
 
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                filter(s.toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {}
+        });
+
         fetchData();
 
         return view;
     }
 
+    private void filter(String text) {
+        List<User> filteredList = new ArrayList<>();
+        for (User user : originalUserList) {
+            if (user.getName().toLowerCase().contains(text.toLowerCase()) ||
+                    user.getEmail().toLowerCase().contains(text.toLowerCase())) {
+                filteredList.add(user);
+            }
+        }
+        adapter.filterList(filteredList);
+    }
+
     private void fetchData() {
         progressBar.setVisibility(View.VISIBLE);
-        // Ensure "Hospital Staff" matches the role exactly as saved in Firestore
         viewModel.getUsersByRole("Hospital").observe(getViewLifecycleOwner(), users -> {
             progressBar.setVisibility(View.GONE);
             if (users == null || users.isEmpty()) {
                 tvEmptyState.setVisibility(View.VISIBLE);
+                originalUserList.clear();
             } else {
                 tvEmptyState.setVisibility(View.GONE);
+                originalUserList = users;
                 adapter.setList(users);
             }
         });
