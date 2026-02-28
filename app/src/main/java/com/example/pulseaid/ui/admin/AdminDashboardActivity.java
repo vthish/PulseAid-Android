@@ -21,7 +21,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    private MaterialCardView cardSummary, cardManageUsers, cardBloodRequests;
+    private MaterialCardView cardSummary, cardManageUsers, cardBloodRequests, cardAnalytics, cardSettings;
     private MaterialCardView btnLogout;
     private BottomNavigationView bottomNavigation;
 
@@ -46,6 +46,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
         cardSummary = findViewById(R.id.cardSummary);
         cardManageUsers = findViewById(R.id.cardManageUsers);
         cardBloodRequests = findViewById(R.id.cardBloodRequests);
+        cardAnalytics = findViewById(R.id.cardAnalytics);
+        cardSettings = findViewById(R.id.cardSettings);
         btnLogout = findViewById(R.id.btnLogout);
         bottomNavigation = findViewById(R.id.bottomNavigation);
 
@@ -69,6 +71,14 @@ public class AdminDashboardActivity extends AppCompatActivity {
         cardBloodRequests.setOnClickListener(v -> {
             Intent intent = new Intent(AdminDashboardActivity.this, ManageRequestsActivity.class);
             startActivity(intent);
+        });
+
+        cardAnalytics.setOnClickListener(v -> {
+            Toast.makeText(AdminDashboardActivity.this, "Analytics page coming soon!", Toast.LENGTH_SHORT).show();
+        });
+
+        cardSettings.setOnClickListener(v -> {
+            Toast.makeText(AdminDashboardActivity.this, "Settings page coming soon!", Toast.LENGTH_SHORT).show();
         });
 
         bottomNavigation.setOnItemSelectedListener(item -> {
@@ -96,6 +106,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
         cardManageUsers.setAlpha(0f);
         cardBloodRequests.setTranslationY(offset);
         cardBloodRequests.setAlpha(0f);
+        cardAnalytics.setTranslationY(offset);
+        cardAnalytics.setAlpha(0f);
+        cardSettings.setTranslationY(offset);
+        cardSettings.setAlpha(0f);
     }
 
     private void animateCardsIn() {
@@ -121,6 +135,20 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 .setInterpolator(new OvershootInterpolator())
                 .setDuration(duration)
                 .setStartDelay(delay + 200)
+                .start();
+
+        cardAnalytics.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(delay + 300)
+                .start();
+
+        cardSettings.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(delay + 400)
                 .start();
     }
 }

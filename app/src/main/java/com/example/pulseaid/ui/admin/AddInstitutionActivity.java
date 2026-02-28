@@ -92,10 +92,22 @@ public class AddInstitutionActivity extends AppCompatActivity {
         progressBar.setVisibility(View.VISIBLE);
         btnRegister.setEnabled(false);
 
-        auth.createUserWithEmailAndPassword(email, password)
+        com.google.firebase.FirebaseApp defaultApp = com.google.firebase.FirebaseApp.getInstance();
+        com.google.firebase.FirebaseApp secondaryApp;
+
+        try {
+            secondaryApp = com.google.firebase.FirebaseApp.getInstance("SecondaryApp");
+        } catch (IllegalStateException e) {
+            secondaryApp = com.google.firebase.FirebaseApp.initializeApp(getApplicationContext(), defaultApp.getOptions(), "SecondaryApp");
+        }
+
+        FirebaseAuth secondaryAuth = FirebaseAuth.getInstance(secondaryApp);
+
+        // Use secondaryAuth to create the user
+        secondaryAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && auth.getCurrentUser() != null) {
-                        String userId = auth.getCurrentUser().getUid();
+                    if (task.isSuccessful() && task.getResult().getUser() != null) {
+                        String userId = task.getResult().getUser().getUid();
 
                         Map<String, Object> userMap = new HashMap<>();
                         userMap.put("name", name);
@@ -107,11 +119,12 @@ public class AddInstitutionActivity extends AppCompatActivity {
                                 .set(userMap)
                                 .addOnSuccessListener(aVoid -> {
                                     progressBar.setVisibility(View.GONE);
-                                    auth.signOut();
-                                    Toast.makeText(this, assignedRole + " Added Successfully! Please login again.", Toast.LENGTH_LONG).show();
 
-                                    Intent intent = new Intent(AddInstitutionActivity.this, LoginActivity.class);
-                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    secondaryAuth.signOut();
+
+                                    Toast.makeText(this, assignedRole + " Added Successfully!", Toast.LENGTH_LONG).show();
+                                    Intent intent = new Intent(AddInstitutionActivity.this, AdminDashboardActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
                                     startActivity(intent);
                                     finish();
                                 })
