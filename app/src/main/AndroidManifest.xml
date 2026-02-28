@@ -10,7 +10,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
-
+        <activity
+            android:name=".ui.admin.ManageUsersActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.donor.DonorRegisterActivity"
             android:exported="false" />
@@ -22,15 +24,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.admin.AddInstitutionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageHospitalsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageBloodBanksActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageDonorsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.admin.AdminDashboardActivity"

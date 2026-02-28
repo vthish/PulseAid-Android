@@ -61,8 +61,13 @@ public class AddInstitutionActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
 
-        if (getIntent() != null && getIntent().hasExtra("ROLE_TYPE")) {
-            assignedRole = getIntent().getStringExtra("ROLE_TYPE");
+        if (getIntent() != null && getIntent().hasExtra("INSTITUTION_TYPE")) {
+            String type = getIntent().getStringExtra("INSTITUTION_TYPE");
+            if ("Blood Bank".equals(type)) {
+                assignedRole = "Blood Bank";
+            } else {
+                assignedRole = "Hospital";
+            }
         }
 
         btnBack.setOnClickListener(v -> finish());
@@ -96,6 +101,7 @@ public class AddInstitutionActivity extends AppCompatActivity {
                         userMap.put("name", name);
                         userMap.put("email", email);
                         userMap.put("role", assignedRole);
+                        userMap.put("uid", userId);
 
                         db.collection("Users").document(userId)
                                 .set(userMap)

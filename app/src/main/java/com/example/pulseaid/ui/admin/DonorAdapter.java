@@ -9,22 +9,27 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pulseaid.R;
-import com.example.pulseaid.data.admin.Donor;
+import com.example.pulseaid.data.User; // Imported User class
 
 import java.util.List;
 
 public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHolder> {
 
-    private List<Donor> donorList;
+    private List<User> userList;
     private OnDonorClickListener listener;
 
     public interface OnDonorClickListener {
-        void onDeleteClick(Donor donor);
+        void onDeleteClick(User user);
     }
 
-    public DonorAdapter(List<Donor> donorList, OnDonorClickListener listener) {
-        this.donorList = donorList;
+    public DonorAdapter(List<User> userList, OnDonorClickListener listener) {
+        this.userList = userList;
         this.listener = listener;
+    }
+
+    public void setList(List<User> list) {
+        this.userList = list;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -36,26 +41,26 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
 
     @Override
     public void onBindViewHolder(@NonNull DonorViewHolder holder, int position) {
-        Donor donor = donorList.get(position);
-        holder.tvDonorName.setText(donor.getName());
-        holder.tvDonorEmail.setText(donor.getEmail());
+        User user = userList.get(position);
+        holder.tvDonorName.setText(user.getName());
+        holder.tvDonorEmail.setText(user.getEmail());
 
-        // Update the blood group dynamically from the database
-        String bloodGroup = donor.getBloodGroup();
-        if (bloodGroup != null && !bloodGroup.isEmpty()) {
-            holder.tvBloodGroup.setText(bloodGroup);
+        // Using getBloodType() instead of getBloodGroup() based on User.java
+        String bloodType = user.getBloodGroup();
+        if (bloodType != null && !bloodType.isEmpty()) {
+            holder.tvBloodGroup.setText(bloodType);
         } else {
             holder.tvBloodGroup.setText("?");
         }
 
         holder.btnDeleteDonor.setOnClickListener(v -> {
-            if (listener != null) listener.onDeleteClick(donor);
+            if (listener != null) listener.onDeleteClick(user);
         });
     }
 
     @Override
     public int getItemCount() {
-        return donorList.size();
+        return userList.size();
     }
 
     public static class DonorViewHolder extends RecyclerView.ViewHolder {

@@ -2,6 +2,7 @@ package com.example.pulseaid.ui.admin;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.OvershootInterpolator;
 import android.widget.Toast;
@@ -20,13 +21,14 @@ import com.google.firebase.auth.FirebaseAuth;
 
 public class AdminDashboardActivity extends AppCompatActivity {
 
-    private MaterialCardView cardSummary, cardManageDonors, cardManageBloodBanks, cardManageHospitals, cardBloodRequests;
+    private MaterialCardView cardSummary, cardManageUsers, cardBloodRequests;
     private MaterialCardView btnLogout;
     private BottomNavigationView bottomNavigation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_admin_dashboard);
 
@@ -37,13 +39,12 @@ public class AdminDashboardActivity extends AppCompatActivity {
                 v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
                 return insets;
             });
+        } else {
+            Log.e("AdminDashboard", "Main view is null, skipping insets");
         }
 
-        // Initialize Views
         cardSummary = findViewById(R.id.cardSummary);
-        cardManageDonors = findViewById(R.id.cardManageDonors);
-        cardManageBloodBanks = findViewById(R.id.cardManageBloodBanks);
-        cardManageHospitals = findViewById(R.id.cardManageHospitals);
+        cardManageUsers = findViewById(R.id.cardManageUsers);
         cardBloodRequests = findViewById(R.id.cardBloodRequests);
         btnLogout = findViewById(R.id.btnLogout);
         bottomNavigation = findViewById(R.id.bottomNavigation);
@@ -60,18 +61,8 @@ public class AdminDashboardActivity extends AppCompatActivity {
             finish();
         });
 
-        cardManageDonors.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboardActivity.this, ManageDonorsActivity.class);
-            startActivity(intent);
-        });
-
-        cardManageBloodBanks.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboardActivity.this, ManageBloodBanksActivity.class);
-            startActivity(intent);
-        });
-
-        cardManageHospitals.setOnClickListener(v -> {
-            Intent intent = new Intent(AdminDashboardActivity.this, ManageHospitalsActivity.class);
+        cardManageUsers.setOnClickListener(v -> {
+            Intent intent = new Intent(AdminDashboardActivity.this, ManageUsersActivity.class);
             startActivity(intent);
         });
 
@@ -99,15 +90,10 @@ public class AdminDashboardActivity extends AppCompatActivity {
 
     private void prepareCardsForAnimation() {
         float offset = 100f;
-
         cardSummary.setTranslationY(offset);
         cardSummary.setAlpha(0f);
-        cardManageDonors.setTranslationY(offset);
-        cardManageDonors.setAlpha(0f);
-        cardManageBloodBanks.setTranslationY(offset);
-        cardManageBloodBanks.setAlpha(0f);
-        cardManageHospitals.setTranslationY(offset);
-        cardManageHospitals.setAlpha(0f);
+        cardManageUsers.setTranslationY(offset);
+        cardManageUsers.setAlpha(0f);
         cardBloodRequests.setTranslationY(offset);
         cardBloodRequests.setAlpha(0f);
     }
@@ -116,10 +102,25 @@ public class AdminDashboardActivity extends AppCompatActivity {
         long delay = 100;
         long duration = 600;
 
-        cardSummary.animate().translationY(0f).alpha(1f).setInterpolator(new OvershootInterpolator()).setDuration(duration).setStartDelay(delay).start();
-        cardManageDonors.animate().translationY(0f).alpha(1f).setInterpolator(new OvershootInterpolator()).setDuration(duration).setStartDelay(delay + 100).start();
-        cardManageBloodBanks.animate().translationY(0f).alpha(1f).setInterpolator(new OvershootInterpolator()).setDuration(duration).setStartDelay(delay + 150).start();
-        cardManageHospitals.animate().translationY(0f).alpha(1f).setInterpolator(new OvershootInterpolator()).setDuration(duration).setStartDelay(delay + 200).start();
-        cardBloodRequests.animate().translationY(0f).alpha(1f).setInterpolator(new OvershootInterpolator()).setDuration(duration).setStartDelay(delay + 250).start();
+        cardSummary.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(delay)
+                .start();
+
+        cardManageUsers.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(delay + 100)
+                .start();
+
+        cardBloodRequests.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(delay + 200)
+                .start();
     }
 }
