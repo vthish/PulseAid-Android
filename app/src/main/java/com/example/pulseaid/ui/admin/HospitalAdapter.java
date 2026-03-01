@@ -31,6 +31,10 @@ public class HospitalAdapter extends RecyclerView.Adapter<HospitalAdapter.Hospit
         this.userList = list;
         notifyDataSetChanged();
     }
+    public void filterList(List<User> filteredList) {
+        this.userList = filteredList;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override

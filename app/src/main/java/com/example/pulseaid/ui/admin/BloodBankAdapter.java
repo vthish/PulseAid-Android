@@ -31,6 +31,10 @@ public class BloodBankAdapter extends RecyclerView.Adapter<BloodBankAdapter.Bloo
         this.userList = list;
         notifyDataSetChanged();
     }
+    public void filterList(List<User> filteredList) {
+        this.userList = filteredList;
+        notifyDataSetChanged();
+    }
 
     @NonNull
     @Override
