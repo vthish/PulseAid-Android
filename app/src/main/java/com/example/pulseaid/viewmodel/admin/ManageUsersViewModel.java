@@ -4,6 +4,7 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.pulseaid.data.admin.Donor;
 import com.example.pulseaid.data.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -34,6 +35,23 @@ public class ManageUsersViewModel extends ViewModel {
                     }
                 });
         return userList;
+    }
+
+    public LiveData<List<Donor>> getDonors() {
+        MutableLiveData<List<Donor>> donorList = new MutableLiveData<>();
+        db.collection("Users")
+                .whereEqualTo("role", "Donor")
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    List<Donor> donors = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : queryDocumentSnapshots) {
+                        Donor donor = doc.toObject(Donor.class);
+                        donors.add(donor);
+                    }
+                    donorList.setValue(donors);
+                })
+                .addOnFailureListener(e -> donorList.setValue(null));
+        return donorList;
     }
 
     public void deleteUser(String uid) {

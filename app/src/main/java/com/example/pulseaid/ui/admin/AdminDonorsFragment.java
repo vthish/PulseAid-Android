@@ -18,7 +18,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pulseaid.R;
-import com.example.pulseaid.data.User;
+import com.example.pulseaid.data.admin.Donor;
 import com.example.pulseaid.viewmodel.admin.ManageUsersViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 
@@ -35,7 +35,7 @@ public class AdminDonorsFragment extends Fragment {
     private DonorAdapter adapter;
     private ManageUsersViewModel viewModel;
 
-    private List<User> originalUserList = new ArrayList<>();
+    private List<Donor> originalDonorList = new ArrayList<>();
 
     @Nullable
     @Override
@@ -50,13 +50,12 @@ public class AdminDonorsFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         viewModel = new ViewModelProvider(this).get(ManageUsersViewModel.class);
 
-        adapter = new DonorAdapter(new ArrayList<>(), user -> {
-            viewModel.deleteUser(user.getUid());
+        adapter = new DonorAdapter(new ArrayList<>(), donor -> {
+            viewModel.deleteUser(donor.getUid());
             Toast.makeText(getContext(), "Donor Deleted", Toast.LENGTH_SHORT).show();
         });
         recyclerView.setAdapter(adapter);
 
-        // Add TextWatcher for Search
         etSearch.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
@@ -76,28 +75,40 @@ public class AdminDonorsFragment extends Fragment {
     }
 
     private void filter(String text) {
-        List<User> filteredList = new ArrayList<>();
-        for (User user : originalUserList) {
-            // Search by Name or Email
-            if (user.getName().toLowerCase().contains(text.toLowerCase()) ||
-                    user.getEmail().toLowerCase().contains(text.toLowerCase())) {
-                filteredList.add(user);
+        List<Donor> filteredList = new ArrayList<>();
+        for (Donor donor : originalDonorList) {
+            boolean nameMatches = donor.getName() != null && donor.getName().toLowerCase().contains(text.toLowerCase());
+            boolean emailMatches = donor.getEmail() != null && donor.getEmail().toLowerCase().contains(text.toLowerCase());
+
+            if (nameMatches || emailMatches) {
+                filteredList.add(donor);
             }
         }
         adapter.filterList(filteredList);
+
+        if (filteredList.isEmpty() && !text.isEmpty()) {
+            tvEmptyState.setVisibility(View.VISIBLE);
+            tvEmptyState.setText("No results found for '" + text + "'");
+        } else if (filteredList.isEmpty() && text.isEmpty()) {
+            tvEmptyState.setVisibility(View.VISIBLE);
+            tvEmptyState.setText("No data found");
+        } else {
+            tvEmptyState.setVisibility(View.GONE);
+        }
     }
 
     private void fetchData() {
         progressBar.setVisibility(View.VISIBLE);
-        viewModel.getUsersByRole("Donor").observe(getViewLifecycleOwner(), users -> {
+        viewModel.getDonors().observe(getViewLifecycleOwner(), donors -> {
             progressBar.setVisibility(View.GONE);
-            if (users == null || users.isEmpty()) {
+            if (donors == null || donors.isEmpty()) {
                 tvEmptyState.setVisibility(View.VISIBLE);
-                originalUserList.clear();
+                tvEmptyState.setText("No data found");
+                originalDonorList.clear();
             } else {
                 tvEmptyState.setVisibility(View.GONE);
-                originalUserList = users;
-                adapter.setList(users);
+                originalDonorList = donors;
+                adapter.setList(donors);
             }
         });
     }

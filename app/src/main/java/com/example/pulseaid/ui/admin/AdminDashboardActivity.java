@@ -74,28 +74,39 @@ public class AdminDashboardActivity extends AppCompatActivity {
         });
 
         cardAnalytics.setOnClickListener(v -> {
-            Toast.makeText(AdminDashboardActivity.this, "Analytics page coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AdminDashboardActivity.this, AnalyticsActivity.class);
+            startActivity(intent);
         });
 
         cardSettings.setOnClickListener(v -> {
-            Toast.makeText(AdminDashboardActivity.this, "Settings page coming soon!", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(AdminDashboardActivity.this, AdminSettingsActivity.class);
+            startActivity(intent);
         });
 
         bottomNavigation.setOnItemSelectedListener(item -> {
             int itemId = item.getItemId();
 
             if (itemId == R.id.nav_home) {
-                Toast.makeText(this, "Home clicked", Toast.LENGTH_SHORT).show();
                 return true;
             } else if (itemId == R.id.nav_alerts) {
-                Toast.makeText(this, "System Alerts clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AdminDashboardActivity.this, ManageRequestsActivity.class);
+                startActivity(intent);
                 return true;
             } else if (itemId == R.id.nav_settings) {
-                Toast.makeText(this, "Admin Settings clicked", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(AdminDashboardActivity.this, AdminSettingsActivity.class);
+                startActivity(intent);
                 return true;
             }
             return false;
         });
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (bottomNavigation != null) {
+            bottomNavigation.setSelectedItemId(R.id.nav_home);
+        }
     }
 
     private void prepareCardsForAnimation() {

@@ -11,6 +11,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
         <activity
+            android:name=".ui.admin.AnalyticsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AdminSettingsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.admin.ManageUsersActivity"
             android:exported="false" />
         <activity
