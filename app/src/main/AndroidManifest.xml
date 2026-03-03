@@ -10,7 +10,15 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
-
+        <activity
+            android:name=".ui.hospital.RequestFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.AvailabilityActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.HospitalDahboard"
+            android:exported="false" />
         <activity
             android:name=".ui.donor.DonorRegisterActivity"
             android:exported="false" />
