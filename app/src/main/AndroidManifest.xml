@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:tools="http://schemas.android.com/tools"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:allowBackup="true"
@@ -10,6 +13,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
+        <activity
+            android:name=".ui.bloodBank.StockMonitosActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bloodBank.HospitleRequestHandlingActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bloodBank.DonerCheckInQueryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bloodBank.BloodBankDashboardActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.bloodBank.RequestAdapter"
+            android:exported="false"
+            tools:ignore="MissingClass" />
         <activity
             android:name=".ui.admin.AnalyticsActivity"
             android:exported="false" />

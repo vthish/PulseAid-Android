@@ -1,26 +1,37 @@
 package com.example.pulseaid.ui.bloodBank;
 
 import android.os.Bundle;
-
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import com.example.pulseaid.R;
+import java.util.ArrayList;
 
 public class HospitleRequestHandlingActivity extends AppCompatActivity {
+
+    private RecyclerView recyclerView;
+    private com.example.pulseaid.ui.bloodBank.RequestAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_hospitle_request_handling);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+
+        recyclerView = findViewById(R.id.recyclerHospitalRequests);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+        ArrayList<HospitalRequest> requestList = new ArrayList<>();
+        requestList.add(new HospitalRequest("General Hospital", "A+", "5 Units"));
+        requestList.add(new HospitalRequest("Base Hospital", "O-", "2 Units"));
+
+        adapter = new com.example.pulseaid.ui.bloodBank.RequestAdapter(requestList);
+        recyclerView.setAdapter(adapter);
+    }
+
+    public static class HospitalRequest {
+        String name, type, qty;
+        HospitalRequest(String name, String type, String qty) {
+            this.name = name; this.type = type; this.qty = qty;
+        }
     }
 }
