@@ -17,6 +17,7 @@ import androidx.core.view.WindowInsetsCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.ui.donor.DonorDashboardActivity;
 import com.example.pulseaid.ui.donor.DonorRegisterActivity;
 import com.example.pulseaid.viewmodel.LoginViewModel;
 import com.example.pulseaid.data.User;
@@ -84,14 +85,19 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        com.google.firebase.auth.FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        com.google.firebase.auth.FirebaseUser currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-
-            Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
-            startActivity(intent);
-            finish();
+            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+                    .collection("Users")
+                    .document(currentUser.getUid())
+                    .get()
+                    .addOnSuccessListener(document -> {
+                        if (document.exists()) {
+                            String role = document.getString("role");
+                            redirectUserBasedOnRole(role);
+                        }
+                    });
         }
     }
 
@@ -157,7 +163,10 @@ public class LoginActivity extends AppCompatActivity {
                 Toast.makeText(this, "Redirecting to Hospital Dashboard...", Toast.LENGTH_SHORT).show();
                 break;
             case "donor":
-                Toast.makeText(this, "Redirecting to Donor Dashboard...", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Redirecting to Donor Dashboard.", Toast.LENGTH_SHORT).show();
+                Intent donorIntent = new Intent(LoginActivity.this, DonorDashboardActivity.class);
+                startActivity(donorIntent);
+                finish();
                 break;
             default:
                 Toast.makeText(this, "Invalid Role!", Toast.LENGTH_SHORT).show();
