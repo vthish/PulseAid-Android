@@ -21,6 +21,7 @@ import com.example.pulseaid.ui.donor.DonorRegisterActivity;
 import com.example.pulseaid.viewmodel.LoginViewModel;
 import com.example.pulseaid.data.User;
 import com.example.pulseaid.ui.admin.AdminDashboardActivity;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -78,6 +79,20 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         setupObservers();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        com.google.firebase.auth.FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+
+        if (currentUser != null) {
+
+            Intent intent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
+            startActivity(intent);
+            finish();
+        }
     }
 
     private void setupObservers() {

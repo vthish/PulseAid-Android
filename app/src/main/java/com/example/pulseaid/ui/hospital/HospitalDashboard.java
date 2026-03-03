@@ -10,7 +10,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pulseaid.R;
 
-public class HospitalDahboard extends AppCompatActivity {
+public class HospitalDashboard extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

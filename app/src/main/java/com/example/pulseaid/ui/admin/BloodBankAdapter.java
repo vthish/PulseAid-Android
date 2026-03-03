@@ -9,22 +9,31 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pulseaid.R;
-import com.example.pulseaid.data.admin.BloodBank;
+import com.example.pulseaid.data.User;
 
 import java.util.List;
 
 public class BloodBankAdapter extends RecyclerView.Adapter<BloodBankAdapter.BloodBankViewHolder> {
 
-    private List<BloodBank> bankList;
+    private List<User> userList;
     private OnBankClickListener listener;
 
     public interface OnBankClickListener {
-        void onDeleteClick(BloodBank bank);
+        void onDeleteClick(User user);
     }
 
-    public BloodBankAdapter(List<BloodBank> bankList, OnBankClickListener listener) {
-        this.bankList = bankList;
+    public BloodBankAdapter(List<User> userList, OnBankClickListener listener) {
+        this.userList = userList;
         this.listener = listener;
+    }
+
+    public void setList(List<User> list) {
+        this.userList = list;
+        notifyDataSetChanged();
+    }
+    public void filterList(List<User> filteredList) {
+        this.userList = filteredList;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -36,18 +45,18 @@ public class BloodBankAdapter extends RecyclerView.Adapter<BloodBankAdapter.Bloo
 
     @Override
     public void onBindViewHolder(@NonNull BloodBankViewHolder holder, int position) {
-        BloodBank bank = bankList.get(position);
-        holder.tvBankName.setText(bank.getName());
-        holder.tvBankEmail.setText(bank.getEmail());
+        User user = userList.get(position);
+        holder.tvBankName.setText(user.getName());
+        holder.tvBankEmail.setText(user.getEmail());
 
         holder.btnDeleteBank.setOnClickListener(v -> {
-            if (listener != null) listener.onDeleteClick(bank);
+            if (listener != null) listener.onDeleteClick(user);
         });
     }
 
     @Override
     public int getItemCount() {
-        return bankList.size();
+        return userList.size();
     }
 
     public static class BloodBankViewHolder extends RecyclerView.ViewHolder {

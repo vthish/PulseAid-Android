@@ -27,6 +27,16 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
         this.listener = listener;
     }
 
+    public void setList(List<Donor> list) {
+        this.donorList = list;
+        notifyDataSetChanged();
+    }
+
+    public void filterList(List<Donor> filteredList) {
+        this.donorList = filteredList;
+        notifyDataSetChanged();
+    }
+
     @NonNull
     @Override
     public DonorViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -40,7 +50,6 @@ public class DonorAdapter extends RecyclerView.Adapter<DonorAdapter.DonorViewHol
         holder.tvDonorName.setText(donor.getName());
         holder.tvDonorEmail.setText(donor.getEmail());
 
-        // Update the blood group dynamically from the database
         String bloodGroup = donor.getBloodGroup();
         if (bloodGroup != null && !bloodGroup.isEmpty()) {
             holder.tvBloodGroup.setText(bloodGroup);

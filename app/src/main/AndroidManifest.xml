@@ -17,7 +17,15 @@
             android:name=".ui.hospital.AvailabilityActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.hospital.HospitalDahboard"
+            android:name=".ui.hospital.HospitalDashboard"/>
+        <activity
+            android:name=".ui.admin.AnalyticsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.AdminSettingsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.admin.ManageUsersActivity"
             android:exported="false" />
         <activity
             android:name=".ui.donor.DonorRegisterActivity"
@@ -30,15 +38,6 @@
             android:exported="false" />
         <activity
             android:name=".ui.admin.AddInstitutionActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageHospitalsActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageBloodBanksActivity"
-            android:exported="false" />
-        <activity
-            android:name=".ui.admin.ManageDonorsActivity"
             android:exported="false" />
         <activity
             android:name=".ui.admin.AdminDashboardActivity"
