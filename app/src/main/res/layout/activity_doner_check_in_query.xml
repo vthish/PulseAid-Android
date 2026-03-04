@@ -12,13 +12,14 @@
         android:layout_height="wrap_content"
         android:text="Scan Donor QR Code"
         android:textSize="18sp"
+        android:textColor="#757575"
         android:layout_marginBottom="30dp"/>
 
-    <FrameLayout
-        android:id="@+id/scanner_frame"
+    <com.journeyapps.barcodescanner.DecoratedBarcodeView
+        android:id="@+id/barcode_scanner"
         android:layout_width="300dp"
         android:layout_height="300dp"
-        android:background="#000000"/>
+        android:layout_gravity="center" />
 
     <Button
         android:id="@+id/btnVerify90Days"
@@ -27,6 +28,7 @@
         android:layout_marginTop="40dp"
         android:backgroundTint="#D32F2F"
         android:text="VERIFY 90 DAYS ELIGIBILITY"
-        android:textColor="#FFFFFF" />
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" />
 
 </LinearLayout>
