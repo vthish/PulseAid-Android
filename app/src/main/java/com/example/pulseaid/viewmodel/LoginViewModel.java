@@ -11,11 +11,8 @@ public class LoginViewModel extends ViewModel {
 
     private AuthRepository authRepository;
 
-    // LiveData to observe login success and hold the User data (including role)
     private MutableLiveData<User> loginSuccessData = new MutableLiveData<>();
-    // LiveData to observe login errors
     private MutableLiveData<String> loginErrorData = new MutableLiveData<>();
-    // LiveData for loading state
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
     public LoginViewModel() {
@@ -41,13 +38,13 @@ public class LoginViewModel extends ViewModel {
             @Override
             public void onSuccess(User user) {
                 isLoading.setValue(false);
-                loginSuccessData.setValue(user); // Triggers success observer in UI
+                loginSuccessData.setValue(user);
             }
 
             @Override
             public void onError(String message) {
                 isLoading.setValue(false);
-                loginErrorData.setValue(message); // Triggers error observer in UI
+                loginErrorData.setValue(message);
             }
         });
     }

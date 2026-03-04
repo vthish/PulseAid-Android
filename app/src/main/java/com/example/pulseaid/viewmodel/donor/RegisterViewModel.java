@@ -43,6 +43,7 @@ public class RegisterViewModel extends ViewModel {
         authRepo.registerUser(newUser, password, new AuthRepository.AuthCallback() {
             @Override
             public void onSuccess(User user) {
+                com.google.firebase.auth.FirebaseAuth.getInstance().signOut();
                 loadingStatus.setValue(false);
                 successStatus.setValue(true);
             }
@@ -54,4 +55,5 @@ public class RegisterViewModel extends ViewModel {
             }
         });
     }
+
 }
