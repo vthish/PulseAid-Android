@@ -26,10 +26,6 @@
             android:name=".ui.bloodBank.BloodBankDashboardActivity"
             android:exported="false" />
         <activity
-            android:name=".ui.bloodBank.RequestAdapter"
-            android:exported="false"
-            tools:ignore="MissingClass" />
-        <activity
             android:name=".ui.admin.AnalyticsActivity"
             android:exported="false" />
         <activity
