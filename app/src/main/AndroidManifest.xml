@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
         <activity
+            android:name=".ui.hospital.DelivaryStatusActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.hospital.RequestFormActivity"
             android:exported="false" />
         <activity
@@ -49,8 +52,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
-
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
