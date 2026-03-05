@@ -30,7 +30,13 @@ public class AuthRepository {
                         Log.d("PULSEAID_DEBUG", "Login UID: " + uid);
                         fetchUserDetails(uid, callback);
                     } else {
-                        callback.onError(task.getException().getMessage());
+                        String errorMsg = task.getException() != null ? task.getException().getMessage() : "";
+
+                        if (errorMsg.toLowerCase().contains("credential") || errorMsg.toLowerCase().contains("invalid") || errorMsg.toLowerCase().contains("password")) {
+                            callback.onError("Invalid email or password. Please try again.");
+                        } else {
+                            callback.onError("Login failed. Please check your details or network connection.");
+                        }
                     }
                 });
     }
