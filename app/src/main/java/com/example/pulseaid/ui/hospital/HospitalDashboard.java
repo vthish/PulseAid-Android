@@ -21,11 +21,27 @@ public class HospitalDashboard extends AppCompatActivity {
         setContentView(R.layout.activity_hospital_dashboard);
 
         MaterialCardView cardRequestBlood = findViewById(R.id.cardHeroRequest);
-
         cardRequestBlood.setOnClickListener(v -> {
             Intent intent = new Intent(HospitalDashboard.this, RequestFormActivity.class);
             startActivity(intent);
         });
 
+        MaterialCardView bannerAlert = findViewById(R.id.bannerAlert);
+        bannerAlert.setOnClickListener(v -> {
+            Intent intent2 = new Intent(HospitalDashboard.this, DelivaryStatusActivity.class);
+
+            intent2.putExtra("BLOOD_GROUP", "O+");
+            intent2.putExtra("UNITS", "04");
+            intent2.putExtra("ETA", "15 Mins");
+
+            startActivity(intent2);
+        });
+
+        MaterialCardView cardConfirmDelivery = findViewById(R.id.cardConfirmDelivery);
+
+        cardConfirmDelivery.setOnClickListener(v -> {
+            Intent intent = new Intent(HospitalDashboard.this, ConfirmDeliveriesActivity.class);
+            startActivity(intent);
+        });
     }
 }
