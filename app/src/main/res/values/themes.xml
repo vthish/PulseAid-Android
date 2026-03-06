@@ -20,5 +20,7 @@
         <!-- TextInput -->
         <item name="colorControlActivated">@color/pulse_red</item>
 
+        <item name="cornerSize">50%</item>
+
     </style>
 </resources>

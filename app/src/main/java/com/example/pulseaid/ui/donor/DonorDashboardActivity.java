@@ -33,37 +33,42 @@ public class DonorDashboardActivity extends AppCompatActivity {
         bottomNav = findViewById(R.id.donor_bottom_nav);
         dashboardViewModel = new ViewModelProvider(this).get(DonorDashboardViewModel.class);
 
+        setupNavigation();
 
         if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.donor_fragment_container, new DonorHomeFragment())
-                    .commit();
+            loadFragment(new DonorHomeFragment());
         }
+
         dashboardViewModel.getProfileStatus().observe(this, isComplete -> {
             if (isComplete != null && !isComplete) {
                 loadFragment(new DonorProfileFragment());
-
-
                 bottomNav.setSelectedItemId(R.id.nav_profile);
             }
         });
-
-
     }
 
     private void setupNavigation() {
         bottomNav.setOnItemSelectedListener(item -> {
+            Fragment selectedFragment = null;
             int id = item.getItemId();
+
             if (id == R.id.nav_home) {
-                return true;
+                selectedFragment = new DonorHomeFragment();
             } else if (id == R.id.nav_history) {
+                // selectedFragment = new DonorHistoryFragment();
                 return true;
             } else if (id == R.id.nav_profile) {
+                selectedFragment = new DonorAccountFragment();
+            }
+
+            if (selectedFragment != null) {
+                loadFragment(selectedFragment);
                 return true;
             }
             return false;
         });
     }
+
     private void loadFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.donor_fragment_container, fragment)
