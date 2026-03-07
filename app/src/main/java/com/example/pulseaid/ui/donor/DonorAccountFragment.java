@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.ui.LoginActivity;
 import com.example.pulseaid.viewmodel.donor.DonorAccountViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
@@ -30,7 +31,7 @@ public class DonorAccountFragment extends Fragment {
     private TextView tvViewName, tvViewPhone, tvViewWeight, tvViewDob, tvStaticNic, tvStaticEmail, tvHeaderName, tvHeaderBlood;
     private TextInputLayout tilEditName, tilEditPhone, tilEditWeight, tilEditDob;
     private TextInputEditText etEditName, etEditPhone, etEditWeight, etEditDob;
-    private MaterialButton btnEditToggle;
+    private MaterialButton btnEditToggle, btnLogout;
 
     private DonorAccountViewModel viewModel;
     private boolean isEditMode = false;
@@ -55,6 +56,13 @@ public class DonorAccountFragment extends Fragment {
             } else {
                 toggleEditMode(true);
             }
+        });
+
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            android.content.Intent intent = new android.content.Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
         });
 
         etEditDob.setOnClickListener(v -> showDatePicker());
@@ -83,6 +91,7 @@ public class DonorAccountFragment extends Fragment {
         etEditDob = v.findViewById(R.id.et_edit_dob);
 
         btnEditToggle = v.findViewById(R.id.btn_edit_toggle);
+        btnLogout = v.findViewById(R.id.btn_logout);
     }
 
     private void setupObservers() {
@@ -115,7 +124,7 @@ public class DonorAccountFragment extends Fragment {
 
             tvViewName.setText(name);
             tvViewPhone.setText(phone);
-            tvViewWeight.setText(weight);
+            tvViewWeight.setText(weight + " kg");
             tvViewDob.setText(dob);
             tvHeaderName.setText(name);
             tvHeaderBlood.setText(blood);
