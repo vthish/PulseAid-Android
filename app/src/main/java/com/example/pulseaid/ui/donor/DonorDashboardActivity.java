@@ -55,8 +55,7 @@ public class DonorDashboardActivity extends AppCompatActivity {
             if (id == R.id.nav_home) {
                 selectedFragment = new DonorHomeFragment();
             } else if (id == R.id.nav_history) {
-                // selectedFragment = new DonorHistoryFragment();
-                return true;
+                selectedFragment = new DonarHistoryFragment();
             } else if (id == R.id.nav_profile) {
                 selectedFragment = new DonorAccountFragment();
             }

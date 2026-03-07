@@ -79,24 +79,26 @@ public class DonorHomeFragment extends Fragment {
 
     private void setupClickListeners() {
         cardFindBank.setOnClickListener(v -> {
-            // Intent intent = new Intent(getActivity(), DonorBookingActivity.class);
-            // startActivity(intent);
+            Intent intent = new Intent(getActivity(), DonorBookingActivity.class);
+            startActivity(intent);
         });
 
         cardEmergencyRequests.setOnClickListener(v -> {
-            // Fragment emergencyFragment = new EmergencyRequestsFragment();
-            // getParentFragmentManager().beginTransaction()
-            //        .replace(R.id.donor_fragment_container, emergencyFragment)
-            //        .addToBackStack(null)
-            //        .commit();
+            loadFragment(new DonorUrgentAlertsFragment());
         });
 
         cardUpcomingBooking.setOnClickListener(v -> {
-            // Fragment detailsFragment = new AppointmentDetailsFragment();
-            // getParentFragmentManager().beginTransaction()
-            //        .replace(R.id.donor_fragment_container, detailsFragment)
-            //        .addToBackStack(null)
-            //        .commit();
+            loadFragment(new DonorUpcomingAppointmentFragment());
         });
+
+    }
+
+    private void loadFragment(Fragment fragment) {
+        if (fragment != null) {
+            getParentFragmentManager().beginTransaction()
+                    .replace(R.id.donor_fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
+        }
     }
 }

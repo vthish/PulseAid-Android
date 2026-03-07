@@ -5,10 +5,11 @@
     <color name="teal_200">#03DAC5</color>
     <color name="teal_700">#018786</color>
 
-    <!-- PulseAid palette -->
     <color name="pulse_red">#D32F2F</color>
     <color name="pulse_red_dark">#B71C1C</color>
     <color name="pulse_red_soft">#FFF1F1</color>
+    <color name="donor_background">#f1f1ff</color>
+
 
     <color name="text_secondary">#757575</color>
     <color name="outline">#BDBDBD</color>
