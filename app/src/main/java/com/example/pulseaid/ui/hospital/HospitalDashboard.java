@@ -43,5 +43,13 @@ public class HospitalDashboard extends AppCompatActivity {
             Intent intent = new Intent(HospitalDashboard.this, ConfirmDeliveriesActivity.class);
             startActivity(intent);
         });
+
+        findViewById(R.id.cardActiveStatus).setOnClickListener(v -> {
+            startActivity(new Intent(HospitalDashboard.this, ActiveRequestsActivity.class));
+        });
+
+        findViewById(R.id.cardHistory).setOnClickListener(v -> { // ඔයාගේ History කාඩ් එකේ ID එක දෙන්න
+            startActivity(new Intent(HospitalDashboard.this, HistoryActivity.class));
+        });
     }
 }

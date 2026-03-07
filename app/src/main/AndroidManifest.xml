@@ -10,7 +10,12 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
-
+        <activity
+            android:name=".ui.hospital.HistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.ActiveRequestsActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.hospital.ConfirmDeliveriesActivity"
             android:exported="false" />

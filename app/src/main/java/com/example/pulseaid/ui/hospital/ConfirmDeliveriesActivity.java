@@ -17,6 +17,8 @@ import java.util.List;
 
 public class ConfirmDeliveriesActivity extends AppCompatActivity {
 
+    private static List<PendingDeliveryModel> pendingList = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -27,10 +29,11 @@ public class ConfirmDeliveriesActivity extends AppCompatActivity {
 
         RecyclerView rvConfirmDeliveries = findViewById(R.id.rvConfirmDeliveries);
 
-        List<PendingDeliveryModel> pendingList = new ArrayList<>();
-        pendingList.add(new PendingDeliveryModel("O+", "04", "Colombo Blood Bank", "Arrived 5 mins ago"));
-        pendingList.add(new PendingDeliveryModel("A-", "02", "Kandy Blood Bank", "Arrived 15 mins ago"));
-        pendingList.add(new PendingDeliveryModel("B+", "08", "Galle Blood Bank", "Arrived 1 hour ago"));
+        if (pendingList.isEmpty()) {
+            pendingList.add(new PendingDeliveryModel("O+", "04", "Colombo Blood Bank", "Arrived 5 mins ago"));
+            pendingList.add(new PendingDeliveryModel("A-", "02", "Kandy Blood Bank", "Arrived 15 mins ago"));
+            pendingList.add(new PendingDeliveryModel("B+", "08", "Galle Blood Bank", "Arrived 1 hour ago"));
+        }
 
         ConfirmDeliveryAdapter adapter = new ConfirmDeliveryAdapter(pendingList);
         rvConfirmDeliveries.setAdapter(adapter);

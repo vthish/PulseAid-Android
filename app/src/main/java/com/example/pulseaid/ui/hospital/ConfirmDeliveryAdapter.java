@@ -36,6 +36,15 @@ public class ConfirmDeliveryAdapter extends RecyclerView.Adapter<ConfirmDelivery
         holder.tvTime.setText(model.getTime());
 
         holder.btnConfirmReceipt.setOnClickListener(v -> {
+
+            HistoryActivity.globalHistoryList.add(0, new DeliveryHistoryModel(
+                    model.getBloodGroup(),
+                    model.getUnits(),
+                    model.getSourceBank(),
+                    "Recently Requested",
+                    "Just Now"
+            ));
+
             pendingList.remove(position);
             notifyItemRemoved(position);
             notifyItemRangeChanged(position, pendingList.size());

@@ -92,7 +92,6 @@
             android:textColor="#FFFFFF"
             android:textStyle="bold"
             app:backgroundTint="#2E7D32"
-            app:icon="@android:drawable/checkbox_on_background"
             app:iconGravity="textStart"
             app:cornerRadius="8dp"/>
     </LinearLayout>
