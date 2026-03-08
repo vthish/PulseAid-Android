@@ -19,6 +19,8 @@ public class DonorDashboardActivity extends AppCompatActivity {
     private BottomNavigationView bottomNav;
     private DonorDashboardViewModel dashboardViewModel;
 
+    private boolean isProfileComplte = true;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
@@ -35,14 +37,21 @@ public class DonorDashboardActivity extends AppCompatActivity {
 
         setupNavigation();
 
-        if (savedInstanceState == null) {
-            loadFragment(new DonorHomeFragment());
-        }
-
         dashboardViewModel.getProfileStatus().observe(this, isComplete -> {
-            if (isComplete != null && !isComplete) {
+            this.isProfileComplte = (isComplete != null && isComplete);
+
+            if (!this.isProfileComplte) {
+                bottomNav.setVisibility(View.GONE);
                 loadFragment(new DonorProfileFragment());
-                bottomNav.setSelectedItemId(R.id.nav_profile);
+            }
+            else
+            {
+                bottomNav.setVisibility(View.VISIBLE);
+                if(getSupportFragmentManager().findFragmentById(R.id.donor_fragment_container) instanceof DonorProfileFragment || savedInstanceState == null)
+                {
+                    loadFragment(new DonorHomeFragment());
+                    bottomNav.setSelectedItemId(R.id.nav_home);
+                }
             }
         });
     }
