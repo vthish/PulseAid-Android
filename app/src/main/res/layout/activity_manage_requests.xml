@@ -65,6 +65,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#FFFFFF"
+        android:fitsSystemWindows="true"
         app:elevation="16dp"
         app:itemIconTint="@color/admin_bottom_nav_colors"
         app:itemTextColor="@color/admin_bottom_nav_colors"

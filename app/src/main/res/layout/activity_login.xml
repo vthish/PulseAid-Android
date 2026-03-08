@@ -9,7 +9,6 @@
     tools:context=".ui.LoginActivity">
 
     <androidx.core.widget.NestedScrollView
-        android:id="@+id/scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
@@ -70,7 +69,6 @@
             </LinearLayout>
 
             <LinearLayout
-                android:id="@+id/contentBlock"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
@@ -115,7 +113,6 @@
 
                 <!-- Email -->
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/emailInputLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -143,7 +140,6 @@
 
                 <!-- Password + eye icon -->
                 <com.google.android.material.textfield.TextInputLayout
-                    android:id="@+id/passwordInputLayout"
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
