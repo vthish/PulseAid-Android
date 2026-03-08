@@ -41,7 +41,6 @@
             android:name=".ui.donor.DonorBookingActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
-            android:exported="false"/>
 
         <activity
             android:name=".ui.hospital.HistoryActivity"
@@ -84,7 +83,6 @@
             android:name=".ui.donor.DonorRegisterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-            android:exported="false" />
 
         <activity
             android:name=".ui.admin.ManageRequestsActivity"
