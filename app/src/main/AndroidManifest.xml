@@ -15,6 +15,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="PLACEHOLDER_KEY" />
 
         <activity
             android:name=".ui.bloodBank.StockMonitosActivity"
@@ -35,8 +38,9 @@
             android:exported="false" />
 
         <activity
-            android:name=".ui.donor.DonorDashboardActivity"
+            android:name=".ui.donor.DonorBookingActivity"
             android:windowSoftInputMode="adjustResize"
+            android:exported="false" />
             android:exported="false"/>
 
         <activity
@@ -61,6 +65,10 @@
             android:name=".ui.hospital.HospitalDashboard"
             android:exported="false" />
         <activity
+            android:name=".ui.donor.DonorDashboardActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".ui.admin.AnalyticsActivity"
             android:exported="false" />
 
@@ -74,6 +82,8 @@
 
         <activity
             android:name=".ui.donor.DonorRegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
             android:exported="false" />
 
         <activity

@@ -2,9 +2,11 @@
 <resources>
     <color name="white">#FFFFFF</color>
 
-    <!-- PulseAid palette -->
     <color name="pulse_red">#D32F2F</color>
     <color name="pulse_red_dark">#B71C1C</color>
+    <color name="pulse_red_soft">#FFF1F1</color>
+    <color name="donor_background">#f1f1ff</color>
+
 
     <color name="surface">#FFFFFF</color>
 </resources>
