@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.hospital.RequestFormActivity">
+
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Place New Request"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/pulse_red"
+            android:layout_marginBottom="30dp"/>
+
+        <TextView android:text="Select Blood Type" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <Spinner
+            android:id="@+id/spinBloodType"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:entries="@array/blood_types_array"
+            android:layout_marginBottom="20dp" />
+
+        <TextView android:text="Units Needed" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <EditText
+            android:id="@+id/etUnits"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:inputType="number"
+            android:hint="Example: 10"
+            android:layout_marginBottom="30dp"/>
+
+        <Button
+            android:id="@+id/btnCheck"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:text="Find Available Banks"
+            android:backgroundTint="@color/pulse_red_dark"
+            android:textColor="@color/white"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
