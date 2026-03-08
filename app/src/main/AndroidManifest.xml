@@ -40,6 +40,27 @@
             android:exported="false"/>
 
         <activity
+            android:name=".ui.hospital.HistoryActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.ActiveRequestsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.ConfirmDeliveriesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.DelivaryStatusActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.RequestFormActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.AvailabilityActivity"
+            android:exported="false" />
+        <activity
+            android:name=".ui.hospital.HospitalDashboard"
+            android:exported="false" />
+        <activity
             android:name=".ui.admin.AnalyticsActivity"
             android:exported="false" />
 

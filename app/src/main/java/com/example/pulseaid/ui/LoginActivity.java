@@ -20,6 +20,7 @@ import com.example.pulseaid.R;
 import com.example.pulseaid.ui.bloodBank.BloodBankDashboardActivity;
 import com.example.pulseaid.ui.donor.DonorDashboardActivity;
 import com.example.pulseaid.ui.donor.DonorRegisterActivity;
+import com.example.pulseaid.ui.hospital.HospitalDashboard;
 import com.example.pulseaid.viewmodel.LoginViewModel;
 import com.example.pulseaid.data.User;
 import com.example.pulseaid.ui.admin.AdminDashboardActivity;
@@ -165,6 +166,9 @@ public class LoginActivity extends AppCompatActivity {
                 break;
             case "hospital":
                 Toast.makeText(this, "Redirecting to Hospital Dashboard...", Toast.LENGTH_SHORT).show();
+                Intent hospitalIntent = new Intent(LoginActivity.this, HospitalDashboard.class);
+                startActivity(hospitalIntent);
+                finish();
                 break;
             case "donor":
                 Toast.makeText(this, "Redirecting to Donor Dashboard.", Toast.LENGTH_SHORT).show();
