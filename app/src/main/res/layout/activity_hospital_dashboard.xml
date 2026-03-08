@@ -271,6 +271,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Active Requests"
+                            android:textStyle="bold"
                             android:textColor="#616161"
                             android:textSize="13sp" />
                     </LinearLayout>
@@ -303,7 +304,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="View History"
-                            android:textColor="#2E7D32"
+                            android:textColor="#616161"
                             android:textStyle="bold"
                             android:textSize="14sp"
                             android:layout_marginTop="12dp"/>
@@ -315,17 +316,17 @@
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fabEmergency"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="24dp"
-        android:text="EMERGENCY"
-        android:textColor="#FFFFFF"
-        app:icon="@android:drawable/stat_sys_warning"
-        app:iconTint="#FFFFFF"
-        app:backgroundTint="#D32F2F"
-        app:elevation="6dp" />
+<!--    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton-->
+<!--        android:id="@+id/fabEmergency"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_gravity="bottom|end"-->
+<!--        android:layout_margin="24dp"-->
+<!--        android:text="EMERGENCY"-->
+<!--        android:textColor="#FFFFFF"-->
+<!--        app:icon="@android:drawable/stat_sys_warning"-->
+<!--        app:iconTint="#FFFFFF"-->
+<!--        app:backgroundTint="#D32F2F"-->
+<!--        app:elevation="6dp" />-->
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
