@@ -71,7 +71,7 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
 
         cardAlerts.setOnClickListener(v -> {
             addRecentActivity("Viewed Alerts", "Checked expiring blood stock alerts.", android.R.drawable.ic_dialog_alert);
-            Intent intent = new Intent(BloodBankDashboardActivity.this, StockMonitosActivity.class);
+            Intent intent = new Intent(BloodBankDashboardActivity.this, ExpiringAlertsActivity.class);
             startActivity(intent);
         });
 

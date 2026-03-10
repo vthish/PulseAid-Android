@@ -21,6 +21,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
         <activity
+            android:name=".ui.bloodBank.ExpiringAlertsActivity"
+            android:exported="false" />
+        <activity
             android:name=".ui.bloodBank.BloodStockDetailsActivity"
             android:exported="false" />
 
