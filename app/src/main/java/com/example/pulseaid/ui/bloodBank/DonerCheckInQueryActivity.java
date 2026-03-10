@@ -1,6 +1,7 @@
 package com.example.pulseaid.ui.bloodBank;
 
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
@@ -11,15 +12,16 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.example.pulseaid.R;
+import com.google.android.material.card.MaterialCardView;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
-
 
 public class DonerCheckInQueryActivity extends AppCompatActivity {
 
     private DecoratedBarcodeView barcodeScannerView;
     private Button btnVerify;
+    private MaterialCardView btnBack;
     private static final int CAMERA_PERMISSION_CODE = 100;
 
     private String scannedDonorId = null;
@@ -33,6 +35,14 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
         barcodeScannerView.getStatusView().setVisibility(View.GONE);
 
         btnVerify = findViewById(R.id.btnVerify90Days);
+        btnBack = findViewById(R.id.btnBack);
+
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(DonerCheckInQueryActivity.this, BloodBankDashboardActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.CAMERA}, CAMERA_PERMISSION_CODE);

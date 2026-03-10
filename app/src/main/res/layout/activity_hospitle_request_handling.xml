@@ -9,20 +9,18 @@
     android:fitsSystemWindows="true"
     tools:context=".ui.bloodBank.HospitleRequestHandlingActivity">
 
-    <!-- Red header -->
     <View
         android:id="@+id/headerBg"
         android:layout_width="match_parent"
-        android:layout_height="140dp"
+        android:layout_height="110dp"
         android:background="#B71C1C"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- Top bar: Back + Title -->
     <LinearLayout
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="30dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
@@ -58,13 +56,15 @@
             android:textStyle="bold" />
     </LinearLayout>
 
-    <!-- Recycler -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerHospitalRequests"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="12dp"
-        android:background="#DFD3E3"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="20dp"
+        android:clipToPadding="false"
+        android:background="#00000000"
         app:layout_constraintTop_toBottomOf="@id/headerBg"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
