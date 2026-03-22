@@ -51,9 +51,7 @@
         <activity
             android:name=".ui.hospital.ConfirmDeliveriesActivity"
             android:exported="false" />
-        <activity
-            android:name=".ui.hospital.DelivaryStatusActivity"
-            android:exported="false" />
+
         <activity
             android:name=".ui.hospital.RequestFormActivity"
             android:exported="false" />

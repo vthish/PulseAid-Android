@@ -2,6 +2,8 @@ package com.example.pulseaid.ui.hospital;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -10,7 +12,9 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.ui.LoginActivity;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 
 public class HospitalDashboard extends AppCompatActivity {
 
@@ -26,16 +30,7 @@ public class HospitalDashboard extends AppCompatActivity {
             startActivity(intent);
         });
 
-        MaterialCardView bannerAlert = findViewById(R.id.bannerAlert);
-        bannerAlert.setOnClickListener(v -> {
-            Intent intent2 = new Intent(HospitalDashboard.this, DelivaryStatusActivity.class);
 
-            intent2.putExtra("BLOOD_GROUP", "O+");
-            intent2.putExtra("UNITS", "04");
-            intent2.putExtra("ETA", "15 Mins");
-
-            startActivity(intent2);
-        });
 
         MaterialCardView cardConfirmDelivery = findViewById(R.id.cardConfirmDelivery);
 
@@ -50,6 +45,21 @@ public class HospitalDashboard extends AppCompatActivity {
 
         findViewById(R.id.cardHistory).setOnClickListener(v -> { // ඔයාගේ History කාඩ් එකේ ID එක දෙන්න
             startActivity(new Intent(HospitalDashboard.this, HistoryActivity.class));
+        });
+
+        View btnLogout = findViewById(R.id.btnLogout);
+
+        btnLogout.setOnClickListener(v -> {
+
+            FirebaseAuth.getInstance().signOut();
+
+            Toast.makeText(HospitalDashboard.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+
+            Intent intent = new Intent(HospitalDashboard.this, LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+
+            finish();
         });
     }
 }
