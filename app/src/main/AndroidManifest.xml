@@ -3,8 +3,16 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
+    <uses-feature
+        android:name="android.hardware.camera.autofocus"
+        android:required="false" />
 
     <application
         android:allowBackup="false"
@@ -15,33 +23,32 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="PLACEHOLDER_KEY" />
+            android:value="AIzaSyBLt0AgcpyR14S-FZAV57aZAEqFbHz7n4E" />
 
+        <activity
+            android:name=".ui.hospital.HospitalProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.bloodBank.StockMonitosActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.bloodBank.HospitleRequestHandlingActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.bloodBank.DonerCheckInQueryActivity"
+            android:exported="false"
             android:screenOrientation="portrait"
-            android:stateNotNeeded="true"
-            android:exported="false" />
-
+            android:stateNotNeeded="true" />
         <activity
             android:name=".ui.bloodBank.BloodBankDashboardActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.donor.DonorBookingActivity"
-            android:windowSoftInputMode="adjustResize"
-            android:exported="false" />
-
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".ui.hospital.HistoryActivity"
             android:exported="false" />
@@ -51,7 +58,6 @@
         <activity
             android:name=".ui.hospital.ConfirmDeliveriesActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.hospital.RequestFormActivity"
             android:exported="false" />
@@ -68,45 +74,39 @@
         <activity
             android:name=".ui.admin.AnalyticsActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.admin.AdminSettingsActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.admin.ManageUsersActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.donor.DonorRegisterActivity"
             android:exported="false"
             android:windowSoftInputMode="adjustResize" />
-
         <activity
             android:name=".ui.admin.ManageRequestsActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.ForgotPasswordActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.admin.AddInstitutionActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.admin.AdminDashboardActivity"
             android:exported="false" />
-
         <activity
             android:name=".ui.LoginActivity"
             android:exported="true"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
     </application>
 
 </manifest>
