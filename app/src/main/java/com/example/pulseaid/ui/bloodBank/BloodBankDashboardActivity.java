@@ -51,6 +51,9 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
         CardView cardAlerts = findViewById(R.id.cardAlerts);
         MaterialCardView btnLogout = findViewById(R.id.btnLogout);
 
+        // Added Profile Button Initialize
+        MaterialCardView btnProfile = findViewById(R.id.btnProfile);
+
         cardInventory.setOnClickListener(v -> {
             addRecentActivity("Viewed Stock Status", "Checked current blood inventory levels.", android.R.drawable.ic_menu_sort_by_size);
             Intent intent = new Intent(BloodBankDashboardActivity.this, StockMonitosActivity.class);
@@ -74,6 +77,15 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
             Intent intent = new Intent(BloodBankDashboardActivity.this, ExpiringAlertsActivity.class);
             startActivity(intent);
         });
+
+        // Click Listener for Profile Button
+        if (btnProfile != null) {
+            btnProfile.setOnClickListener(v -> {
+                addRecentActivity("Viewed Profile", "Navigated to profile settings.", android.R.drawable.ic_menu_edit);
+                Intent intent = new Intent(BloodBankDashboardActivity.this, BloodBankProfileActivity.class);
+                startActivity(intent);
+            });
+        }
 
         if (btnLogout != null) {
             btnLogout.setOnClickListener(v -> {

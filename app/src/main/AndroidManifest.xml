@@ -2,7 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <uses-feature
         android:name="android.hardware.camera"
@@ -20,6 +23,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.PulseAid">
+
+        <activity
+            android:name=".ui.bloodBank.BloodBankProfileActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.bloodBank.ExpiringAlertsActivity"
             android:exported="false" />
@@ -29,7 +36,7 @@
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="PLACEHOLDER_KEY" />
+            android:value="AIzaSyBLt0AgcpyR14S-FZAV57aZAEqFbHz7n4E" />
 
         <activity
             android:name=".ui.bloodBank.StockMonitosActivity"
