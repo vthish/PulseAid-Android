@@ -10,11 +10,13 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pulseaid.R;
 import com.example.pulseaid.ui.LoginActivity;
+import com.example.pulseaid.viewmodel.bloodBank.BloodBankDashboardViewModel;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 
@@ -30,10 +32,19 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
     private ActivityAdapter activityAdapter;
     private List<ActivityItem> activityList;
 
+    private TextView txtTotalStock, txtPending, txtTodayApoinment, txtExpireAlert;
+    private BloodBankDashboardViewModel viewModel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blood_bank_dashboard);
+
+        // Initialize TextViews for dashboard stats
+        txtTotalStock = findViewById(R.id.txtTotalStock);
+        txtPending = findViewById(R.id.txtPending);
+        txtTodayApoinment = findViewById(R.id.txtTodayApoinment);
+        txtExpireAlert = findViewById(R.id.txtExpireAlert);
 
         // Setup the RecyclerView to display the list
         recyclerViewActivities = findViewById(R.id.recyclerViewActivities);
@@ -50,9 +61,11 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
         CardView cardAppointments = findViewById(R.id.cardAppointments);
         CardView cardAlerts = findViewById(R.id.cardAlerts);
         MaterialCardView btnLogout = findViewById(R.id.btnLogout);
-
-        // Added Profile Button Initialize
         MaterialCardView btnProfile = findViewById(R.id.btnProfile);
+
+        // Initialize ViewModel and observe data
+        viewModel = new ViewModelProvider(this).get(BloodBankDashboardViewModel.class);
+        observeDashboardData();
 
         cardInventory.setOnClickListener(v -> {
             addRecentActivity("Viewed Stock Status", "Checked current blood inventory levels.", android.R.drawable.ic_menu_sort_by_size);
@@ -99,11 +112,39 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
         }
     }
 
+    private void observeDashboardData() {
+        viewModel.getIsLoading().observe(this, isLoading -> {
+            if (isLoading != null && isLoading) {
+                txtTotalStock.setText("...");
+                txtPending.setText("...");
+                txtTodayApoinment.setText("...");
+                txtExpireAlert.setText("...");
+            }
+        });
+
+        viewModel.getTotalStock().observe(this, stock -> {
+            if (stock != null) txtTotalStock.setText(stock + " Units");
+        });
+
+        viewModel.getPendingOrders().observe(this, pending -> {
+            if (pending != null) txtPending.setText(String.format(Locale.getDefault(), "%02d", pending));
+        });
+
+        viewModel.getTodayAppointments().observe(this, appt -> {
+            if (appt != null) txtTodayApoinment.setText(String.format(Locale.getDefault(), "%02d", appt));
+        });
+
+        viewModel.getExpireAlerts().observe(this, alerts -> {
+            if (alerts != null) txtExpireAlert.setText(String.format(Locale.getDefault(), "%02d", alerts));
+        });
+    }
+
     private void addRecentActivity(String title, String desc, int iconRes) {
         String currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
 
         activityList.add(0, new ActivityItem(title, desc, currentTime, iconRes));
 
+        // Keep only the latest 5 activities
         if (activityList.size() > 5) {
             activityList.remove(activityList.size() - 1);
         }
@@ -145,6 +186,7 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
             holder.txtTime.setText(item.time);
             holder.imgIcon.setImageResource(item.iconResource);
 
+            // Change icon color based on activity type
             if(item.title.contains("Alerts")){
                 holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#D32F2F")); // Red
             } else if(item.title.contains("Orders")){

@@ -6,15 +6,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.data.bloodBank.BloodStockDetailsRepository.DummyDonor;
+import com.example.pulseaid.viewmodel.bloodBank.BloodStockDetailsViewModel;
 import com.google.android.material.card.MaterialCardView;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class BloodStockDetailsActivity extends AppCompatActivity {
@@ -22,6 +26,8 @@ public class BloodStockDetailsActivity extends AppCompatActivity {
     private TextView txtBloodGroupTitle, txtTotalUnits, txtDonateTo, txtReceiveFrom;
     private RecyclerView recyclerDonors;
     private String bloodGroup;
+
+    private BloodStockDetailsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,101 +38,63 @@ public class BloodStockDetailsActivity extends AppCompatActivity {
         if (bloodGroup == null) {
             bloodGroup = "A+";
         }
+
+        initializeViews();
+
+        // Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(BloodStockDetailsViewModel.class);
+
+        // Observe Data
+        observeViewModel();
+
+        // Fetch Data
+        viewModel.loadDetails(bloodGroup);
+    }
+
+    private void initializeViews() {
         txtBloodGroupTitle = findViewById(R.id.txtBloodGroupTitle);
         txtTotalUnits = findViewById(R.id.txtTotalUnits);
         txtDonateTo = findViewById(R.id.txtDonateTo);
         txtReceiveFrom = findViewById(R.id.txtReceiveFrom);
-        MaterialCardView btnBack = findViewById(R.id.btnBack);
         recyclerDonors = findViewById(R.id.recyclerDonors);
 
+        txtBloodGroupTitle.setText(bloodGroup);
+        // Assuming units logic is handled elsewhere or passed via Intent, setting dummy for now.
+        txtTotalUnits.setText("Check Main Stock for Units");
+
+        MaterialCardView btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(BloodStockDetailsActivity.this, StockMonitosActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
             startActivity(intent);
             finish();
         });
-
-        txtBloodGroupTitle.setText(bloodGroup);
-        setupCompatibilityData(bloodGroup);
-        setupDummyDonorsList(bloodGroup);
     }
 
-    private void setupCompatibilityData(String bg) {
-        String donateTo = "";
-        String receiveFrom = "";
-        String units = "0";
+    private void observeViewModel() {
+        viewModel.getCompatibilityInfo().observe(this, info -> {
+            if (info != null) {
+                txtDonateTo.setText(info.get("donateTo"));
+                txtReceiveFrom.setText(info.get("receiveFrom"));
+            }
+        });
 
-        switch (bg) {
-            case "A+":
-                donateTo = "A+, AB+";
-                receiveFrom = "A+, A-, O+, O-";
-                units = "24 Units Available";
-                break;
-            case "A-":
-                donateTo = "A+, A-, AB+, AB-";
-                receiveFrom = "A-, O-";
-                units = "05 Units Available";
-                break;
-            case "B+":
-                donateTo = "B+, AB+";
-                receiveFrom = "B+, B-, O+, O-";
-                units = "18 Units Available";
-                break;
-            case "B-":
-                donateTo = "B+, B-, AB+, AB-";
-                receiveFrom = "B-, O-";
-                units = "02 Units Available";
-                break;
-            case "AB+":
-                donateTo = "AB+";
-                receiveFrom = "Everyone (Universal Recipient)";
-                units = "10 Units Available";
-                break;
-            case "AB-":
-                donateTo = "AB+, AB-";
-                receiveFrom = "AB-, A-, B-, O-";
-                units = "01 Unit Available";
-                break;
-            case "O+":
-                donateTo = "O+, A+, B+, AB+";
-                receiveFrom = "O+, O-";
-                units = "35 Units Available";
-                break;
-            case "O-":
-                donateTo = "Everyone (Universal Donor)";
-                receiveFrom = "O-";
-                units = "08 Units Available";
-                break;
-        }
+        viewModel.getDonorList().observe(this, donors -> {
+            if (donors != null) {
+                recyclerDonors.setLayoutManager(new LinearLayoutManager(this));
+                DummyDonorAdapter adapter = new DummyDonorAdapter(donors);
+                recyclerDonors.setAdapter(adapter);
+            }
+        });
 
-        txtDonateTo.setText(donateTo);
-        txtReceiveFrom.setText(receiveFrom);
-        txtTotalUnits.setText(units);
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    private void setupDummyDonorsList(String bg) {
-        recyclerDonors.setLayoutManager(new LinearLayoutManager(this));
-
-        List<DummyDonor> donorList = new ArrayList<>();
-        donorList.add(new DummyDonor("Kamal Perera", "0771234567", bg, "Last Donated: 2 Months Ago"));
-        donorList.add(new DummyDonor("Nimal Silva", "0719876543", bg, "Last Donated: 5 Months Ago"));
-        donorList.add(new DummyDonor("Kasun Kalhara", "0751122334", bg, "Last Donated: 1 Year Ago"));
-
-        DummyDonorAdapter adapter = new DummyDonorAdapter(donorList);
-        recyclerDonors.setAdapter(adapter);
-    }
-
-    private static class DummyDonor {
-        String name, phone, bloodGroup, lastDonated;
-
-        public DummyDonor(String name, String phone, String bloodGroup, String lastDonated) {
-            this.name = name;
-            this.phone = phone;
-            this.bloodGroup = bloodGroup;
-            this.lastDonated = lastDonated;
-        }
-    }
-
+    // Adapter for RecyclerView
     private static class DummyDonorAdapter extends RecyclerView.Adapter<DummyDonorAdapter.ViewHolder> {
         private final List<DummyDonor> donors;
 

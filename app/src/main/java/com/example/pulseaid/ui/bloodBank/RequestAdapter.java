@@ -8,14 +8,22 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.pulseaid.R;
+import com.example.pulseaid.data.bloodBank.HospitalRequestRepository.HospitalRequest;
 import java.util.List;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHolder> {
 
-    private List<com.example.pulseaid.ui.bloodBank.HospitleRequestHandlingActivity.HospitalRequest> requests;
+    private List<HospitalRequest> requests;
+    private final OnRequestActionListener listener;
 
-    public RequestAdapter(List<com.example.pulseaid.ui.bloodBank.HospitleRequestHandlingActivity.HospitalRequest> requests) {
+    public interface OnRequestActionListener {
+        void onIssue(String requestId);
+        void onReject(String requestId);
+    }
+
+    public RequestAdapter(List<HospitalRequest> requests, OnRequestActionListener listener) {
         this.requests = requests;
+        this.listener = listener;
     }
 
     @NonNull
@@ -27,13 +35,21 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        com.example.pulseaid.ui.bloodBank.HospitleRequestHandlingActivity.HospitalRequest request = requests.get(position);
+        HospitalRequest request = requests.get(position);
         holder.hospitalName.setText(request.name);
         holder.bloodDetails.setText("Type: " + request.type + " | Qty: " + request.qty);
+
+        holder.btnIssue.setOnClickListener(v -> listener.onIssue(request.id));
+        holder.btnReject.setOnClickListener(v -> listener.onReject(request.id));
     }
 
     @Override
     public int getItemCount() { return requests.size(); }
+
+    public void updateData(List<HospitalRequest> newRequests) {
+        this.requests = newRequests;
+        notifyDataSetChanged();
+    }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView hospitalName, bloodDetails;
