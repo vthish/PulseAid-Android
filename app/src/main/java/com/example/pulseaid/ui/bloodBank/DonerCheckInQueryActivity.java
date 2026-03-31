@@ -9,14 +9,16 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pulseaid.R;
-import com.example.pulseaid.viewmodel.bloodBank.DonorCheckInViewModel;
+import com.example.pulseaid.viewmodel.bloodBank.DonorCheckinViewModel;
 import com.google.android.material.card.MaterialCardView;
+import com.google.firebase.auth.FirebaseAuth;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -28,8 +30,9 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
     private MaterialCardView btnBack;
     private static final int CAMERA_PERMISSION_CODE = 100;
 
-    private String scannedDonorId = null;
-    private DonorCheckInViewModel viewModel;
+    private String scannedAppointmentId = null;
+    private String currentBloodBankCenterId;
+    private DonorCheckinViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +43,14 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
         barcodeScannerView.getStatusView().setVisibility(View.GONE);
 
         btnVerify = findViewById(R.id.btnVerify90Days);
+        btnVerify.setText("VERIFY APPOINTMENT");
         btnBack = findViewById(R.id.btnBack);
 
-        // Initialize ViewModel
-        viewModel = new ViewModelProvider(this).get(DonorCheckInViewModel.class);
+        if (FirebaseAuth.getInstance().getCurrentUser() != null) {
+            currentBloodBankCenterId = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        }
+
+        viewModel = new ViewModelProvider(this).get(DonorCheckinViewModel.class);
         observeViewModel();
 
         btnBack.setOnClickListener(v -> {
@@ -60,8 +67,12 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
         }
 
         btnVerify.setOnClickListener(v -> {
-            if (scannedDonorId != null) {
-                viewModel.verifyDonor(scannedDonorId);
+            if (scannedAppointmentId != null) {
+                if (currentBloodBankCenterId != null) {
+                    viewModel.verifyAppointmentQR(scannedAppointmentId, currentBloodBankCenterId);
+                } else {
+                    Toast.makeText(this, "Error: Blood Bank not logged in properly.", Toast.LENGTH_SHORT).show();
+                }
             } else {
                 Toast.makeText(this, "Please align a QR code in the frame first!", Toast.LENGTH_SHORT).show();
             }
@@ -74,22 +85,55 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
                 btnVerify.setText("VERIFYING...");
                 btnVerify.setEnabled(false);
             } else {
-                btnVerify.setText("VERIFY 90 DAYS ELIGIBILITY");
+                btnVerify.setText("VERIFY APPOINTMENT");
                 btnVerify.setEnabled(true);
             }
         });
 
-        viewModel.getVerificationMessage().observe(this, message -> {
-            if (message != null) {
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+        viewModel.getValidAppointment().observe(this, document -> {
+            if (document != null) {
+                showStatusUpdateDialog(document.getId());
+            }
+        });
+
+        viewModel.getUpdateSuccess().observe(this, isSuccess -> {
+            if (isSuccess != null && isSuccess) {
+                Toast.makeText(this, "Appointment Status Updated Successfully!", Toast.LENGTH_SHORT).show();
+                scannedAppointmentId = null;
+                barcodeScannerView.resume();
             }
         });
 
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null) {
                 Toast.makeText(this, error, Toast.LENGTH_LONG).show();
+                scannedAppointmentId = null;
+                barcodeScannerView.resume();
             }
         });
+    }
+
+    private void showStatusUpdateDialog(String appointmentId) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Update Appointment Status");
+        builder.setMessage("This QR is valid for your center. What is the status of this appointment?");
+
+        builder.setPositiveButton("COMPLETED", (dialog, which) -> {
+            viewModel.updateStatus(appointmentId, "COMPLETED");
+        });
+
+        builder.setNegativeButton("REJECTED", (dialog, which) -> {
+            viewModel.updateStatus(appointmentId, "REJECTED");
+        });
+
+        builder.setNeutralButton("CANCEL", (dialog, which) -> {
+            scannedAppointmentId = null;
+            barcodeScannerView.resume();
+            dialog.dismiss();
+        });
+
+        builder.setCancelable(false);
+        builder.show();
     }
 
     private void startScanner() {
@@ -97,10 +141,11 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
             @Override
             public void barcodeResult(BarcodeResult result) {
                 if (result.getText() != null) {
-                    scannedDonorId = result.getText();
-                    // Optional: Visual feedback that QR was captured
-                    Toast.makeText(DonerCheckInQueryActivity.this, "QR Captured! Tap Verify.", Toast.LENGTH_SHORT).show();
-                    // Pause scanner to prevent multiple rapid scans
+                    scannedAppointmentId = result.getText().trim();
+
+
+                    Toast.makeText(DonerCheckInQueryActivity.this, "Scanned Data: " + scannedAppointmentId, Toast.LENGTH_LONG).show();
+
                     barcodeScannerView.pause();
                 }
             }
@@ -129,7 +174,7 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
                 startScanner();
                 barcodeScannerView.resume();
             } else {
-                Toast.makeText(this, "Camera permission is permanently denied or required!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Camera permission is required!", Toast.LENGTH_LONG).show();
             }
         }
     }

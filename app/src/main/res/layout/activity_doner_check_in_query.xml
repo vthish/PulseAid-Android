@@ -89,7 +89,7 @@
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:backgroundTint="#D32F2F"
-            android:text="VERIFY 90 DAYS ELIGIBILITY"
+            android:text="VERIFY APPOINTMENT"
             android:textColor="#FFFFFF"
             android:textSize="16sp"
             android:textStyle="bold"
