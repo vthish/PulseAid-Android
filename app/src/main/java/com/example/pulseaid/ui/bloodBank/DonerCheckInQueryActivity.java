@@ -7,11 +7,15 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.example.pulseaid.R;
+import com.example.pulseaid.viewmodel.bloodBank.DonorCheckInViewModel;
 import com.google.android.material.card.MaterialCardView;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
@@ -25,6 +29,7 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
     private static final int CAMERA_PERMISSION_CODE = 100;
 
     private String scannedDonorId = null;
+    private DonorCheckInViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +41,10 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
 
         btnVerify = findViewById(R.id.btnVerify90Days);
         btnBack = findViewById(R.id.btnBack);
+
+        // Initialize ViewModel
+        viewModel = new ViewModelProvider(this).get(DonorCheckInViewModel.class);
+        observeViewModel();
 
         btnBack.setOnClickListener(v -> {
             Intent intent = new Intent(DonerCheckInQueryActivity.this, BloodBankDashboardActivity.class);
@@ -52,9 +61,33 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
 
         btnVerify.setOnClickListener(v -> {
             if (scannedDonorId != null) {
-                Toast.makeText(this, "Verifying Donor ID: " + scannedDonorId, Toast.LENGTH_LONG).show();
+                viewModel.verifyDonor(scannedDonorId);
             } else {
                 Toast.makeText(this, "Please align a QR code in the frame first!", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void observeViewModel() {
+        viewModel.getIsLoading().observe(this, isLoading -> {
+            if (isLoading != null && isLoading) {
+                btnVerify.setText("VERIFYING...");
+                btnVerify.setEnabled(false);
+            } else {
+                btnVerify.setText("VERIFY 90 DAYS ELIGIBILITY");
+                btnVerify.setEnabled(true);
+            }
+        });
+
+        viewModel.getVerificationMessage().observe(this, message -> {
+            if (message != null) {
+                Toast.makeText(this, message, Toast.LENGTH_LONG).show();
+            }
+        });
+
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_LONG).show();
             }
         });
     }
@@ -65,6 +98,10 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
             public void barcodeResult(BarcodeResult result) {
                 if (result.getText() != null) {
                     scannedDonorId = result.getText();
+                    // Optional: Visual feedback that QR was captured
+                    Toast.makeText(DonerCheckInQueryActivity.this, "QR Captured! Tap Verify.", Toast.LENGTH_SHORT).show();
+                    // Pause scanner to prevent multiple rapid scans
+                    barcodeScannerView.pause();
                 }
             }
         });
