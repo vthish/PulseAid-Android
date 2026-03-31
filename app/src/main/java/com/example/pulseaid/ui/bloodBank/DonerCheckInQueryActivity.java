@@ -4,8 +4,11 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -19,6 +22,7 @@ import com.example.pulseaid.R;
 import com.example.pulseaid.viewmodel.bloodBank.DonorCheckinViewModel;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.journeyapps.barcodescanner.BarcodeCallback;
 import com.journeyapps.barcodescanner.BarcodeResult;
 import com.journeyapps.barcodescanner.DecoratedBarcodeView;
@@ -71,10 +75,10 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
                 if (currentBloodBankCenterId != null) {
                     viewModel.verifyAppointmentQR(scannedAppointmentId, currentBloodBankCenterId);
                 } else {
-                    Toast.makeText(this, "Error: Blood Bank not logged in properly.", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "Session Error: Re-login required.", Toast.LENGTH_SHORT).show();
                 }
             } else {
-                Toast.makeText(this, "Please align a QR code in the frame first!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Please scan a QR code first!", Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -82,7 +86,7 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
     private void observeViewModel() {
         viewModel.getIsLoading().observe(this, isLoading -> {
             if (isLoading != null && isLoading) {
-                btnVerify.setText("VERIFYING...");
+                btnVerify.setText("WAITING...");
                 btnVerify.setEnabled(false);
             } else {
                 btnVerify.setText("VERIFY APPOINTMENT");
@@ -90,15 +94,16 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getValidAppointment().observe(this, document -> {
-            if (document != null) {
-                showStatusUpdateDialog(document.getId());
+        viewModel.getAppointmentData().observe(this, appointment -> {
+            DocumentSnapshot donor = viewModel.getDonorData().getValue();
+            if (appointment != null && donor != null) {
+                showStatusUpdateDialog(appointment, donor);
             }
         });
 
-        viewModel.getUpdateSuccess().observe(this, isSuccess -> {
+        viewModel.getTransactionSuccess().observe(this, isSuccess -> {
             if (isSuccess != null && isSuccess) {
-                Toast.makeText(this, "Appointment Status Updated Successfully!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Donation Successfully Recorded!", Toast.LENGTH_SHORT).show();
                 scannedAppointmentId = null;
                 barcodeScannerView.resume();
             }
@@ -113,27 +118,52 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
         });
     }
 
-    private void showStatusUpdateDialog(String appointmentId) {
+    private void showStatusUpdateDialog(DocumentSnapshot appointment, DocumentSnapshot donor) {
+        String donorName = donor.getString("fullName");
+        String bloodType = donor.getString("bloodGroup");
+        String appointmentId = appointment.getId();
+        String donorUid = donor.getId();
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Update Appointment Status");
-        builder.setMessage("This QR is valid for your center. What is the status of this appointment?");
+        builder.setTitle("Donor Identified!");
 
-        builder.setPositiveButton("COMPLETED", (dialog, which) -> {
-            viewModel.updateStatus(appointmentId, "COMPLETED");
-        });
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(60, 40, 60, 10);
 
-        builder.setNegativeButton("REJECTED", (dialog, which) -> {
-            viewModel.updateStatus(appointmentId, "REJECTED");
-        });
+        final EditText etUnits = new EditText(this);
+        etUnits.setHint("Blood Units (e.g., 1)");
+        etUnits.setInputType(InputType.TYPE_CLASS_NUMBER);
+        layout.addView(etUnits);
 
-        builder.setNeutralButton("CANCEL", (dialog, which) -> {
+        builder.setMessage("Name: " + donorName + "\nBlood Type: " + bloodType);
+        builder.setView(layout);
+
+        builder.setPositiveButton("MARK AS COMPLETED", null);
+        builder.setNegativeButton("CLOSE", (dialog, which) -> {
             scannedAppointmentId = null;
             barcodeScannerView.resume();
             dialog.dismiss();
         });
 
-        builder.setCancelable(false);
-        builder.show();
+        AlertDialog dialog = builder.create();
+        dialog.setCancelable(false);
+
+        dialog.setOnShowListener(dialogInterface -> {
+            Button button = dialog.getButton(AlertDialog.BUTTON_POSITIVE);
+            button.setOnClickListener(view -> {
+                String unitsStr = etUnits.getText().toString().trim();
+                if (unitsStr.isEmpty()) {
+                    etUnits.setError("Required");
+                } else {
+                    int units = Integer.parseInt(unitsStr);
+                    viewModel.completeDonation(appointmentId, donorUid, currentBloodBankCenterId, bloodType, units);
+                    dialog.dismiss();
+                }
+            });
+        });
+
+        dialog.show();
     }
 
     private void startScanner() {
@@ -142,10 +172,7 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
             public void barcodeResult(BarcodeResult result) {
                 if (result.getText() != null) {
                     scannedAppointmentId = result.getText().trim();
-
-
-                    Toast.makeText(DonerCheckInQueryActivity.this, "Scanned Data: " + scannedAppointmentId, Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(DonerCheckInQueryActivity.this, "QR Captured", Toast.LENGTH_SHORT).show();
                     barcodeScannerView.pause();
                 }
             }
@@ -174,7 +201,7 @@ public class DonerCheckInQueryActivity extends AppCompatActivity {
                 startScanner();
                 barcodeScannerView.resume();
             } else {
-                Toast.makeText(this, "Camera permission is required!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Camera permission denied!", Toast.LENGTH_LONG).show();
             }
         }
     }

@@ -12,8 +12,9 @@ public class DonorCheckinViewModel extends ViewModel {
 
     private MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
     private MutableLiveData<String> errorMessage = new MutableLiveData<>();
-    private MutableLiveData<DocumentSnapshot> validAppointment = new MutableLiveData<>();
-    private MutableLiveData<Boolean> updateSuccess = new MutableLiveData<>();
+    private MutableLiveData<DocumentSnapshot> appointmentData = new MutableLiveData<>();
+    private MutableLiveData<DocumentSnapshot> donorData = new MutableLiveData<>();
+    private MutableLiveData<Boolean> transactionSuccess = new MutableLiveData<>();
 
     public DonorCheckinViewModel() {
         repository = new DonorCheckInRepository();
@@ -21,28 +22,36 @@ public class DonorCheckinViewModel extends ViewModel {
 
     public LiveData<Boolean> getIsLoading() { return isLoading; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
-    public LiveData<DocumentSnapshot> getValidAppointment() { return validAppointment; }
-    public LiveData<Boolean> getUpdateSuccess() { return updateSuccess; }
+    public LiveData<DocumentSnapshot> getAppointmentData() { return appointmentData; }
+    public LiveData<DocumentSnapshot> getDonorData() { return donorData; }
+    public LiveData<Boolean> getTransactionSuccess() { return transactionSuccess; }
 
     public void verifyAppointmentQR(String appointmentId, String currentCenterId) {
         isLoading.setValue(true);
-        String cleanAppointmentId = appointmentId.trim();
-
-        repository.getAppointment(cleanAppointmentId, new DonorCheckInRepository.AppointmentCallback() {
+        repository.getAppointmentWithDonor(appointmentId, new DonorCheckInRepository.AppointmentDetailsCallback() {
             @Override
-            public void onSuccess(DocumentSnapshot document) {
+            public void onSuccess(DocumentSnapshot appointmentDoc, DocumentSnapshot donorDoc) {
                 isLoading.setValue(false);
-                if (document.exists()) {
-                    String dbCenterId = document.getString("centerId");
+                String status = appointmentDoc.getString("status");
+                String centerId = appointmentDoc.getString("centerId");
 
-                    if (dbCenterId != null && dbCenterId.equals(currentCenterId)) {
-                        validAppointment.setValue(document);
-                    } else {
-                        errorMessage.setValue("Do not scan! This appointment belongs to another center.");
-                    }
-                } else {
-                    errorMessage.setValue("Invalid QR: Appointment not found in database.");
+                if ("COMPLETED".equals(status)) {
+                    errorMessage.setValue("Already Completed: This appointment has been processed.");
+                    return;
                 }
+
+                if (!"CONFIRMED".equals(status)) {
+                    errorMessage.setValue("Error: Appointment is still PENDING or REJECTED.");
+                    return;
+                }
+
+                if (centerId == null || !centerId.equals(currentCenterId)) {
+                    errorMessage.setValue("Invalid Center: This appointment belongs to another branch.");
+                    return;
+                }
+
+                appointmentData.setValue(appointmentDoc);
+                donorData.setValue(donorDoc);
             }
 
             @Override
@@ -53,13 +62,13 @@ public class DonorCheckinViewModel extends ViewModel {
         });
     }
 
-    public void updateStatus(String appointmentId, String status) {
+    public void completeDonation(String appointmentId, String donorUid, String bloodBankId, String bloodType, int units) {
         isLoading.setValue(true);
-        repository.updateAppointmentStatus(appointmentId.trim(), status, new DonorCheckInRepository.UpdateCallback() {
+        repository.completeDonationTransaction(appointmentId, donorUid, bloodBankId, bloodType, units, new DonorCheckInRepository.TransactionCallback() {
             @Override
             public void onSuccess() {
                 isLoading.setValue(false);
-                updateSuccess.setValue(true);
+                transactionSuccess.setValue(true);
             }
 
             @Override
