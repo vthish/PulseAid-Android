@@ -29,23 +29,26 @@ public class StockMonitorRepository {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        db.collection("BloodStock").document(userId)
+        // Fetching from 'Users' collection
+        db.collection("Users").document(userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         DocumentSnapshot document = task.getResult();
                         Map<String, String> stockData = new HashMap<>();
 
-                        if (document.exists()) {
 
-                            stockData.put("A+", getStockValue(document, "A+"));
-                            stockData.put("A-", getStockValue(document, "A-"));
-                            stockData.put("B+", getStockValue(document, "B+"));
-                            stockData.put("B-", getStockValue(document, "B-"));
-                            stockData.put("AB+", getStockValue(document, "AB+"));
-                            stockData.put("AB-", getStockValue(document, "AB-"));
-                            stockData.put("O+", getStockValue(document, "O+"));
-                            stockData.put("O-", getStockValue(document, "O-"));
+                        if (document.exists() && document.contains("inventory")) {
+                            Map<String, Object> inventory = (Map<String, Object>) document.get("inventory");
+
+                            stockData.put("A+", getStockValue(inventory, "A+"));
+                            stockData.put("A-", getStockValue(inventory, "A-"));
+                            stockData.put("B+", getStockValue(inventory, "B+"));
+                            stockData.put("B-", getStockValue(inventory, "B-"));
+                            stockData.put("AB+", getStockValue(inventory, "AB+"));
+                            stockData.put("AB-", getStockValue(inventory, "AB-"));
+                            stockData.put("O+", getStockValue(inventory, "O+"));
+                            stockData.put("O-", getStockValue(inventory, "O-"));
                         } else {
                             stockData.put("A+", "0"); stockData.put("A-", "0");
                             stockData.put("B+", "0"); stockData.put("B-", "0");
@@ -59,10 +62,9 @@ public class StockMonitorRepository {
                 });
     }
 
-    private String getStockValue(DocumentSnapshot document, String field) {
-        Object value = document.get(field);
-        if (value != null) {
-            return String.valueOf(value);
+    private String getStockValue(Map<String, Object> inventory, String field) {
+        if (inventory != null && inventory.containsKey(field)) {
+            return String.valueOf(inventory.get(field));
         }
         return "0";
     }

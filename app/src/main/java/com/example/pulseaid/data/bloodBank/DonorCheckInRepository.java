@@ -56,11 +56,14 @@ public class DonorCheckInRepository {
                     transaction.update(db.collection("Users").document(donorId), "lastDonationDate", System.currentTimeMillis());
                     transaction.update(db.collection("Users").document(donorId), "donationCount", FieldValue.increment(1));
 
+                    Map<String, Object> bloodTypeUpdate = new HashMap<>();
+                    bloodTypeUpdate.put(type, FieldValue.increment(units));
 
-                    Map<String, Object> stockUpdate = new HashMap<>();
-                    stockUpdate.put(type, FieldValue.increment(units));
+                    Map<String, Object> inventoryMap = new HashMap<>();
+                    inventoryMap.put("inventory", bloodTypeUpdate);
 
-                    transaction.set(db.collection("BloodStock").document(bankId), stockUpdate, SetOptions.merge());
+                    // Updating the nested 'inventory' map inside the existing 'Users' collection
+                    transaction.set(db.collection("Users").document(bankId), inventoryMap, SetOptions.merge());
 
                     return null;
                 }).addOnSuccessListener(v -> callback.onSuccess())
