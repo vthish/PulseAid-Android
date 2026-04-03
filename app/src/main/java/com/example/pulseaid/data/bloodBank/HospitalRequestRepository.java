@@ -35,51 +35,24 @@ public class HospitalRequestRepository {
             if (task.isSuccessful()) {
                 List<HospitalRequest> list = new ArrayList<>();
                 for (DocumentSnapshot doc : task.getResult()) {
-                    List<Map<String, Object>> assignedBanks = (List<Map<String, Object>>) doc.get("assignedBanks");
-                    if (assignedBanks != null) {
-                        for (Map<String, Object> bank : assignedBanks) {
-                            if (currentUserId.equals(bank.get("bankId"))) {
-                                String deliveryStatus = (String) bank.get("deliveryStatus");
-                                String bloodGroup = (String) bank.get("bloodTypeProvided");
-                                int qty = ((Number) bank.get("unitsProvided")).intValue();
-
-                                if ("Pending".equals(deliveryStatus)) {
-                                    reservePacketsAutomatically(doc.getId(), bloodGroup, qty, assignedBanks, doc.getReference());
-                                    list.add(new HospitalRequest(doc.getId(), doc.getString("hospitalName"), bloodGroup, qty));
-                                } else if ("Reserved".equals(deliveryStatus)) {
-                                    list.add(new HospitalRequest(doc.getId(), doc.getString("hospitalName"), bloodGroup, qty));
-                                }
+                    List<Map<String, Object>> assigned = (List<Map<String, Object>>) doc.get("assignedBanks");
+                    if (assigned != null) {
+                        for (Map<String, Object> bank : assigned) {
+                            if (currentUserId.equals(bank.get("bankId")) && "Pending".equals(bank.get("deliveryStatus"))) {
+                                String urgency = doc.getString("urgency");
+                                if (urgency == null) urgency = "Normal";
+                                long units = 0;
+                                Object q = bank.get("unitsProvided");
+                                if (q instanceof Long) units = (Long) q;
+                                else if (q instanceof Integer) units = (Integer) q;
+                                list.add(new HospitalRequest(doc.getId(), doc.getString("hospitalName"), (String)bank.get("bloodTypeProvided"), (int)units, urgency));
                             }
                         }
                     }
                 }
                 callback.onSuccess(list);
-            } else callback.onFailure("Error fetching requests");
+            } else callback.onFailure("Error");
         });
-    }
-
-    private void reservePacketsAutomatically(String reqId, String group, int qty, List<Map<String, Object>> assigned, DocumentReference reqRef) {
-        String uid = mAuth.getCurrentUser().getUid();
-        db.collection("BloodPackets")
-                .whereEqualTo("centerId", uid)
-                .whereEqualTo("bloodGroup", group)
-                .whereEqualTo("status", "AVAILABLE")
-                .limit(qty)
-                .get()
-                .addOnSuccessListener(snaps -> {
-                    if (snaps.size() >= qty) {
-                        WriteBatch batch = db.batch();
-                        for (DocumentSnapshot d : snaps) {
-                            batch.update(d.getReference(), "status", "Reserved");
-                            batch.update(d.getReference(), "reservedForRequest", reqId);
-                        }
-                        for (Map<String, Object> b : assigned) {
-                            if (uid.equals(b.get("bankId"))) b.put("deliveryStatus", "Reserved");
-                        }
-                        batch.update(reqRef, "assignedBanks", assigned);
-                        batch.commit();
-                    }
-                });
     }
 
     public void confirmBloodUnits(String requestId, String bloodGroup, int qty, ActionCallback callback) {
@@ -87,10 +60,14 @@ public class HospitalRequestRepository {
         db.collection("BloodPackets")
                 .whereEqualTo("centerId", currentUserId)
                 .whereEqualTo("bloodGroup", bloodGroup)
-                .whereEqualTo("status", "Reserved")
-                .whereEqualTo("reservedForRequest", requestId)
+                .whereEqualTo("status", "AVAILABLE")
+                .limit(qty)
                 .get()
                 .addOnSuccessListener(snaps -> {
+                    if (snaps.size() < qty) {
+                        callback.onFailure("Insufficient stock!");
+                        return;
+                    }
                     WriteBatch batch = db.batch();
                     long currentTime = System.currentTimeMillis();
                     for (DocumentSnapshot d : snaps) {
@@ -115,10 +92,10 @@ public class HospitalRequestRepository {
     }
 
     public static class HospitalRequest {
-        public String id, name, type;
+        public String id, name, type, urgency;
         public int qty;
-        public HospitalRequest(String id, String name, String type, int qty) {
-            this.id = id; this.name = name; this.type = type; this.qty = qty;
+        public HospitalRequest(String id, String name, String type, int qty, String urgency) {
+            this.id = id; this.name = name; this.type = type; this.qty = qty; this.urgency = urgency;
         }
     }
 }

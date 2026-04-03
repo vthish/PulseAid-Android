@@ -1,5 +1,7 @@
 package com.example.pulseaid.ui.bloodBank;
 
+import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,15 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
         HospitalRequest request = requests.get(position);
         holder.hospitalName.setText(request.name);
         holder.bloodDetails.setText("Type: " + request.type + " | Qty: " + request.qty + " Units");
+        holder.urgencyTag.setText(request.urgency.toUpperCase());
+
+        GradientDrawable bg = (GradientDrawable) holder.urgencyTag.getBackground();
+        if (request.urgency.equalsIgnoreCase("Urgent")) {
+            bg.setColor(Color.parseColor("#D32F2F"));
+        } else {
+            bg.setColor(Color.parseColor("#757575"));
+        }
+
         holder.btnConfirm.setOnClickListener(v -> listener.onConfirm(request));
     }
 
@@ -48,12 +59,13 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        TextView hospitalName, bloodDetails;
+        TextView hospitalName, bloodDetails, urgencyTag;
         Button btnConfirm;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             hospitalName = itemView.findViewById(R.id.txtHospitalName);
             bloodDetails = itemView.findViewById(R.id.txtBloodDetails);
+            urgencyTag = itemView.findViewById(R.id.txtUrgencyTag);
             btnConfirm = itemView.findViewById(R.id.btnIssue);
         }
     }
