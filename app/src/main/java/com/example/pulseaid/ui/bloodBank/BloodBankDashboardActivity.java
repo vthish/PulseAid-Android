@@ -2,11 +2,14 @@ package com.example.pulseaid.ui.bloodBank;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
@@ -16,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.pulseaid.R;
 import com.example.pulseaid.ui.LoginActivity;
 import com.example.pulseaid.viewmodel.bloodBank.BloodBankDashboardViewModel;
+import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.auth.FirebaseAuth;
 import java.text.SimpleDateFormat;
@@ -31,27 +35,46 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
     private TextView txtTotalStock, txtPending, txtTodayApoinment, txtExpireAlert;
     private BloodBankDashboardViewModel viewModel;
 
+    private Handler refreshHandler;
+    private Runnable refreshRunnable;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_blood_bank_dashboard);
+
         txtTotalStock = findViewById(R.id.txtTotalStock);
         txtPending = findViewById(R.id.txtPending);
         txtTodayApoinment = findViewById(R.id.txtTodayApoinment);
         txtExpireAlert = findViewById(R.id.txtExpireAlert);
+
         recyclerViewActivities = findViewById(R.id.recyclerViewActivities);
         recyclerViewActivities.setLayoutManager(new LinearLayoutManager(this));
         activityList = new ArrayList<>();
         activityAdapter = new ActivityAdapter(activityList);
         recyclerViewActivities.setAdapter(activityAdapter);
+
         CardView cardInventory = findViewById(R.id.cardInventory);
         CardView cardRequests = findViewById(R.id.cardRequests);
         CardView cardAppointments = findViewById(R.id.cardAppointments);
         CardView cardAlerts = findViewById(R.id.cardAlerts);
         MaterialCardView btnLogout = findViewById(R.id.btnLogout);
         MaterialCardView btnProfile = findViewById(R.id.btnProfile);
+        MaterialButton btnEmergency = findViewById(R.id.btnEmergencyRequest);
+
         viewModel = new ViewModelProvider(this).get(BloodBankDashboardViewModel.class);
         observeDashboardData();
+
+
+        refreshHandler = new Handler(Looper.getMainLooper());
+        refreshRunnable = new Runnable() {
+            @Override
+            public void run() {
+                viewModel.loadDashboardData();
+                refreshHandler.postDelayed(this, 1000);
+            }
+        };
+
         cardInventory.setOnClickListener(v -> {
             addRecentActivity("Viewed Stock Status", "Checked current blood inventory levels.", android.R.drawable.ic_menu_sort_by_size);
             startActivity(new Intent(this, StockMonitosActivity.class));
@@ -68,35 +91,62 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
             addRecentActivity("Viewed Alerts", "Checked expiring blood stock alerts.", android.R.drawable.ic_dialog_alert);
             startActivity(new Intent(this, ExpiringAlertsActivity.class));
         });
-        if (btnProfile != null) {
-            btnProfile.setOnClickListener(v -> startActivity(new Intent(this, BloodBankProfileActivity.class)));
-        }
-        if (btnLogout != null) {
-            btnLogout.setOnClickListener(v -> {
-                FirebaseAuth.getInstance().signOut();
-                Intent i = new Intent(this, LoginActivity.class);
-                i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                startActivity(i);
-                finish();
-            });
-        }
+
+        btnEmergency.setOnClickListener(v -> {
+            addRecentActivity("Emergency Sent", "An emergency blood request was dispatched.", android.R.drawable.ic_dialog_alert);
+            startActivity(new Intent(this, EmergencyRequestActivity.class));
+        });
+
+        if (btnProfile != null) btnProfile.setOnClickListener(v -> startActivity(new Intent(this, BloodBankProfileActivity.class)));
+
+        btnLogout.setOnClickListener(v -> {
+            FirebaseAuth.getInstance().signOut();
+            Intent i = new Intent(this, LoginActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(i);
+            finish();
+        });
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        viewModel.loadDashboardData();
+        refreshHandler.post(refreshRunnable);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        refreshHandler.removeCallbacks(refreshRunnable);
     }
 
     private void observeDashboardData() {
         viewModel.getIsLoading().observe(this, isLoading -> {
-            if (isLoading != null && isLoading) {
+            if (isLoading != null && isLoading && txtTotalStock.getText().toString().equals("-- Units")) {
                 txtTotalStock.setText("..."); txtPending.setText("..."); txtTodayApoinment.setText("..."); txtExpireAlert.setText("...");
             }
         });
+
         viewModel.getTotalStock().observe(this, stock -> {
-            if (stock != null) txtTotalStock.setText(stock + " Units");
+            if (stock != null) {
+                txtTotalStock.setText(stock + " Units");
+
+                // Color change logic
+                try {
+                    int count = Integer.parseInt(String.valueOf(stock).trim());
+                    if (count <= 5) {
+                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#D32F2F")); // රතු
+                    } else if (count <= 10) {
+                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#F57C00")); // තැඹිලි
+                    } else {
+                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#388E3C")); // කොළ
+                    }
+                } catch (NumberFormatException e) {
+                    txtTotalStock.setTextColor(android.graphics.Color.parseColor("#D32F2F"));
+                }
+            }
         });
+
         viewModel.getPendingOrders().observe(this, pending -> {
             if (pending != null) txtPending.setText(String.format(Locale.getDefault(), "%02d", pending));
         });
@@ -111,7 +161,7 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
     private void addRecentActivity(String title, String desc, int iconRes) {
         String currentTime = new SimpleDateFormat("hh:mm a", Locale.getDefault()).format(new Date());
         activityList.add(0, new ActivityItem(title, desc, currentTime, iconRes));
-        if (activityList.size() > 5) activityList.remove(activityList.size() - 1);
+        if (activityList.size() > 8) activityList.remove(activityList.size() - 1);
         activityAdapter.notifyDataSetChanged();
     }
 
@@ -132,7 +182,7 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
         @Override public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             ActivityItem item = items.get(position);
             holder.txtTitle.setText(item.title); holder.txtDesc.setText(item.description); holder.txtTime.setText(item.time); holder.imgIcon.setImageResource(item.iconResource);
-            if(item.title.contains("Alerts")) holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#D32F2F"));
+            if(item.title.contains("Alerts") || item.title.contains("Emergency")) holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#D32F2F"));
             else if(item.title.contains("Orders")) holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#F57C00"));
             else holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#1976D2"));
         }

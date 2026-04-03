@@ -37,13 +37,17 @@ public class ExpiringAlertsRepository {
                             String status = doc.getString("status");
                             Long exp = doc.getLong("expiryTimestamp");
 
-                            if (exp != null && ("AVAILABLE".equals(status) || "EXPIRED".equals(status))) {
+                            if (exp != null && ("AVAILABLE".equalsIgnoreCase(status) || "EXPIRED".equalsIgnoreCase(status))) {
                                 long diff = exp - now;
 
-                                if (diff > 0 && diff <= sevenDays) {
+                                if (diff <= sevenDays) {
                                     String timeText;
                                     int days = (int) (diff / oneDay);
-                                    if (days >= 1) {
+
+                                    if (diff <= 0) {
+                                        timeText = "EXPIRED";
+                                        days = -1;
+                                    } else if (days >= 1) {
                                         timeText = days + " Days Left";
                                     } else {
                                         long hours = diff / (60 * 60 * 1000L);

@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.pulseaid.R;
-import com.example.pulseaid.data.bloodBank.BloodStockDetailsRepository.DummyDonor;
+import com.example.pulseaid.data.bloodBank.BloodStockDetailsRepository.BloodPacket;
 import com.example.pulseaid.viewmodel.bloodBank.BloodStockDetailsViewModel;
 import com.google.android.material.card.MaterialCardView;
 
@@ -41,13 +41,8 @@ public class BloodStockDetailsActivity extends AppCompatActivity {
 
         initializeViews();
 
-        // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(BloodStockDetailsViewModel.class);
-
-        // Observe Data
         observeViewModel();
-
-        // Fetch Data
         viewModel.loadDetails(bloodGroup);
     }
 
@@ -59,8 +54,7 @@ public class BloodStockDetailsActivity extends AppCompatActivity {
         recyclerDonors = findViewById(R.id.recyclerDonors);
 
         txtBloodGroupTitle.setText(bloodGroup);
-        // Assuming units logic is handled elsewhere or passed via Intent, setting dummy for now.
-        txtTotalUnits.setText("Check Main Stock for Units");
+        txtTotalUnits.setText("Loading units...");
 
         MaterialCardView btnBack = findViewById(R.id.btnBack);
         btnBack.setOnClickListener(v -> {
@@ -79,10 +73,21 @@ public class BloodStockDetailsActivity extends AppCompatActivity {
             }
         });
 
-        viewModel.getDonorList().observe(this, donors -> {
-            if (donors != null) {
+        viewModel.getPacketList().observe(this, packets -> {
+            if (packets != null) {
+                int count = packets.size();
+                txtTotalUnits.setText(count + " Packets Available");
+
+                if (count <= 5) {
+                    txtTotalUnits.setTextColor(android.graphics.Color.parseColor("#D32F2F"));
+                } else if (count <= 10) {
+                    txtTotalUnits.setTextColor(android.graphics.Color.parseColor("#F57C00"));
+                } else {
+                    txtTotalUnits.setTextColor(android.graphics.Color.parseColor("#388E3C"));
+                }
+
                 recyclerDonors.setLayoutManager(new LinearLayoutManager(this));
-                DummyDonorAdapter adapter = new DummyDonorAdapter(donors);
+                BloodPacketAdapter adapter = new BloodPacketAdapter(packets);
                 recyclerDonors.setAdapter(adapter);
             }
         });
@@ -94,12 +99,11 @@ public class BloodStockDetailsActivity extends AppCompatActivity {
         });
     }
 
-    // Adapter for RecyclerView
-    private static class DummyDonorAdapter extends RecyclerView.Adapter<DummyDonorAdapter.ViewHolder> {
-        private final List<DummyDonor> donors;
+    private static class BloodPacketAdapter extends RecyclerView.Adapter<BloodPacketAdapter.ViewHolder> {
+        private final List<BloodPacket> packets;
 
-        public DummyDonorAdapter(List<DummyDonor> donors) {
-            this.donors = donors;
+        public BloodPacketAdapter(List<BloodPacket> packets) {
+            this.packets = packets;
         }
 
         @NonNull
@@ -111,19 +115,20 @@ public class BloodStockDetailsActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-            DummyDonor donor = donors.get(position);
-            holder.text1.setText(donor.name + " (" + donor.bloodGroup + ")");
-            holder.text1.setTextColor(android.graphics.Color.parseColor("#212121"));
+            BloodPacket packet = packets.get(position);
+
+            holder.text1.setText("Packet ID: " + packet.packetId + " (" + packet.bloodGroup + ")");
+            holder.text1.setTextColor(android.graphics.Color.parseColor("#D32F2F"));
             holder.text1.setTextSize(16f);
             holder.text1.setTypeface(null, android.graphics.Typeface.BOLD);
 
-            holder.text2.setText(donor.phone + " | " + donor.lastDonated);
+            holder.text2.setText("Exp: " + packet.expiryDate + " | Status: " + packet.status);
             holder.text2.setTextColor(android.graphics.Color.parseColor("#757575"));
         }
 
         @Override
         public int getItemCount() {
-            return donors.size();
+            return packets.size();
         }
 
         static class ViewHolder extends RecyclerView.ViewHolder {

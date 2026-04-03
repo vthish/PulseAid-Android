@@ -37,12 +37,14 @@ public class ExpiringAlertsAdapter extends RecyclerView.Adapter<ExpiringAlertsAd
         holder.txtBloodGroup.setText("Blood Group: " + item.bloodGroup);
         holder.txtDaysLeft.setText(item.daysLeftText);
 
-        if (item.daysLeftValue < 1) {
-            holder.txtDaysLeft.setTextColor(Color.parseColor("#B71C1C")); // Dark Red for hours
+        if (item.daysLeftValue < 0) {
+            holder.txtDaysLeft.setTextColor(Color.parseColor("#B71C1C"));
+        } else if (item.daysLeftValue < 1) {
+            holder.txtDaysLeft.setTextColor(Color.parseColor("#D32F2F"));
         } else if (item.daysLeftValue <= 3) {
-            holder.txtDaysLeft.setTextColor(Color.parseColor("#D32F2F")); // Red
+            holder.txtDaysLeft.setTextColor(Color.parseColor("#F57C00"));
         } else {
-            holder.txtDaysLeft.setTextColor(Color.parseColor("#F57C00")); // Orange
+            holder.txtDaysLeft.setTextColor(Color.parseColor("#388E3C"));
         }
     }
 

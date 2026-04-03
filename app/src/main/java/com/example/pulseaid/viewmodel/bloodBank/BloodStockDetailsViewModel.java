@@ -5,7 +5,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.pulseaid.data.bloodBank.BloodStockDetailsRepository;
-import com.example.pulseaid.data.bloodBank.BloodStockDetailsRepository.DummyDonor;
+import com.example.pulseaid.data.bloodBank.BloodStockDetailsRepository.BloodPacket;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +15,7 @@ public class BloodStockDetailsViewModel extends ViewModel {
     private final BloodStockDetailsRepository repository;
 
     private final MutableLiveData<Map<String, String>> compatibilityInfo = new MutableLiveData<>();
-    private final MutableLiveData<List<DummyDonor>> donorList = new MutableLiveData<>();
+    private final MutableLiveData<List<BloodPacket>> packetList = new MutableLiveData<>();
     private final MutableLiveData<String> errorMessage = new MutableLiveData<>();
     private final MutableLiveData<Boolean> isLoading = new MutableLiveData<>();
 
@@ -24,7 +24,7 @@ public class BloodStockDetailsViewModel extends ViewModel {
     }
 
     public LiveData<Map<String, String>> getCompatibilityInfo() { return compatibilityInfo; }
-    public LiveData<List<DummyDonor>> getDonorList() { return donorList; }
+    public LiveData<List<BloodPacket>> getPacketList() { return packetList; }
     public LiveData<String> getErrorMessage() { return errorMessage; }
     public LiveData<Boolean> getIsLoading() { return isLoading; }
 
@@ -32,10 +32,10 @@ public class BloodStockDetailsViewModel extends ViewModel {
         isLoading.setValue(true);
         repository.fetchDetails(bloodGroup, new BloodStockDetailsRepository.DetailsCallback() {
             @Override
-            public void onSuccess(Map<String, String> info, List<DummyDonor> donors) {
+            public void onSuccess(Map<String, String> info, List<BloodPacket> packets) {
                 isLoading.setValue(false);
                 compatibilityInfo.setValue(info);
-                donorList.setValue(donors);
+                packetList.setValue(packets);
             }
 
             @Override
