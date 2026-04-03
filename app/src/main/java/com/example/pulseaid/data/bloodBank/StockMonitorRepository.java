@@ -1,8 +1,8 @@
 package com.example.pulseaid.data.bloodBank;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,43 +29,35 @@ public class StockMonitorRepository {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        // Fetching from 'Users' collection
-        db.collection("Users").document(userId)
+        db.collection("BloodPackets")
+                .whereEqualTo("centerId", userId)
+                .whereEqualTo("status", "AVAILABLE")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        DocumentSnapshot document = task.getResult();
-                        Map<String, String> stockData = new HashMap<>();
 
+                        Map<String, Integer> stockCounts = new HashMap<>();
+                        stockCounts.put("A+", 0); stockCounts.put("A-", 0);
+                        stockCounts.put("B+", 0); stockCounts.put("B-", 0);
+                        stockCounts.put("AB+", 0); stockCounts.put("AB-", 0);
+                        stockCounts.put("O+", 0); stockCounts.put("O-", 0);
 
-                        if (document.exists() && document.contains("inventory")) {
-                            Map<String, Object> inventory = (Map<String, Object>) document.get("inventory");
-
-                            stockData.put("A+", getStockValue(inventory, "A+"));
-                            stockData.put("A-", getStockValue(inventory, "A-"));
-                            stockData.put("B+", getStockValue(inventory, "B+"));
-                            stockData.put("B-", getStockValue(inventory, "B-"));
-                            stockData.put("AB+", getStockValue(inventory, "AB+"));
-                            stockData.put("AB-", getStockValue(inventory, "AB-"));
-                            stockData.put("O+", getStockValue(inventory, "O+"));
-                            stockData.put("O-", getStockValue(inventory, "O-"));
-                        } else {
-                            stockData.put("A+", "0"); stockData.put("A-", "0");
-                            stockData.put("B+", "0"); stockData.put("B-", "0");
-                            stockData.put("AB+", "0"); stockData.put("AB-", "0");
-                            stockData.put("O+", "0"); stockData.put("O-", "0");
+                        for (QueryDocumentSnapshot doc : task.getResult()) {
+                            String bloodGroup = doc.getString("bloodGroup");
+                            if (bloodGroup != null && stockCounts.containsKey(bloodGroup)) {
+                                stockCounts.put(bloodGroup, stockCounts.get(bloodGroup) + 1);
+                            }
                         }
-                        callback.onSuccess(stockData);
+
+                        Map<String, String> stockDataString = new HashMap<>();
+                        for (Map.Entry<String, Integer> entry : stockCounts.entrySet()) {
+                            stockDataString.put(entry.getKey(), String.valueOf(entry.getValue()));
+                        }
+
+                        callback.onSuccess(stockDataString);
                     } else {
-                        callback.onFailure(task.getException() != null ? task.getException().getMessage() : "Failed to fetch stock");
+                        callback.onFailure("Failed to fetch stock data");
                     }
                 });
-    }
-
-    private String getStockValue(Map<String, Object> inventory, String field) {
-        if (inventory != null && inventory.containsKey(field)) {
-            return String.valueOf(inventory.get(field));
-        }
-        return "0";
     }
 }

@@ -5,18 +5,27 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.pulseaid.R;
+import com.example.pulseaid.data.bloodBank.ExpiringAlertsRepository.AlertItem;
+import com.example.pulseaid.viewmodel.bloodBank.ExpiringAlertsViewModel;
 import com.google.android.material.card.MaterialCardView;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExpiringAlertsActivity extends AppCompatActivity {
 
     private RecyclerView recyclerExpiringAlerts;
+    private ExpiringAlertsViewModel viewModel;
+    private AlertAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,32 +38,37 @@ public class ExpiringAlertsActivity extends AppCompatActivity {
         recyclerExpiringAlerts = findViewById(R.id.recyclerExpiringAlerts);
         recyclerExpiringAlerts.setLayoutManager(new LinearLayoutManager(this));
 
-        List<AlertItem> alertList = new ArrayList<>();
-        alertList.add(new AlertItem("PKT-1023", "A+", "2 Days"));
-        alertList.add(new AlertItem("PKT-5041", "O-", "3 Days"));
-        alertList.add(new AlertItem("PKT-2234", "B+", "5 Days"));
-        alertList.add(new AlertItem("PKT-8890", "AB-", "7 Days"));
-
-        AlertAdapter adapter = new AlertAdapter(alertList);
+        adapter = new AlertAdapter(new ArrayList<>());
         recyclerExpiringAlerts.setAdapter(adapter);
+
+        viewModel = new ViewModelProvider(this).get(ExpiringAlertsViewModel.class);
+        observeViewModel();
     }
 
-    // Model Class
-    private static class AlertItem {
-        String packetId, bloodGroup, daysLeft;
-        public AlertItem(String packetId, String bloodGroup, String daysLeft) {
-            this.packetId = packetId;
-            this.bloodGroup = bloodGroup;
-            this.daysLeft = daysLeft;
-        }
+    private void observeViewModel() {
+        viewModel.getAlertList().observe(this, alerts -> {
+            if (alerts != null) {
+                adapter.updateList(alerts);
+            }
+        });
+
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // Adapter Class
     private static class AlertAdapter extends RecyclerView.Adapter<AlertAdapter.ViewHolder> {
-        private final List<AlertItem> items;
+        private List<AlertItem> items;
 
         public AlertAdapter(List<AlertItem> items) {
             this.items = items;
+        }
+
+        public void updateList(List<AlertItem> newItems) {
+            this.items = newItems;
+            notifyDataSetChanged();
         }
 
         @NonNull
@@ -69,12 +83,12 @@ public class ExpiringAlertsActivity extends AppCompatActivity {
             AlertItem item = items.get(position);
             holder.txtPacketId.setText("Packet: " + item.packetId);
             holder.txtBloodGroup.setText("Blood Group: " + item.bloodGroup);
-            holder.txtDaysLeft.setText(item.daysLeft);
+            holder.txtDaysLeft.setText(item.daysLeftText);
 
-            if(item.daysLeft.equals("2 Days") || item.daysLeft.equals("3 Days")) {
-                holder.txtDaysLeft.setTextColor(android.graphics.Color.parseColor("#D32F2F")); // Red for very critical
+            if (item.daysLeftValue <= 3) {
+                holder.txtDaysLeft.setTextColor(android.graphics.Color.parseColor("#D32F2F"));
             } else {
-                holder.txtDaysLeft.setTextColor(android.graphics.Color.parseColor("#F57C00")); // Orange for warning
+                holder.txtDaysLeft.setTextColor(android.graphics.Color.parseColor("#F57C00"));
             }
         }
 

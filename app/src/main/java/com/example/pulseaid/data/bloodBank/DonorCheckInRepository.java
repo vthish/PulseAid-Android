@@ -3,10 +3,10 @@ package com.example.pulseaid.data.bloodBank;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
-
+import com.google.firebase.firestore.WriteBatch;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class DonorCheckInRepository {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -26,47 +26,40 @@ public class DonorCheckInRepository {
             callback.onFailure("Invalid QR Code Format!");
             return;
         }
-
-        try {
-            db.collection("appointments").document(appointmentId).get()
-                    .addOnSuccessListener(appointmentDoc -> {
-                        if (appointmentDoc.exists()) {
-                            String donorUid = appointmentDoc.getString("donorUid");
-                            if (donorUid != null) {
-                                db.collection("Users").document(donorUid).get()
-                                        .addOnSuccessListener(donorDoc -> callback.onSuccess(appointmentDoc, donorDoc))
-                                        .addOnFailureListener(e -> callback.onFailure("Donor profile not found!"));
-                            } else {
-                                callback.onFailure("Invalid appointment data!");
-                            }
-                        } else {
-                            callback.onFailure("Appointment not found in database!");
-                        }
-                    })
-                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
-        } catch (Exception e) {
-            callback.onFailure("Database Error: " + e.getMessage());
-        }
+        db.collection("appointments").document(appointmentId).get()
+                .addOnSuccessListener(appointmentDoc -> {
+                    if (appointmentDoc.exists()) {
+                        String donorUid = appointmentDoc.getString("donorUid");
+                        db.collection("Users").document(donorUid).get()
+                                .addOnSuccessListener(donorDoc -> callback.onSuccess(appointmentDoc, donorDoc))
+                                .addOnFailureListener(e -> callback.onFailure("Donor profile not found!"));
+                    } else {
+                        callback.onFailure("Appointment not found!");
+                    }
+                }).addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
-    public void completeDonationTransaction(String appId, String donorId, String bankId, String type, int units, TransactionCallback callback) {
-        db.runTransaction(transaction -> {
+    public void completeDonationTransaction(String appId, String donorId, String centerId, String type, int units, TransactionCallback callback) {
+        WriteBatch batch = db.batch();
+        batch.update(db.collection("appointments").document(appId), "status", "COMPLETED");
+        batch.update(db.collection("Users").document(donorId), "lastDonationDate", System.currentTimeMillis());
+        batch.update(db.collection("Users").document(donorId), "donationCount", FieldValue.increment(1));
 
-                    transaction.update(db.collection("appointments").document(appId), "status", "COMPLETED");
-                    transaction.update(db.collection("Users").document(donorId), "lastDonationDate", System.currentTimeMillis());
-                    transaction.update(db.collection("Users").document(donorId), "donationCount", FieldValue.increment(1));
+        long currentTime = System.currentTimeMillis();
+        long expiryTime = currentTime + (35L * 24 * 60 * 60 * 1000);
 
-                    Map<String, Object> bloodTypeUpdate = new HashMap<>();
-                    bloodTypeUpdate.put(type, FieldValue.increment(units));
-
-                    Map<String, Object> inventoryMap = new HashMap<>();
-                    inventoryMap.put("inventory", bloodTypeUpdate);
-
-                    // Updating the nested 'inventory' map inside the existing 'Users' collection
-                    transaction.set(db.collection("Users").document(bankId), inventoryMap, SetOptions.merge());
-
-                    return null;
-                }).addOnSuccessListener(v -> callback.onSuccess())
-                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+        for (int i = 0; i < units; i++) {
+            String packetId = "PKT-" + UUID.randomUUID().toString().substring(0, 6).toUpperCase();
+            Map<String, Object> packetData = new HashMap<>();
+            packetData.put("packetId", packetId);
+            packetData.put("bloodGroup", type);
+            packetData.put("centerId", centerId); // Changed to centerId
+            packetData.put("donorId", donorId);
+            packetData.put("collectionTimestamp", currentTime);
+            packetData.put("expiryTimestamp", expiryTime);
+            packetData.put("status", "AVAILABLE");
+            batch.set(db.collection("BloodPackets").document(packetId), packetData);
+        }
+        batch.commit().addOnSuccessListener(v -> callback.onSuccess()).addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 }

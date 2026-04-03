@@ -1,14 +1,12 @@
 package com.example.pulseaid.data.bloodBank;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.Calendar;
-import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class BloodBankDashboardRepository {
-
     private FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
@@ -27,66 +25,44 @@ public class BloodBankDashboardRepository {
             callback.onFailure("User not logged in");
             return;
         }
-
         String userId = mAuth.getCurrentUser().getUid();
-
         Calendar cal = Calendar.getInstance();
-        String currentDate = cal.get(Calendar.YEAR) + "-" +
-                (cal.get(Calendar.MONTH) + 1) + "-" +
-                cal.get(Calendar.DAY_OF_MONTH);
+        String currentDate = cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.DAY_OF_MONTH);
 
-        // Fetching from 'Users' collection now
-        db.collection("Users").document(userId).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                DocumentSnapshot doc = task.getResult();
-                int totalStock = 0;
+        db.collection("BloodPackets")
+                .whereEqualTo("centerId", userId) // Filter by centerId
+                .whereEqualTo("status", "AVAILABLE")
+                .get()
+                .addOnCompleteListener(stockTask -> {
+                    if (stockTask.isSuccessful() && stockTask.getResult() != null) {
+                        int totalStockCount = stockTask.getResult().size();
+                        AtomicInteger expireAlertsCount = new AtomicInteger(0);
+                        long currentTime = System.currentTimeMillis();
+                        long oneDayMillis = 24 * 60 * 60 * 1000L;
 
-                // Getting the nested 'inventory' map
-                if (doc.exists() && doc.contains("inventory")) {
-                    Map<String, Object> inventory = (Map<String, Object>) doc.get("inventory");
-
-                    totalStock += getIntValue(inventory, "A+");
-                    totalStock += getIntValue(inventory, "A-");
-                    totalStock += getIntValue(inventory, "B+");
-                    totalStock += getIntValue(inventory, "B-");
-                    totalStock += getIntValue(inventory, "AB+");
-                    totalStock += getIntValue(inventory, "AB-");
-                    totalStock += getIntValue(inventory, "O+");
-                    totalStock += getIntValue(inventory, "O-");
-                }
-
-                final int finalTotalStock = totalStock;
-
-                db.collection("appointments")
-                        .whereEqualTo("centerId", userId)
-                        .whereEqualTo("date", currentDate)
-                        .whereEqualTo("status", "PENDING")
-                        .get()
-                        .addOnCompleteListener(apptTask -> {
-                            int todayPendingAppointmentsCount = 0;
-                            if (apptTask.isSuccessful() && apptTask.getResult() != null) {
-                                todayPendingAppointmentsCount = apptTask.getResult().size();
+                        for (QueryDocumentSnapshot doc : stockTask.getResult()) {
+                            Long expiryTimestamp = doc.getLong("expiryTimestamp");
+                            if (expiryTimestamp != null) {
+                                long diff = expiryTimestamp - currentTime;
+                                int daysLeft = (int) (diff / oneDayMillis);
+                                if (daysLeft >= 0 && daysLeft <= 7) {
+                                    expireAlertsCount.incrementAndGet();
+                                }
                             }
+                        }
 
-                            int pendingOrders = 0;
-                            int expireAlerts = 0;
-
-                            callback.onSuccess(finalTotalStock, pendingOrders, todayPendingAppointmentsCount, expireAlerts);
-                        });
-            } else {
-                callback.onFailure("Failed to load dashboard data");
-            }
-        });
-    }
-
-    private int getIntValue(Map<String, Object> inventory, String field) {
-        if (inventory != null && inventory.containsKey(field)) {
-            try {
-                return Integer.parseInt(String.valueOf(inventory.get(field)));
-            } catch (NumberFormatException e) {
-                return 0;
-            }
-        }
-        return 0;
+                        db.collection("appointments")
+                                .whereEqualTo("centerId", userId)
+                                .whereEqualTo("date", currentDate)
+                                .whereEqualTo("status", "PENDING")
+                                .get()
+                                .addOnCompleteListener(apptTask -> {
+                                    int todayPending = (apptTask.isSuccessful() && apptTask.getResult() != null) ? apptTask.getResult().size() : 0;
+                                    callback.onSuccess(totalStockCount, 0, todayPending, expireAlertsCount.get());
+                                });
+                    } else {
+                        callback.onFailure("Failed to load dashboard data");
+                    }
+                });
     }
 }
