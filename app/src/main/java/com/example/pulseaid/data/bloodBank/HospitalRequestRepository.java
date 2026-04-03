@@ -29,90 +29,96 @@ public class HospitalRequestRepository {
     }
 
     public void fetchHospitalRequests(RequestCallback callback) {
-        if (mAuth.getCurrentUser() == null) {
-            callback.onFailure("User not logged in");
-            return;
-        }
+        if (mAuth.getCurrentUser() == null) return;
         String currentUserId = mAuth.getCurrentUser().getUid();
-        db.collection("BloodRequests")
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        List<HospitalRequest> requestList = new ArrayList<>();
-                        for (DocumentSnapshot document : task.getResult()) {
-                            List<Map<String, Object>> assignedBanks = (List<Map<String, Object>>) document.get("assignedBanks");
-                            if (assignedBanks != null) {
-                                for (Map<String, Object> bankMap : assignedBanks) {
-                                    String bankId = (String) bankMap.get("bankId");
-                                    String deliveryStatus = (String) bankMap.get("deliveryStatus");
-                                    if (currentUserId.equals(bankId) && "Pending".equals(deliveryStatus)) {
-                                        String id = document.getId();
-                                        String hospitalName = document.getString("hospitalName");
-                                        String bloodGroup = (String) bankMap.get("bloodTypeProvided");
-                                        long units = 0;
-                                        Object unitsObj = bankMap.get("unitsProvided");
-                                        if (unitsObj instanceof Long) units = (Long) unitsObj;
-                                        else if (unitsObj instanceof Integer) units = (Integer) unitsObj;
-                                        requestList.add(new HospitalRequest(id, hospitalName, bloodGroup, (int)units));
-                                    }
+        db.collection("BloodRequests").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                List<HospitalRequest> list = new ArrayList<>();
+                for (DocumentSnapshot doc : task.getResult()) {
+                    List<Map<String, Object>> assignedBanks = (List<Map<String, Object>>) doc.get("assignedBanks");
+                    if (assignedBanks != null) {
+                        for (Map<String, Object> bank : assignedBanks) {
+                            if (currentUserId.equals(bank.get("bankId"))) {
+                                String deliveryStatus = (String) bank.get("deliveryStatus");
+                                String bloodGroup = (String) bank.get("bloodTypeProvided");
+                                int qty = ((Number) bank.get("unitsProvided")).intValue();
+
+                                if ("Pending".equals(deliveryStatus)) {
+                                    reservePacketsAutomatically(doc.getId(), bloodGroup, qty, assignedBanks, doc.getReference());
+                                    list.add(new HospitalRequest(doc.getId(), doc.getString("hospitalName"), bloodGroup, qty));
+                                } else if ("Reserved".equals(deliveryStatus)) {
+                                    list.add(new HospitalRequest(doc.getId(), doc.getString("hospitalName"), bloodGroup, qty));
                                 }
                             }
                         }
-                        callback.onSuccess(requestList);
-                    } else {
-                        callback.onFailure("Error fetching requests");
+                    }
+                }
+                callback.onSuccess(list);
+            } else callback.onFailure("Error fetching requests");
+        });
+    }
+
+    private void reservePacketsAutomatically(String reqId, String group, int qty, List<Map<String, Object>> assigned, DocumentReference reqRef) {
+        String uid = mAuth.getCurrentUser().getUid();
+        db.collection("BloodPackets")
+                .whereEqualTo("centerId", uid)
+                .whereEqualTo("bloodGroup", group)
+                .whereEqualTo("status", "AVAILABLE")
+                .limit(qty)
+                .get()
+                .addOnSuccessListener(snaps -> {
+                    if (snaps.size() >= qty) {
+                        WriteBatch batch = db.batch();
+                        for (DocumentSnapshot d : snaps) {
+                            batch.update(d.getReference(), "status", "Reserved");
+                            batch.update(d.getReference(), "reservedForRequest", reqId);
+                        }
+                        for (Map<String, Object> b : assigned) {
+                            if (uid.equals(b.get("bankId"))) b.put("deliveryStatus", "Reserved");
+                        }
+                        batch.update(reqRef, "assignedBanks", assigned);
+                        batch.commit();
                     }
                 });
     }
 
-    public void confirmBloodUnits(String requestId, String bloodGroup, int unitsToShift, ActionCallback callback) {
-        if (mAuth.getCurrentUser() == null) return;
+    public void confirmBloodUnits(String requestId, String bloodGroup, int qty, ActionCallback callback) {
         String currentUserId = mAuth.getCurrentUser().getUid();
         db.collection("BloodPackets")
                 .whereEqualTo("centerId", currentUserId)
                 .whereEqualTo("bloodGroup", bloodGroup)
-                .whereEqualTo("status", "AVAILABLE")
-                .limit(unitsToShift)
+                .whereEqualTo("status", "Reserved")
+                .whereEqualTo("reservedForRequest", requestId)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
-                    if (queryDocumentSnapshots.size() < unitsToShift) {
-                        callback.onFailure("Not enough AVAILABLE stock!");
-                        return;
-                    }
+                .addOnSuccessListener(snaps -> {
                     WriteBatch batch = db.batch();
                     long currentTime = System.currentTimeMillis();
-                    for (DocumentSnapshot packetDoc : queryDocumentSnapshots) {
-                        batch.update(packetDoc.getReference(), "status", "Dispatched");
-                        batch.update(packetDoc.getReference(), "dispatchedDate", currentTime);
+                    for (DocumentSnapshot d : snaps) {
+                        batch.update(d.getReference(), "status", "Dispatched");
+                        batch.update(d.getReference(), "dispatchedDate", currentTime);
                     }
-                    DocumentReference requestRef = db.collection("BloodRequests").document(requestId);
-                    requestRef.get().addOnSuccessListener(requestDoc -> {
-                        List<Map<String, Object>> assignedBanks = (List<Map<String, Object>>) requestDoc.get("assignedBanks");
-                        if (assignedBanks != null) {
-                            for (Map<String, Object> bankMap : assignedBanks) {
-                                if (currentUserId.equals(bankMap.get("bankId"))) {
-                                    bankMap.put("deliveryStatus", "Dispatched");
-                                    bankMap.put("dispatchedDate", currentTime);
+                    DocumentReference ref = db.collection("BloodRequests").document(requestId);
+                    ref.get().addOnSuccessListener(doc -> {
+                        List<Map<String, Object>> banks = (List<Map<String, Object>>) doc.get("assignedBanks");
+                        if (banks != null) {
+                            for (Map<String, Object> b : banks) {
+                                if (currentUserId.equals(b.get("bankId"))) {
+                                    b.put("deliveryStatus", "Dispatched");
+                                    b.put("dispatchedDate", currentTime);
                                 }
                             }
-                            batch.update(requestRef, "assignedBanks", assignedBanks);
-                            batch.commit()
-                                    .addOnSuccessListener(v -> callback.onSuccess())
-                                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+                            batch.update(ref, "assignedBanks", banks);
+                            batch.commit().addOnSuccessListener(v -> callback.onSuccess());
                         }
                     });
-                })
-                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+                });
     }
 
     public static class HospitalRequest {
         public String id, name, type;
         public int qty;
         public HospitalRequest(String id, String name, String type, int qty) {
-            this.id = id;
-            this.name = name;
-            this.type = type;
-            this.qty = qty;
+            this.id = id; this.name = name; this.type = type; this.qty = qty;
         }
     }
 }

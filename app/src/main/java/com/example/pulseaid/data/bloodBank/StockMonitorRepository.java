@@ -21,10 +21,7 @@ public class StockMonitorRepository {
     }
 
     public void fetchBloodStock(StockCallback callback) {
-        if (mAuth.getCurrentUser() == null) {
-            callback.onFailure("User not logged in");
-            return;
-        }
+        if (mAuth.getCurrentUser() == null) return;
         String userId = mAuth.getCurrentUser().getUid();
         db.collection("BloodPackets")
                 .whereEqualTo("centerId", userId)
@@ -33,18 +30,16 @@ public class StockMonitorRepository {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
                         Map<String, Integer> counts = new HashMap<>();
-                        counts.put("A+", 0); counts.put("A-", 0); counts.put("B+", 0); counts.put("B-", 0);
-                        counts.put("AB+", 0); counts.put("AB-", 0); counts.put("O+", 0); counts.put("O-", 0);
+                        String[] groups = {"A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"};
+                        for (String g : groups) counts.put(g, 0);
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            String group = doc.getString("bloodGroup");
-                            if (group != null && counts.containsKey(group)) counts.put(group, counts.get(group) + 1);
+                            String grp = doc.getString("bloodGroup");
+                            if (grp != null && counts.containsKey(grp)) counts.put(grp, counts.get(grp) + 1);
                         }
                         Map<String, String> results = new HashMap<>();
                         for (Map.Entry<String, Integer> entry : counts.entrySet()) results.put(entry.getKey(), String.valueOf(entry.getValue()));
                         callback.onSuccess(results);
-                    } else {
-                        callback.onFailure("Failed to fetch stock");
-                    }
+                    } else callback.onFailure("Error");
                 });
     }
 }
