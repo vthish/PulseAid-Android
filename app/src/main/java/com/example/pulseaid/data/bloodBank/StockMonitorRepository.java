@@ -3,17 +3,16 @@ package com.example.pulseaid.data.bloodBank;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
 import java.util.HashMap;
 import java.util.Map;
 
 public class StockMonitorRepository {
-    private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
+    private final FirebaseFirestore db;
+    private final FirebaseAuth mAuth;
 
     public StockMonitorRepository() {
-        db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
+        this.db = FirebaseFirestore.getInstance();
+        this.mAuth = FirebaseAuth.getInstance();
     }
 
     public interface StockCallback {
@@ -26,37 +25,25 @@ public class StockMonitorRepository {
             callback.onFailure("User not logged in");
             return;
         }
-
         String userId = mAuth.getCurrentUser().getUid();
-
         db.collection("BloodPackets")
                 .whereEqualTo("centerId", userId)
                 .whereEqualTo("status", "AVAILABLE")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-
-                        Map<String, Integer> stockCounts = new HashMap<>();
-                        stockCounts.put("A+", 0); stockCounts.put("A-", 0);
-                        stockCounts.put("B+", 0); stockCounts.put("B-", 0);
-                        stockCounts.put("AB+", 0); stockCounts.put("AB-", 0);
-                        stockCounts.put("O+", 0); stockCounts.put("O-", 0);
-
+                        Map<String, Integer> counts = new HashMap<>();
+                        counts.put("A+", 0); counts.put("A-", 0); counts.put("B+", 0); counts.put("B-", 0);
+                        counts.put("AB+", 0); counts.put("AB-", 0); counts.put("O+", 0); counts.put("O-", 0);
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            String bloodGroup = doc.getString("bloodGroup");
-                            if (bloodGroup != null && stockCounts.containsKey(bloodGroup)) {
-                                stockCounts.put(bloodGroup, stockCounts.get(bloodGroup) + 1);
-                            }
+                            String group = doc.getString("bloodGroup");
+                            if (group != null && counts.containsKey(group)) counts.put(group, counts.get(group) + 1);
                         }
-
-                        Map<String, String> stockDataString = new HashMap<>();
-                        for (Map.Entry<String, Integer> entry : stockCounts.entrySet()) {
-                            stockDataString.put(entry.getKey(), String.valueOf(entry.getValue()));
-                        }
-
-                        callback.onSuccess(stockDataString);
+                        Map<String, String> results = new HashMap<>();
+                        for (Map.Entry<String, Integer> entry : counts.entrySet()) results.put(entry.getKey(), String.valueOf(entry.getValue()));
+                        callback.onSuccess(results);
                     } else {
-                        callback.onFailure("Failed to fetch stock data");
+                        callback.onFailure("Failed to fetch stock");
                     }
                 });
     }

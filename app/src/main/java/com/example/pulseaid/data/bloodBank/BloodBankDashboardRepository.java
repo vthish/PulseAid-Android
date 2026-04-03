@@ -1,18 +1,20 @@
 package com.example.pulseaid.data.bloodBank;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import java.util.Calendar;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.List;
+import java.util.Map;
 
 public class BloodBankDashboardRepository {
-    private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
+    private final FirebaseFirestore db;
+    private final FirebaseAuth mAuth;
 
     public BloodBankDashboardRepository() {
-        db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
+        this.db = FirebaseFirestore.getInstance();
+        this.mAuth = FirebaseAuth.getInstance();
     }
 
     public interface DashboardStatsCallback {
@@ -30,38 +32,52 @@ public class BloodBankDashboardRepository {
         String currentDate = cal.get(Calendar.YEAR) + "-" + (cal.get(Calendar.MONTH) + 1) + "-" + cal.get(Calendar.DAY_OF_MONTH);
 
         db.collection("BloodPackets")
-                .whereEqualTo("centerId", userId) // Filter by centerId
+                .whereEqualTo("centerId", userId)
                 .whereEqualTo("status", "AVAILABLE")
                 .get()
                 .addOnCompleteListener(stockTask -> {
                     if (stockTask.isSuccessful() && stockTask.getResult() != null) {
                         int totalStockCount = stockTask.getResult().size();
-                        AtomicInteger expireAlertsCount = new AtomicInteger(0);
+                        int expireAlertsCount = 0;
                         long currentTime = System.currentTimeMillis();
                         long oneDayMillis = 24 * 60 * 60 * 1000L;
-
                         for (QueryDocumentSnapshot doc : stockTask.getResult()) {
-                            Long expiryTimestamp = doc.getLong("expiryTimestamp");
-                            if (expiryTimestamp != null) {
-                                long diff = expiryTimestamp - currentTime;
+                            Long expiry = doc.getLong("expiryTimestamp");
+                            if (expiry != null) {
+                                long diff = expiry - currentTime;
                                 int daysLeft = (int) (diff / oneDayMillis);
-                                if (daysLeft >= 0 && daysLeft <= 7) {
-                                    expireAlertsCount.incrementAndGet();
-                                }
+                                if (daysLeft >= 0 && daysLeft <= 7) expireAlertsCount++;
                             }
                         }
-
+                        final int finalExpire = expireAlertsCount;
                         db.collection("appointments")
                                 .whereEqualTo("centerId", userId)
                                 .whereEqualTo("date", currentDate)
                                 .whereEqualTo("status", "PENDING")
                                 .get()
                                 .addOnCompleteListener(apptTask -> {
-                                    int todayPending = (apptTask.isSuccessful() && apptTask.getResult() != null) ? apptTask.getResult().size() : 0;
-                                    callback.onSuccess(totalStockCount, 0, todayPending, expireAlertsCount.get());
+                                    int appointments = (apptTask.isSuccessful() && apptTask.getResult() != null) ? apptTask.getResult().size() : 0;
+                                    db.collection("BloodRequests")
+                                            .get()
+                                            .addOnCompleteListener(reqTask -> {
+                                                int pending = 0;
+                                                if (reqTask.isSuccessful() && reqTask.getResult() != null) {
+                                                    for (DocumentSnapshot doc : reqTask.getResult()) {
+                                                        List<Map<String, Object>> assigned = (List<Map<String, Object>>) doc.get("assignedBanks");
+                                                        if (assigned != null) {
+                                                            for (Map<String, Object> bank : assigned) {
+                                                                if (userId.equals(bank.get("bankId")) && "Pending".equals(bank.get("deliveryStatus"))) {
+                                                                    pending++; break;
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                                callback.onSuccess(totalStockCount, pending, appointments, finalExpire);
+                                            });
                                 });
                     } else {
-                        callback.onFailure("Failed to load dashboard data");
+                        callback.onFailure("Error loading dashboard data");
                     }
                 });
     }
