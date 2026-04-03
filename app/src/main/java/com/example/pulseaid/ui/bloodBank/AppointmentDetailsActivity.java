@@ -1,5 +1,6 @@
 package com.example.pulseaid.ui.bloodBank;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,11 +58,28 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
                     tilUnits.setError("Required");
                     return;
                 }
+
+                // Show a loading message
+                Toast.makeText(this, "Processing Donation...", Toast.LENGTH_SHORT).show();
                 vm.completeDonation(appId, donorId, bankId, type, Integer.parseInt(unitsText));
             });
 
-            vm.getTransactionSuccess().observe(this, s -> { if(s != null && s) finish(); });
-            vm.getErrorMessage().observe(this, error -> { if (error != null) Toast.makeText(this, error, Toast.LENGTH_SHORT).show(); });
+            // UPDATE: Redirect to Dashboard upon success
+            vm.getTransactionSuccess().observe(this, s -> {
+                if(s != null && s) {
+                    Toast.makeText(this, "Donation Successful & Inventory Updated!", Toast.LENGTH_LONG).show();
+
+                    Intent intent = new Intent(AppointmentDetailsActivity.this, BloodBankDashboardActivity.class);
+                    // Clear the back stack so user cannot go back to the details screen
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+
+            vm.getErrorMessage().observe(this, error -> {
+                if (error != null) Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            });
 
         } catch (Exception e) {
             Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();

@@ -33,19 +33,17 @@ public class BloodBankDashboardRepository {
                 int totalStock = 0;
 
                 if (doc.exists()) {
-                    // Summing up all the available blood units
-                    totalStock += getIntValue(doc, "A_Pos");
-                    totalStock += getIntValue(doc, "A_Neg");
-                    totalStock += getIntValue(doc, "B_Pos");
-                    totalStock += getIntValue(doc, "B_Neg");
-                    totalStock += getIntValue(doc, "AB_Pos");
-                    totalStock += getIntValue(doc, "AB_Neg");
-                    totalStock += getIntValue(doc, "O_Pos");
-                    totalStock += getIntValue(doc, "O_Neg");
+
+                    totalStock += getIntValue(doc, "A+");
+                    totalStock += getIntValue(doc, "A-");
+                    totalStock += getIntValue(doc, "B+");
+                    totalStock += getIntValue(doc, "B-");
+                    totalStock += getIntValue(doc, "AB+");
+                    totalStock += getIntValue(doc, "AB-");
+                    totalStock += getIntValue(doc, "O+");
+                    totalStock += getIntValue(doc, "O-");
                 }
 
-                // TODO: Replace these with actual Firestore queries for respective collections
-                // Currently set to 0 to remove mock data from the UI
                 int pendingOrders = 0;
                 int todayAppointments = 0;
                 int expireAlerts = 0;
@@ -57,7 +55,6 @@ public class BloodBankDashboardRepository {
         });
     }
 
-    // Helper method to safely parse Firestore objects to integer
     private int getIntValue(DocumentSnapshot doc, String field) {
         Object value = doc.get(field);
         if (value != null) {

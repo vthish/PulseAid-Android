@@ -3,6 +3,10 @@ package com.example.pulseaid.data.bloodBank;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class DonorCheckInRepository {
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -47,10 +51,17 @@ public class DonorCheckInRepository {
 
     public void completeDonationTransaction(String appId, String donorId, String bankId, String type, int units, TransactionCallback callback) {
         db.runTransaction(transaction -> {
+
                     transaction.update(db.collection("appointments").document(appId), "status", "COMPLETED");
                     transaction.update(db.collection("Users").document(donorId), "lastDonationDate", System.currentTimeMillis());
                     transaction.update(db.collection("Users").document(donorId), "donationCount", FieldValue.increment(1));
-                    transaction.update(db.collection("Users").document(bankId), "inventory." + type, FieldValue.increment(units));
+
+
+                    Map<String, Object> stockUpdate = new HashMap<>();
+                    stockUpdate.put(type, FieldValue.increment(units));
+
+                    transaction.set(db.collection("BloodStock").document(bankId), stockUpdate, SetOptions.merge());
+
                     return null;
                 }).addOnSuccessListener(v -> callback.onSuccess())
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));

@@ -16,7 +16,6 @@ public class StockMonitorRepository {
         mAuth = FirebaseAuth.getInstance();
     }
 
-    // Callback interface to send data back to ViewModel
     public interface StockCallback {
         void onSuccess(Map<String, String> stockData);
         void onFailure(String errorMessage);
@@ -30,7 +29,6 @@ public class StockMonitorRepository {
 
         String userId = mAuth.getCurrentUser().getUid();
 
-        // Assuming you have a "BloodStock" collection or sub-collection for each Blood Bank
         db.collection("BloodStock").document(userId)
                 .get()
                 .addOnCompleteListener(task -> {
@@ -39,17 +37,16 @@ public class StockMonitorRepository {
                         Map<String, String> stockData = new HashMap<>();
 
                         if (document.exists()) {
-                            // Extract values from Firestore (Ensure field names match exactly)
-                            stockData.put("A+", getStockValue(document, "A_Pos"));
-                            stockData.put("A-", getStockValue(document, "A_Neg"));
-                            stockData.put("B+", getStockValue(document, "B_Pos"));
-                            stockData.put("B-", getStockValue(document, "B_Neg"));
-                            stockData.put("AB+", getStockValue(document, "AB_Pos"));
-                            stockData.put("AB-", getStockValue(document, "AB_Neg"));
-                            stockData.put("O+", getStockValue(document, "O_Pos"));
-                            stockData.put("O-", getStockValue(document, "O_Neg"));
+
+                            stockData.put("A+", getStockValue(document, "A+"));
+                            stockData.put("A-", getStockValue(document, "A-"));
+                            stockData.put("B+", getStockValue(document, "B+"));
+                            stockData.put("B-", getStockValue(document, "B-"));
+                            stockData.put("AB+", getStockValue(document, "AB+"));
+                            stockData.put("AB-", getStockValue(document, "AB-"));
+                            stockData.put("O+", getStockValue(document, "O+"));
+                            stockData.put("O-", getStockValue(document, "O-"));
                         } else {
-                            // If document doesn't exist, assume 0 for all
                             stockData.put("A+", "0"); stockData.put("A-", "0");
                             stockData.put("B+", "0"); stockData.put("B-", "0");
                             stockData.put("AB+", "0"); stockData.put("AB-", "0");
@@ -62,7 +59,6 @@ public class StockMonitorRepository {
                 });
     }
 
-    // Helper method to safely convert objects to String counts
     private String getStockValue(DocumentSnapshot document, String field) {
         Object value = document.get(field);
         if (value != null) {
