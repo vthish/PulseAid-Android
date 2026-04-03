@@ -18,6 +18,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pulseaid.R;
 import com.example.pulseaid.ui.bloodBank.BloodBankDashboardActivity;
+import com.example.pulseaid.ui.bloodBank.BloodBankProfileActivity;
 import com.example.pulseaid.ui.donor.DonorDashboardActivity;
 import com.example.pulseaid.ui.donor.DonorRegisterActivity;
 import com.example.pulseaid.ui.hospital.HospitalDashboard;
@@ -25,6 +26,8 @@ import com.example.pulseaid.viewmodel.LoginViewModel;
 import com.example.pulseaid.data.User;
 import com.example.pulseaid.ui.admin.AdminDashboardActivity;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -87,10 +90,10 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        com.google.firebase.auth.FirebaseUser currentUser = com.google.firebase.auth.FirebaseAuth.getInstance().getCurrentUser();
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
 
         if (currentUser != null) {
-            com.google.firebase.firestore.FirebaseFirestore.getInstance()
+            FirebaseFirestore.getInstance()
                     .collection("Users")
                     .document(currentUser.getUid())
                     .get()
@@ -153,29 +156,54 @@ public class LoginActivity extends AppCompatActivity {
         switch (role.toLowerCase()) {
             case "admin":
                 Toast.makeText(this, "Redirecting to Admin Dashboard...", Toast.LENGTH_SHORT).show();
-                // Navigate to Admin Dashboard
                 Intent adminIntent = new Intent(LoginActivity.this, AdminDashboardActivity.class);
                 startActivity(adminIntent);
                 finish();
                 break;
+
             case "blood bank":
-                Toast.makeText(this, "Redirecting to Blood Bank Dashboard...", Toast.LENGTH_SHORT).show();
-                Intent bloodStaffIntent = new Intent(LoginActivity.this, BloodBankDashboardActivity.class);
-                startActivity(bloodStaffIntent);
-                finish();
+                FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentUser != null) {
+                    FirebaseFirestore.getInstance()
+                            .collection("Users")
+                            .document(currentUser.getUid())
+                            .get()
+                            .addOnSuccessListener(document -> {
+                                if (document.exists()) {
+                                    String address = document.getString("address");
+
+                                    // Check if address field exists and is not empty
+                                    if (address != null && !address.trim().isEmpty()) {
+                                        Toast.makeText(this, "Redirecting to Blood Bank Dashboard...", Toast.LENGTH_SHORT).show();
+                                        Intent bloodStaffIntent = new Intent(LoginActivity.this, BloodBankDashboardActivity.class);
+                                        startActivity(bloodStaffIntent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(this, "Please complete your profile first", Toast.LENGTH_SHORT).show();
+                                        Intent profileIntent = new Intent(LoginActivity.this, BloodBankProfileActivity.class);
+                                        startActivity(profileIntent);
+                                        finish();
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Error fetching profile info", Toast.LENGTH_SHORT).show());
+                }
                 break;
+
             case "hospital":
                 Toast.makeText(this, "Redirecting to Hospital Dashboard...", Toast.LENGTH_SHORT).show();
                 Intent hospitalIntent = new Intent(LoginActivity.this, HospitalDashboard.class);
                 startActivity(hospitalIntent);
                 finish();
                 break;
+
             case "donor":
                 Toast.makeText(this, "Redirecting to Donor Dashboard.", Toast.LENGTH_SHORT).show();
                 Intent donorIntent = new Intent(LoginActivity.this, DonorDashboardActivity.class);
                 startActivity(donorIntent);
                 finish();
                 break;
+
             default:
                 Toast.makeText(this, "Invalid Role!", Toast.LENGTH_SHORT).show();
         }
