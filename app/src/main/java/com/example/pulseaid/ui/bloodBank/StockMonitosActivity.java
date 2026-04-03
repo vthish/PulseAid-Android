@@ -1,6 +1,7 @@
 package com.example.pulseaid.ui.bloodBank;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -30,15 +31,11 @@ public class StockMonitosActivity extends AppCompatActivity {
         setupClickListeners();
         setupBack();
 
-        // Initialize ViewModel
         viewModel = new ViewModelProvider(this).get(StockMonitorViewModel.class);
-
-        // Observe Data from ViewModel
         observeViewModel();
     }
 
     private void initializeViews() {
-        // Initialize Cards
         cardAPos = findViewById(R.id.cardAPositive);
         cardANeg = findViewById(R.id.cardANegative);
         cardBPos = findViewById(R.id.cardBPositive);
@@ -48,7 +45,6 @@ public class StockMonitosActivity extends AppCompatActivity {
         cardOPos = findViewById(R.id.cardOPositive);
         cardONeg = findViewById(R.id.cardONegative);
 
-        // Initialize TextViews for counts
         txtCountAPos = findViewById(R.id.txtCountAPositive);
         txtCountANeg = findViewById(R.id.txtCountANegative);
         txtCountBPos = findViewById(R.id.txtCountBPositive);
@@ -62,7 +58,6 @@ public class StockMonitosActivity extends AppCompatActivity {
     }
 
     private void observeViewModel() {
-        // Show loading state
         viewModel.getIsLoading().observe(this, isLoading -> {
             if (isLoading) {
                 String loadingText = "...";
@@ -77,26 +72,49 @@ public class StockMonitosActivity extends AppCompatActivity {
             }
         });
 
-        // Update UI with Firebase data
         viewModel.getStockData().observe(this, stockData -> {
             if (stockData != null) {
-                txtCountAPos.setText(stockData.get("A+") + " Units");
-                txtCountANeg.setText(stockData.get("A-") + " Units");
-                txtCountBPos.setText(stockData.get("B+") + " Units");
-                txtCountBNeg.setText(stockData.get("B-") + " Units");
-                txtCountABPos.setText(stockData.get("AB+") + " Units");
-                txtCountABNeg.setText(stockData.get("AB-") + " Units");
-                txtCountOPos.setText(stockData.get("O+") + " Units");
-                txtCountONeg.setText(stockData.get("O-") + " Units");
+                updateStockUI(txtCountAPos, stockData.get("A+"));
+                updateStockUI(txtCountANeg, stockData.get("A-"));
+                updateStockUI(txtCountBPos, stockData.get("B+"));
+                updateStockUI(txtCountBNeg, stockData.get("B-"));
+                updateStockUI(txtCountABPos, stockData.get("AB+"));
+                updateStockUI(txtCountABNeg, stockData.get("AB-"));
+                updateStockUI(txtCountOPos, stockData.get("O+"));
+                updateStockUI(txtCountONeg, stockData.get("O-"));
             }
         });
 
-        // Show error message if fetching fails
         viewModel.getErrorMessage().observe(this, error -> {
             if (error != null) {
                 Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    // අලුත් Color Logic එක මෙතන තියෙනවා
+    private void updateStockUI(TextView textView, String countStr) {
+        if (countStr == null) countStr = "0";
+
+        textView.setText(countStr + " Units");
+
+        try {
+            int count = Integer.parseInt(countStr.trim());
+
+            if (count <= 5) {
+                // 5 හෝ ඊට අඩු නම්: රතු (Critical)
+                textView.setTextColor(Color.parseColor("#D32F2F"));
+            } else if (count <= 10) {
+                // 6 ත් 10 ත් අතර නම්: තැඹිලි (Warning)
+                textView.setTextColor(Color.parseColor("#F57C00"));
+            } else {
+                // 10 ට වැඩි නම්: කොළ (Good Status)
+                textView.setTextColor(Color.parseColor("#388E3C"));
+            }
+
+        } catch (NumberFormatException e) {
+            textView.setTextColor(Color.parseColor("#D32F2F")); // Error එකක් ආවොත් රතු පාටින් පෙන්වන්න
+        }
     }
 
     private void setupBack() {
