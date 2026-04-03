@@ -40,7 +40,7 @@
                     android:id="@+id/txtHospitalName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Karapitiya Teaching Hospital"
+                    android:text="Hospital Name"
                     android:textColor="#212121"
                     android:textSize="17sp"
                     android:textStyle="bold" />
@@ -50,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="Need 5 Units of B-"
+                    android:text="Details"
                     android:textColor="#757575"
                     android:textSize="14sp" />
             </LinearLayout>
@@ -70,25 +70,13 @@
             android:orientation="horizontal">
 
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnReject"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-                android:layout_width="wrap_content"
-                android:layout_height="45dp"
-                android:text="Reject"
-                android:textColor="#D32F2F"
-                app:strokeColor="#D32F2F"
-                app:cornerRadius="10dp"
-                android:layout_marginEnd="12dp" />
-
-            <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnIssue"
                 android:layout_width="wrap_content"
                 android:layout_height="45dp"
                 android:backgroundTint="#2E7D32"
-                android:text="Issue Blood"
+                android:text="Confirm"
                 android:textColor="#FFFFFF"
                 app:cornerRadius="10dp" />
         </LinearLayout>
     </LinearLayout>
-
 </androidx.cardview.widget.CardView>

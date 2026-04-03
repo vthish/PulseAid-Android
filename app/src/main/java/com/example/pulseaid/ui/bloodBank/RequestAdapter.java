@@ -12,13 +12,11 @@ import com.example.pulseaid.data.bloodBank.HospitalRequestRepository.HospitalReq
 import java.util.List;
 
 public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHolder> {
-
     private List<HospitalRequest> requests;
     private final OnRequestActionListener listener;
 
     public interface OnRequestActionListener {
-        void onIssue(String requestId);
-        void onReject(String requestId);
+        void onConfirm(HospitalRequest request);
     }
 
     public RequestAdapter(List<HospitalRequest> requests, OnRequestActionListener listener) {
@@ -37,10 +35,8 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         HospitalRequest request = requests.get(position);
         holder.hospitalName.setText(request.name);
-        holder.bloodDetails.setText("Type: " + request.type + " | Qty: " + request.qty);
-
-        holder.btnIssue.setOnClickListener(v -> listener.onIssue(request.id));
-        holder.btnReject.setOnClickListener(v -> listener.onReject(request.id));
+        holder.bloodDetails.setText("Type: " + request.type + " | Qty: " + request.qty + " Units");
+        holder.btnConfirm.setOnClickListener(v -> listener.onConfirm(request));
     }
 
     @Override
@@ -53,14 +49,12 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.ViewHold
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
         TextView hospitalName, bloodDetails;
-        Button btnIssue, btnReject;
-
+        Button btnConfirm;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             hospitalName = itemView.findViewById(R.id.txtHospitalName);
             bloodDetails = itemView.findViewById(R.id.txtBloodDetails);
-            btnIssue = itemView.findViewById(R.id.btnIssue);
-            btnReject = itemView.findViewById(R.id.btnReject);
+            btnConfirm = itemView.findViewById(R.id.btnIssue);
         }
     }
 }

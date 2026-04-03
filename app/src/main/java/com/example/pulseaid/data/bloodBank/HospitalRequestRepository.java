@@ -1,14 +1,15 @@
 package com.example.pulseaid.data.bloodBank;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-
+import com.google.firebase.firestore.WriteBatch;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class HospitalRequestRepository {
-
     private final FirebaseFirestore db;
     private final FirebaseAuth mAuth;
 
@@ -22,57 +23,92 @@ public class HospitalRequestRepository {
         void onFailure(String errorMessage);
     }
 
+    public interface ActionCallback {
+        void onSuccess();
+        void onFailure(String errorMessage);
+    }
+
     public void fetchHospitalRequests(RequestCallback callback) {
         if (mAuth.getCurrentUser() == null) {
             callback.onFailure("User not logged in");
             return;
         }
-
         String currentUserId = mAuth.getCurrentUser().getUid();
-
-        // Fetching real pending requests from Firestore
-        db.collection("HospitalRequests")
-                .whereEqualTo("bloodBankId", currentUserId)
-                .whereEqualTo("status", "Pending")
+        db.collection("BloodRequests")
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         List<HospitalRequest> requestList = new ArrayList<>();
-                        for (QueryDocumentSnapshot document : task.getResult()) {
-                            String id = document.getId();
-                            // Ensure these field names match your Firestore database exactly
-                            String name = document.getString("hospitalName");
-                            String type = document.getString("bloodGroup");
-                            String unitsStr = document.getString("units");
-
-                            String qty = (unitsStr != null ? unitsStr : "0") + " Units";
-                            name = name != null ? name : "Unknown Hospital";
-                            type = type != null ? type : "Unknown";
-
-                            requestList.add(new HospitalRequest(id, name, type, qty));
+                        for (DocumentSnapshot document : task.getResult()) {
+                            List<Map<String, Object>> assignedBanks = (List<Map<String, Object>>) document.get("assignedBanks");
+                            if (assignedBanks != null) {
+                                for (Map<String, Object> bankMap : assignedBanks) {
+                                    String bankId = (String) bankMap.get("bankId");
+                                    String deliveryStatus = (String) bankMap.get("deliveryStatus");
+                                    if (currentUserId.equals(bankId) && "Pending".equals(deliveryStatus)) {
+                                        String id = document.getId();
+                                        String hospitalName = document.getString("hospitalName");
+                                        String bloodGroup = (String) bankMap.get("bloodTypeProvided");
+                                        long units = 0;
+                                        Object unitsObj = bankMap.get("unitsProvided");
+                                        if (unitsObj instanceof Long) units = (Long) unitsObj;
+                                        else if (unitsObj instanceof Integer) units = (Integer) unitsObj;
+                                        requestList.add(new HospitalRequest(id, hospitalName, bloodGroup, (int)units));
+                                    }
+                                }
+                            }
                         }
                         callback.onSuccess(requestList);
                     } else {
-                        callback.onFailure(task.getException() != null ? task.getException().getMessage() : "Error fetching requests");
+                        callback.onFailure("Error fetching requests");
                     }
                 });
     }
 
-    // Method to update the status in Firestore (Issue or Reject)
-    public void updateRequestStatus(String requestId, String newStatus, RequestCallback callback) {
-        db.collection("HospitalRequests").document(requestId)
-                .update("status", newStatus)
-                .addOnSuccessListener(aVoid -> {
-                    // Refresh the list after successful update
-                    fetchHospitalRequests(callback);
+    public void confirmBloodUnits(String requestId, String bloodGroup, int unitsToShift, ActionCallback callback) {
+        if (mAuth.getCurrentUser() == null) return;
+        String currentUserId = mAuth.getCurrentUser().getUid();
+        db.collection("BloodPackets")
+                .whereEqualTo("centerId", currentUserId)
+                .whereEqualTo("bloodGroup", bloodGroup)
+                .whereEqualTo("status", "AVAILABLE")
+                .limit(unitsToShift)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    if (queryDocumentSnapshots.size() < unitsToShift) {
+                        callback.onFailure("Not enough AVAILABLE stock!");
+                        return;
+                    }
+                    WriteBatch batch = db.batch();
+                    long currentTime = System.currentTimeMillis();
+                    for (DocumentSnapshot packetDoc : queryDocumentSnapshots) {
+                        batch.update(packetDoc.getReference(), "status", "Dispatched");
+                        batch.update(packetDoc.getReference(), "dispatchedDate", currentTime);
+                    }
+                    DocumentReference requestRef = db.collection("BloodRequests").document(requestId);
+                    requestRef.get().addOnSuccessListener(requestDoc -> {
+                        List<Map<String, Object>> assignedBanks = (List<Map<String, Object>>) requestDoc.get("assignedBanks");
+                        if (assignedBanks != null) {
+                            for (Map<String, Object> bankMap : assignedBanks) {
+                                if (currentUserId.equals(bankMap.get("bankId"))) {
+                                    bankMap.put("deliveryStatus", "Dispatched");
+                                    bankMap.put("dispatchedDate", currentTime);
+                                }
+                            }
+                            batch.update(requestRef, "assignedBanks", assignedBanks);
+                            batch.commit()
+                                    .addOnSuccessListener(v -> callback.onSuccess())
+                                    .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+                        }
+                    });
                 })
                 .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 
     public static class HospitalRequest {
-        public String id, name, type, qty;
-
-        public HospitalRequest(String id, String name, String type, String qty) {
+        public String id, name, type;
+        public int qty;
+        public HospitalRequest(String id, String name, String type, int qty) {
             this.id = id;
             this.name = name;
             this.type = type;
