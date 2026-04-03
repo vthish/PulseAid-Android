@@ -59,7 +59,7 @@ public class PendingRequestsFragment extends Fragment {
 
                     @Override
                     public void onResolve(BloodRequest request) {
-                        viewModel.markAsResolved(request.getId());
+                        viewModel.markAsResolved(request);
                         Toast.makeText(getContext(), "Request Marked as Resolved!", Toast.LENGTH_SHORT).show();
                     }
                 });
