@@ -3,18 +3,16 @@ package com.example.pulseaid.data.bloodBank;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
 import java.util.ArrayList;
 import java.util.List;
 
 public class ExpiringAlertsRepository {
-
-    private FirebaseFirestore db;
-    private FirebaseAuth mAuth;
+    private final FirebaseFirestore db;
+    private final FirebaseAuth mAuth;
 
     public ExpiringAlertsRepository() {
-        db = FirebaseFirestore.getInstance();
-        mAuth = FirebaseAuth.getInstance();
+        this.db = FirebaseFirestore.getInstance();
+        this.mAuth = FirebaseAuth.getInstance();
     }
 
     public interface AlertsCallback {
@@ -23,56 +21,57 @@ public class ExpiringAlertsRepository {
     }
 
     public void fetchExpiringAlerts(AlertsCallback callback) {
-        if (mAuth.getCurrentUser() == null) {
-            callback.onFailure("User not logged in");
-            return;
-        }
-
-        String bankId = mAuth.getCurrentUser().getUid();
+        if (mAuth.getCurrentUser() == null) return;
+        String userId = mAuth.getCurrentUser().getUid();
+        long now = System.currentTimeMillis();
+        long oneDay = 24 * 60 * 60 * 1000L;
+        long sevenDays = 7 * oneDay;
 
         db.collection("BloodPackets")
-                .whereEqualTo("center Id", bankId)
-                .whereEqualTo("status", "AVAILABLE")
+                .whereEqualTo("centerId", userId)
                 .get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null) {
-                        List<AlertItem> alertList = new ArrayList<>();
-                        long currentTime = System.currentTimeMillis();
-                        long oneDayMillis = 24 * 60 * 60 * 1000L;
-
+                        List<AlertItem> list = new ArrayList<>();
                         for (QueryDocumentSnapshot doc : task.getResult()) {
-                            Long expiryTimestamp = doc.getLong("expiryTimestamp");
+                            String status = doc.getString("status");
+                            Long exp = doc.getLong("expiryTimestamp");
 
-                            if (expiryTimestamp != null) {
-                                long diff = expiryTimestamp - currentTime;
-                                int daysLeft = (int) (diff / oneDayMillis);
+                            if (exp != null && ("AVAILABLE".equals(status) || "EXPIRED".equals(status))) {
+                                long diff = exp - now;
 
-                                if (daysLeft >= 0 && daysLeft <= 7) {
-                                    String packetId = doc.getString("packetId");
-                                    if (packetId == null) {
-                                        packetId = doc.getId();
+                                if (diff > 0 && diff <= sevenDays) {
+                                    String timeText;
+                                    int days = (int) (diff / oneDay);
+                                    if (days >= 1) {
+                                        timeText = days + " Days Left";
+                                    } else {
+                                        long hours = diff / (60 * 60 * 1000L);
+                                        timeText = hours + " Hours Left";
                                     }
-                                    String bloodGroup = doc.getString("bloodGroup");
-                                    alertList.add(new AlertItem(packetId, bloodGroup, daysLeft));
+
+                                    list.add(new AlertItem(
+                                            doc.getString("bloodGroup"),
+                                            doc.getString("packetId"),
+                                            timeText,
+                                            days
+                                    ));
                                 }
                             }
                         }
-                        callback.onSuccess(alertList);
-                    } else {
-                        callback.onFailure("Failed to fetch expiring alerts");
-                    }
+                        callback.onSuccess(list);
+                    } else callback.onFailure("Error loading alerts");
                 });
     }
 
     public static class AlertItem {
-        public String packetId, bloodGroup, daysLeftText;
+        public String bloodGroup, packetId, daysLeftText;
         public int daysLeftValue;
-
-        public AlertItem(String packetId, String bloodGroup, int daysLeftValue) {
-            this.packetId = packetId;
+        public AlertItem(String bloodGroup, String packetId, String daysLeftText, int daysLeftValue) {
             this.bloodGroup = bloodGroup;
+            this.packetId = packetId;
+            this.daysLeftText = daysLeftText;
             this.daysLeftValue = daysLeftValue;
-            this.daysLeftText = daysLeftValue + " Days";
         }
     }
 }
