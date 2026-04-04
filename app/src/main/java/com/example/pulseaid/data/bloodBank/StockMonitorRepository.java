@@ -43,6 +43,7 @@ public class StockMonitorRepository {
                             }
                         }
 
+                        // Pending request walata assign karapu units adu kirima
                         db.collection("BloodRequests").get().addOnCompleteListener(reqTask -> {
                             if (reqTask.isSuccessful() && reqTask.getResult() != null) {
                                 for (DocumentSnapshot d : reqTask.getResult()) {

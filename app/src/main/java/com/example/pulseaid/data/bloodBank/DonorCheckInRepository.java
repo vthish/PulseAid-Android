@@ -41,6 +41,7 @@ public class DonorCheckInRepository {
 
     public void completeDonationTransaction(String appId, String donorId, String centerId, String type, int units, TransactionCallback callback) {
         WriteBatch batch = db.batch();
+
         batch.update(db.collection("appointments").document(appId), "status", "COMPLETED");
         batch.update(db.collection("appointments").document(appId), "donateUnits", units);
 
