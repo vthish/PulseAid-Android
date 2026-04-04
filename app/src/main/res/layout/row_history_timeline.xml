@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingVertical="12dp">
+
+    <!-- Bank Title -->
+    <TextView
+        android:id="@+id/tvTimelineBankName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Bank Name | 50 Units"
+        android:textSize="15sp"
+        android:textStyle="bold"
+        android:textColor="@color/pulse_red_dark"
+        android:layout_marginBottom="10dp" />
+
+    <!-- ORDERED -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/circle_indicator"
+            android:backgroundTint="#9E9E9E" />
+
+        <TextView
+            android:id="@+id/tvStepOrdered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:text="Ordered: --"
+            android:textSize="12sp"
+            android:textColor="?android:attr/textColorSecondary" />
+    </LinearLayout>
+
+    <!-- LINE -->
+    <View
+        android:layout_width="1.5dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="4dp"
+        android:background="?android:attr/textColorSecondary"
+        android:alpha="0.25" />
+
+    <!-- DISPATCHED -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/circle_indicator"
+            android:backgroundTint="#1976D2" />
+
+        <TextView
+            android:id="@+id/tvStepDispatched"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:text="Dispatched: --"
+            android:textSize="12sp"
+            android:textColor="?android:attr/textColorSecondary" />
+    </LinearLayout>
+
+    <!-- LINE -->
+    <View
+        android:layout_width="1.5dp"
+        android:layout_height="18dp"
+        android:layout_marginStart="4dp"
+        android:background="?android:attr/textColorSecondary"
+        android:alpha="0.25" />
+
+    <!-- DELIVERED -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <View
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/circle_indicator"
+            android:backgroundTint="#388E3C" />
+
+        <TextView
+            android:id="@+id/tvStepDelivered"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="14dp"
+            android:text="Delivered: --"
+            android:textSize="12sp"
+            android:textColor="?android:attr/textColorPrimary"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+</LinearLayout>

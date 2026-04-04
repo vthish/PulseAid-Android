@@ -127,6 +127,8 @@
                             android:text="Hashan"
                             android:textColor="#000000"
                             android:textSize="14sp" />
+                            android:textColor="#000000"
+                            android:textSize="14sp"/>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_edit_name"
@@ -166,6 +168,8 @@
                             android:text="0763188909"
                             android:textColor="#000000"
                             android:textSize="14sp" />
+                            android:textColor="#000000"
+                            android:textSize="14sp"/>
 
                         <com.google.android.material.textfield.TextInputLayout
                             android:id="@+id/til_edit_phone"
@@ -215,6 +219,8 @@
                                     android:paddingVertical="3dp"
                                     android:text="58 kg"
                                     android:textColor="#000000"
+                                    android:textSize="14sp"/>
+                                    android:textColor="#000000"
                                     android:textSize="14sp" />
                             </LinearLayout>
 
@@ -236,6 +242,8 @@
                                     android:layout_height="wrap_content"
                                     android:paddingVertical="3dp"
                                     android:text="1998-05-20"
+                                    android:textColor="#000000"
+                                    android:textSize="14sp"/>
                                     android:textColor="#000000"
                                     android:textSize="14sp" />
                             </LinearLayout>

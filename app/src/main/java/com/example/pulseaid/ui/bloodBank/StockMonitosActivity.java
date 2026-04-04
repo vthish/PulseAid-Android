@@ -1,27 +1,26 @@
 package com.example.pulseaid.ui.bloodBank;
 
-import android.app.AlertDialog;
-import android.os.Build;
+import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.pulseaid.R;
+import com.example.pulseaid.viewmodel.bloodBank.StockMonitorViewModel;
 import com.google.android.material.card.MaterialCardView;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.Locale;
 
 public class StockMonitosActivity extends AppCompatActivity {
 
     private CardView cardAPos, cardANeg, cardBPos, cardBNeg, cardABPos, cardABNeg, cardOPos, cardONeg;
+    private TextView txtCountAPos, txtCountANeg, txtCountBPos, txtCountBNeg, txtCountABPos, txtCountABNeg, txtCountOPos, txtCountONeg;
     private MaterialCardView btnBack;
+
+    private StockMonitorViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,6 +30,9 @@ public class StockMonitosActivity extends AppCompatActivity {
         initializeViews();
         setupClickListeners();
         setupBack();
+
+        viewModel = new ViewModelProvider(this).get(StockMonitorViewModel.class);
+        observeViewModel();
     }
 
     private void initializeViews() {
@@ -43,7 +45,76 @@ public class StockMonitosActivity extends AppCompatActivity {
         cardOPos = findViewById(R.id.cardOPositive);
         cardONeg = findViewById(R.id.cardONegative);
 
-        btnBack = findViewById(R.id.btnBack); // ✅ from updated XML
+        txtCountAPos = findViewById(R.id.txtCountAPositive);
+        txtCountANeg = findViewById(R.id.txtCountANegative);
+        txtCountBPos = findViewById(R.id.txtCountBPositive);
+        txtCountBNeg = findViewById(R.id.txtCountBNegative);
+        txtCountABPos = findViewById(R.id.txtCountABPositive);
+        txtCountABNeg = findViewById(R.id.txtCountABNegative);
+        txtCountOPos = findViewById(R.id.txtCountOPositive);
+        txtCountONeg = findViewById(R.id.txtCountONegative);
+
+        btnBack = findViewById(R.id.btnBack);
+    }
+
+    private void observeViewModel() {
+        viewModel.getIsLoading().observe(this, isLoading -> {
+            if (isLoading) {
+                String loadingText = "...";
+                txtCountAPos.setText(loadingText);
+                txtCountANeg.setText(loadingText);
+                txtCountBPos.setText(loadingText);
+                txtCountBNeg.setText(loadingText);
+                txtCountABPos.setText(loadingText);
+                txtCountABNeg.setText(loadingText);
+                txtCountOPos.setText(loadingText);
+                txtCountONeg.setText(loadingText);
+            }
+        });
+
+        viewModel.getStockData().observe(this, stockData -> {
+            if (stockData != null) {
+                updateStockUI(txtCountAPos, stockData.get("A+"));
+                updateStockUI(txtCountANeg, stockData.get("A-"));
+                updateStockUI(txtCountBPos, stockData.get("B+"));
+                updateStockUI(txtCountBNeg, stockData.get("B-"));
+                updateStockUI(txtCountABPos, stockData.get("AB+"));
+                updateStockUI(txtCountABNeg, stockData.get("AB-"));
+                updateStockUI(txtCountOPos, stockData.get("O+"));
+                updateStockUI(txtCountONeg, stockData.get("O-"));
+            }
+        });
+
+        viewModel.getErrorMessage().observe(this, error -> {
+            if (error != null) {
+                Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    // අලුත් Color Logic එක මෙතන තියෙනවා
+    private void updateStockUI(TextView textView, String countStr) {
+        if (countStr == null) countStr = "0";
+
+        textView.setText(countStr + " Units");
+
+        try {
+            int count = Integer.parseInt(countStr.trim());
+
+            if (count <= 5) {
+                // 5 හෝ ඊට අඩු නම්: රතු (Critical)
+                textView.setTextColor(Color.parseColor("#D32F2F"));
+            } else if (count <= 10) {
+                // 6 ත් 10 ත් අතර නම්: තැඹිලි (Warning)
+                textView.setTextColor(Color.parseColor("#F57C00"));
+            } else {
+                // 10 ට වැඩි නම්: කොළ (Good Status)
+                textView.setTextColor(Color.parseColor("#388E3C"));
+            }
+
+        } catch (NumberFormatException e) {
+            textView.setTextColor(Color.parseColor("#D32F2F")); // Error එකක් ආවොත් රතු පාටින් පෙන්වන්න
+        }
     }
 
     private void setupBack() {
@@ -53,87 +124,19 @@ public class StockMonitosActivity extends AppCompatActivity {
     }
 
     private void setupClickListeners() {
-        cardAPos.setOnClickListener(v -> showFIFOInventoryDialog("A+"));
-        cardANeg.setOnClickListener(v -> showFIFOInventoryDialog("A-"));
-        cardBPos.setOnClickListener(v -> showFIFOInventoryDialog("B+"));
-        cardBNeg.setOnClickListener(v -> showFIFOInventoryDialog("B-"));
-        cardABPos.setOnClickListener(v -> showFIFOInventoryDialog("AB+"));
-        cardABNeg.setOnClickListener(v -> showFIFOInventoryDialog("AB-"));
-        cardOPos.setOnClickListener(v -> showFIFOInventoryDialog("O+"));
-        cardONeg.setOnClickListener(v -> showFIFOInventoryDialog("O-"));
+        cardAPos.setOnClickListener(v -> navigateToDetail("A+"));
+        cardANeg.setOnClickListener(v -> navigateToDetail("A-"));
+        cardBPos.setOnClickListener(v -> navigateToDetail("B+"));
+        cardBNeg.setOnClickListener(v -> navigateToDetail("B-"));
+        cardABPos.setOnClickListener(v -> navigateToDetail("AB+"));
+        cardABNeg.setOnClickListener(v -> navigateToDetail("AB-"));
+        cardOPos.setOnClickListener(v -> navigateToDetail("O+"));
+        cardONeg.setOnClickListener(v -> navigateToDetail("O-"));
     }
 
-    private void showFIFOInventoryDialog(String bloodGroup) {
-        ArrayList<BloodPacket> inventoryList = new ArrayList<>();
-
-        // ✅ Mock data (replace with Firebase later)
-        inventoryList.add(new BloodPacket("PKT-105", "2026-06-12"));
-        inventoryList.add(new BloodPacket("PKT-202", "2026-03-25")); // earliest
-        inventoryList.add(new BloodPacket("PKT-309", "2026-04-05"));
-
-        // ✅ FIFO: sort by expiry date (real date compare)
-        Collections.sort(inventoryList, new Comparator<BloodPacket>() {
-            @Override
-            public int compare(BloodPacket p1, BloodPacket p2) {
-                Date d1 = parseDateSafe(p1.getExpiryDate());
-                Date d2 = parseDateSafe(p2.getExpiryDate());
-
-                // if parse fail, keep original order safely
-                if (d1 == null && d2 == null) return 0;
-                if (d1 == null) return 1;
-                if (d2 == null) return -1;
-
-                return d1.compareTo(d2);
-            }
-        });
-
-        StringBuilder message = new StringBuilder();
-        message.append("Priority: Expiring Soon (FIFO)\n\n");
-
-        for (BloodPacket packet : inventoryList) {
-            message.append("ID: ").append(packet.getPacketId())
-                    .append("\nExpiry: ").append(packet.getExpiryDate())
-                    .append("\n--------------------------\n");
-        }
-
-        new AlertDialog.Builder(this)
-                .setTitle(bloodGroup + " Stock Status")
-                .setMessage(message.toString())
-                .setPositiveButton("Dismiss", null)
-                .show();
-    }
-
-    // Supports common formats: "yyyy-MM-dd", "dd/MM/yyyy", "MM/dd/yyyy"
-    private Date parseDateSafe(String s) {
-        if (s == null) return null;
-
-        String[] patterns = new String[]{
-                "yyyy-MM-dd",
-                "dd/MM/yyyy",
-                "MM/dd/yyyy"
-        };
-
-        for (String p : patterns) {
-            try {
-                SimpleDateFormat sdf = new SimpleDateFormat(p, Locale.US);
-                sdf.setLenient(false);
-                return sdf.parse(s);
-            } catch (ParseException ignored) {
-            }
-        }
-        return null;
-    }
-
-    private static class BloodPacket {
-        private final String packetId;
-        private final String expiryDate;
-
-        public BloodPacket(String packetId, String expiryDate) {
-            this.packetId = packetId;
-            this.expiryDate = expiryDate;
-        }
-
-        public String getPacketId() { return packetId; }
-        public String getExpiryDate() { return expiryDate; }
+    private void navigateToDetail(String bloodGroup) {
+        Intent intent = new Intent(StockMonitosActivity.this, BloodStockDetailsActivity.class);
+        intent.putExtra("BLOOD_GROUP", bloodGroup);
+        startActivity(intent);
     }
 }
