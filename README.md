@@ -1,31 +1,30 @@
 # PulseAid - Blood Donation Management System 🩸
 
-PulseAid is a comprehensive Android application developed to bridge the gap between blood donors, hospitals, and blood banks. The system ensures efficient management of blood requests and real-time communication during emergencies.
+PulseAid is a dedicated Android application designed to streamline the blood donation process by connecting donors, hospitals, and blood banks in real-time. Built with a robust MVVM architecture, it ensures high performance and reliability during emergencies.
 
-## 🚀 Features
+## 🚀 Key Features
 
-### 👤 User Roles
-The application supports four primary user roles with specific dashboards:
-* **Admin:** Oversees the entire system, manages blood requests, and broadcasts emergency alerts.
-* **Donor:** Can view blood requests, manage their profile, and track donation history.
-* **Hospital:** Requests specific blood types and manages clinical requirements.
-* **Blood Bank:** Manages local blood stocks and staff activities.
+### 🏢 Multi-User Dashboards
+The app provides specialized interfaces for four different roles:
+* **Admin:** Manage all blood requests, monitor users, and broadcast emergency alerts.
+* **Donor:** View nearby blood requirements, maintain a donation profile, and receive notifications.
+* **Hospital:** Create urgent blood requests and manage clinical inventory needs.
+* **Blood Bank:** Update local blood stocks and coordinate with the central system.
 
-### 🛠 Core Functionalities
-* **Secure Authentication:** Integrated Firebase Authentication for secure email/password login.
-* **Real-time Database:** Utilizes Firebase Firestore for instant data synchronization across all users.
-* **Emergency Broadcasting:** Admin can broadcast urgent blood requirements to notify relevant users.
-* **Profile Management:** Users can complete and update their profiles to ensure accurate records.
+### 🛡 Core Functionalities
+* **Firebase Integration:** Secure authentication and real-time data syncing via Firestore.
+* **Emergency Broadcasting:** Admins can send instant alerts for critical blood shortages.
+* **Profile Verification:** Ensures all users have completed profiles before accessing critical features.
 
 ## 🛠 Tech Stack
 * **Language:** Java
 * **Database:** Firebase Firestore
 * **Authentication:** Firebase Auth
-* **UI/UX:** XML with Material Design components
+* **Design:** Material Design Components with XML
 * **Architecture:** MVVM (Model-View-ViewModel)
 
 ## 📦 Setup & Installation
 
-1. **Clone the Repository:**
+1. **Clone the Project:**
    ```bash
-   git clone [https://github.com/your-username/PulseAid.git](https://github.com/your-username/PulseAid.git)
+   git clone [https://github.com/vthish/PulseAid-Android.git](https://github.com/vthish/PulseAid-Android.git)
