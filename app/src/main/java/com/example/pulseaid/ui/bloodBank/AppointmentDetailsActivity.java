@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
@@ -50,27 +49,50 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
             ((TextView)findViewById(R.id.tvStatus)).setText("Status: " + getIntent().getStringExtra("status"));
 
             TextInputEditText etUnits = findViewById(R.id.etUnits);
+            TextInputEditText etRejectReason = findViewById(R.id.etRejectReason);
             TextInputLayout tilUnits = findViewById(R.id.tilUnits);
+            TextInputLayout tilRejectReason = findViewById(R.id.tilRejectReason);
 
+            tilUnits.setErrorEnabled(true);
+            tilRejectReason.setErrorEnabled(true);
+
+            // 2. Confirm Donation Button (Green) Listener
             findViewById(R.id.btnComplete).setOnClickListener(v -> {
+                tilUnits.setError(null);
+                tilRejectReason.setError(null);
                 String unitsText = etUnits.getText().toString().trim();
                 if (unitsText.isEmpty()) {
-                    tilUnits.setError("Required");
+                    tilUnits.setError("Collected units required");
                     return;
                 }
-
-                // Show a loading message
-                Toast.makeText(this, "Processing Donation...", Toast.LENGTH_SHORT).show();
-                vm.completeDonation(appId, donorId, bankId, type, Integer.parseInt(unitsText));
+                try {
+                    int units = Integer.parseInt(unitsText);
+                    if (units <= 0) {
+                        tilUnits.setError("Invalid number of units");
+                        return;
+                    }
+                    vm.completeDonation(appId, donorId, bankId, type, units);
+                } catch (NumberFormatException e) {
+                    tilUnits.setError("Invalid format");
+                }
             });
 
-            // UPDATE: Redirect to Dashboard upon success
+            // 4. Reject Button (Red) Listener
+            findViewById(R.id.btnReject).setOnClickListener(v -> {
+                tilUnits.setError(null);
+                tilRejectReason.setError(null);
+                String reason = etRejectReason.getText().toString().trim();
+                if (reason.isEmpty()) {
+                    tilRejectReason.setError("Reason required for rejection");
+                    return;
+                }
+                vm.rejectAppointment(appId, reason);
+            });
+
             vm.getTransactionSuccess().observe(this, s -> {
                 if(s != null && s) {
-                    Toast.makeText(this, "Donation Successful & Inventory Updated!", Toast.LENGTH_LONG).show();
-
+                    Toast.makeText(this, "Process successful!", Toast.LENGTH_SHORT).show();
                     Intent intent = new Intent(AppointmentDetailsActivity.this, BloodBankDashboardActivity.class);
-                    // Clear the back stack so user cannot go back to the details screen
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     startActivity(intent);
                     finish();
@@ -78,11 +100,15 @@ public class AppointmentDetailsActivity extends AppCompatActivity {
             });
 
             vm.getErrorMessage().observe(this, error -> {
-                if (error != null) Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+                if (error != null) {
+                    Toast.makeText(this, error, Toast.LENGTH_SHORT).show();
+                    vm.clearErrorMessage();
+                }
             });
 
         } catch (Exception e) {
-            Toast.makeText(this, "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Error loading details", Toast.LENGTH_SHORT).show();
+            finish();
         }
     }
 }

@@ -42,6 +42,8 @@ public class DonorCheckInRepository {
     public void completeDonationTransaction(String appId, String donorId, String centerId, String type, int units, TransactionCallback callback) {
         WriteBatch batch = db.batch();
         batch.update(db.collection("appointments").document(appId), "status", "COMPLETED");
+        batch.update(db.collection("appointments").document(appId), "donateUnits", units);
+
         batch.update(db.collection("Users").document(donorId), "lastDonationDate", System.currentTimeMillis());
         batch.update(db.collection("Users").document(donorId), "donationCount", FieldValue.increment(1));
 
@@ -53,7 +55,7 @@ public class DonorCheckInRepository {
             Map<String, Object> packetData = new HashMap<>();
             packetData.put("packetId", packetId);
             packetData.put("bloodGroup", type);
-            packetData.put("centerId", centerId); // Changed to centerId
+            packetData.put("centerId", centerId);
             packetData.put("donorId", donorId);
             packetData.put("collectionTimestamp", currentTime);
             packetData.put("expiryTimestamp", expiryTime);
@@ -61,5 +63,16 @@ public class DonorCheckInRepository {
             batch.set(db.collection("BloodPackets").document(packetId), packetData);
         }
         batch.commit().addOnSuccessListener(v -> callback.onSuccess()).addOnFailureListener(e -> callback.onFailure(e.getMessage()));
+    }
+
+    public void rejectAppointmentTransaction(String appId, String reason, TransactionCallback callback) {
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("status", "REJECTED");
+        updates.put("rejectReason", reason);
+
+        db.collection("appointments").document(appId)
+                .update(updates)
+                .addOnSuccessListener(v -> callback.onSuccess())
+                .addOnFailureListener(e -> callback.onFailure(e.getMessage()));
     }
 }
