@@ -15,7 +15,7 @@ public class EmergencyRequestRepository {
         mAuth = FirebaseAuth.getInstance();
     }
 
-    // Callback interface to handle success and failure
+
     public interface RequestCallback {
         void onSuccess();
         void onFailure(String error);
