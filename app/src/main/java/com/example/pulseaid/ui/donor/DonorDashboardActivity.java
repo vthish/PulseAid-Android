@@ -18,8 +18,7 @@ public class DonorDashboardActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNav;
     private DonorDashboardViewModel dashboardViewModel;
-
-    private boolean isProfileComplte = true;
+    private boolean isProfileComplete = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,18 +37,17 @@ public class DonorDashboardActivity extends AppCompatActivity {
         setupNavigation();
 
         dashboardViewModel.getProfileStatus().observe(this, isComplete -> {
-            this.isProfileComplte = (isComplete != null && isComplete);
+            isProfileComplete = isComplete != null && isComplete;
 
-            if (!this.isProfileComplte) {
+            if (!isProfileComplete) {
                 bottomNav.setVisibility(View.GONE);
-                loadFragment(new DonorProfileFragment());
-            }
-            else
-            {
+                loadRootFragment(new DonorProfileFragment());
+            } else {
                 bottomNav.setVisibility(View.VISIBLE);
-                if(getSupportFragmentManager().findFragmentById(R.id.donor_fragment_container) instanceof DonorProfileFragment || savedInstanceState == null)
-                {
-                    loadFragment(new DonorHomeFragment());
+
+                Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.donor_fragment_container);
+                if (currentFragment == null || currentFragment instanceof DonorProfileFragment || savedInstanceState == null) {
+                    loadRootFragment(new DonorHomeFragment());
                     bottomNav.setSelectedItemId(R.id.nav_home);
                 }
             }
@@ -58,26 +56,59 @@ public class DonorDashboardActivity extends AppCompatActivity {
 
     private void setupNavigation() {
         bottomNav.setOnItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.donor_fragment_container);
             int id = item.getItemId();
 
             if (id == R.id.nav_home) {
-                selectedFragment = new DonorHomeFragment();
+                if (currentFragment instanceof DonorHomeFragment) {
+                    return true;
+                }
+                clearFragmentBackStack();
+                loadRootFragment(new DonorHomeFragment());
+                return true;
             } else if (id == R.id.nav_history) {
-                selectedFragment = new DonarHistoryFragment();
+                if (currentFragment instanceof DonarHistoryFragment) {
+                    return true;
+                }
+                clearFragmentBackStack();
+                loadRootFragment(new DonarHistoryFragment());
+                return true;
             } else if (id == R.id.nav_profile) {
-                selectedFragment = new DonorAccountFragment();
-            }
-
-            if (selectedFragment != null) {
-                loadFragment(selectedFragment);
+                if (currentFragment instanceof DonorAccountFragment) {
+                    return true;
+                }
+                clearFragmentBackStack();
+                loadRootFragment(new DonorAccountFragment());
                 return true;
             }
+
             return false;
+        });
+
+        bottomNav.setOnItemReselectedListener(item -> {
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.donor_fragment_container);
+            int id = item.getItemId();
+
+            if (id == R.id.nav_home && !(currentFragment instanceof DonorHomeFragment)) {
+                clearFragmentBackStack();
+                loadRootFragment(new DonorHomeFragment());
+            } else if (id == R.id.nav_history && !(currentFragment instanceof DonarHistoryFragment)) {
+                clearFragmentBackStack();
+                loadRootFragment(new DonarHistoryFragment());
+            } else if (id == R.id.nav_profile && !(currentFragment instanceof DonorAccountFragment)) {
+                clearFragmentBackStack();
+                loadRootFragment(new DonorAccountFragment());
+            }
         });
     }
 
-    private void loadFragment(Fragment fragment) {
+    private void clearFragmentBackStack() {
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0) {
+            getSupportFragmentManager().popBackStack(null, androidx.fragment.app.FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        }
+    }
+
+    private void loadRootFragment(Fragment fragment) {
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.donor_fragment_container, fragment)
                 .commit();

@@ -158,18 +158,25 @@
                     app:singleSelection="true">
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_morning"
+                        android:id="@+id/chip_09_10"
                         style="@style/Widget.MaterialComponents.Chip.Choice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Morning (09-12)" />
+                        android:text="09:00 AM - 10:00 AM" />
 
                     <com.google.android.material.chip.Chip
-                        android:id="@+id/chip_evening"
+                        android:id="@+id/chip_10_11"
                         style="@style/Widget.MaterialComponents.Chip.Choice"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Evening (01-03)" />
+                        android:text="10:00 AM - 11:00 AM" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_11_12"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="11:00 AM - 12:00 PM" />
                 </com.google.android.material.chip.ChipGroup>
 
                 <com.google.android.material.button.MaterialButton

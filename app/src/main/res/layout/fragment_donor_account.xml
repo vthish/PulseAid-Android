@@ -1,77 +1,94 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white">
 
-    <androidx.core.widget.NestedScrollView
-        android:id="@+id/nestedScrollView"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:fillViewport="true"
-        android:overScrollMode="never"
-        android:scrollbars="none"
-        app:layout_constraintBottom_toTopOf="@+id/bottom_buttons_container"
+    <LinearLayout
+        android:id="@+id/top_profile_container"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingTop="35dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        android:paddingBottom="10dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/tv_profile_page_title"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_marginTop="40dp"
+            android:text="My Profile"
+            android:textColor="#333333"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="209dp"
-                android:background="@color/white"
-                android:paddingHorizontal="20dp"
-                android:paddingTop="20dp">
+        <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/iv_profile_pic"
+            android:layout_width="85dp"
+            android:layout_height="85dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:padding="3dp"
+            android:src="@drawable/ic_donor_placeholder"
+            app:strokeColor="@color/pulse_red_dark"
+            app:strokeWidth="2dp" />
 
-                <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/iv_profile_pic"
-                    android:layout_width="85dp"
-                    android:layout_height="85dp"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="40dp"
-                    android:padding="3dp"
-                    android:src="@drawable/ic_donor_placeholder"
-                    app:strokeColor="@color/pulse_red_dark"
-                    app:strokeWidth="2dp"/>
+        <TextView
+            android:id="@+id/tv_header_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Hashan"
+            android:textColor="@color/pulse_red"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-                <TextView
-                    android:id="@+id/tv_header_name"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/iv_profile_pic"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="5dp"
-                    android:text="Hashan"
-                    android:textColor="@color/pulse_red"
-                    android:textSize="20dp"
-                    android:textStyle="bold"/>
+        <TextView
+            android:id="@+id/tv_header_blood_group"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="4dp"
+            android:background="@drawable/bg_blood_badge"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="2dp"
+            android:text="B+"
+            android:textColor="@color/pulse_red"
+            android:textStyle="bold" />
+    </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tv_header_blood_group"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/tv_header_name"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="2dp"
-                    android:background="@drawable/bg_blood_badge"
-                    android:paddingHorizontal="12dp"
-                    android:paddingVertical="2dp"
-                    android:text="B+"
-                    android:textColor="@color/pulse_red"
-                    android:textStyle="bold"/>
-            </RelativeLayout>
+    <FrameLayout
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/bottom_buttons_container"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_profile_container">
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/nestedScrollView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            android:overScrollMode="never"
+            android:scrollbars="none"
+            android:visibility="gone">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:layout_marginTop="20dp"
-                android:paddingHorizontal="15dp">
+                android:paddingLeft="15dp"
+                android:paddingRight="15dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
@@ -94,13 +111,13 @@
                             android:layout_marginBottom="10dp"
                             android:text="Personal Details"
                             android:textColor="@color/pulse_red"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Full Name"
-                            android:textSize="11sp"/>
+                            android:textSize="11sp" />
 
                         <TextView
                             android:id="@+id/tv_view_name"
@@ -108,6 +125,8 @@
                             android:layout_height="wrap_content"
                             android:paddingVertical="3dp"
                             android:text="Hashan"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
                             android:textColor="#000000"
                             android:textSize="14sp"/>
 
@@ -117,28 +136,29 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:visibility="gone"
-                            app:boxCornerRadiusTopStart="25dp"
-                            app:boxCornerRadiusTopEnd="25dp"
+                            app:boxCornerRadiusBottomEnd="25dp"
                             app:boxCornerRadiusBottomStart="25dp"
-                            app:boxCornerRadiusBottomEnd="25dp">
+                            app:boxCornerRadiusTopEnd="25dp"
+                            app:boxCornerRadiusTopStart="25dp">
+
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_edit_name"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="textPersonName"/>
+                                android:inputType="textPersonName" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginVertical="6dp"
-                            android:background="#EEEEEE"/>
+                            android:background="#EEEEEE" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Phone Number"
-                            android:textSize="11sp"/>
+                            android:textSize="11sp" />
 
                         <TextView
                             android:id="@+id/tv_view_phone"
@@ -146,6 +166,8 @@
                             android:layout_height="wrap_content"
                             android:paddingVertical="3dp"
                             android:text="0763188909"
+                            android:textColor="#000000"
+                            android:textSize="14sp" />
                             android:textColor="#000000"
                             android:textSize="14sp"/>
 
@@ -155,22 +177,23 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:visibility="gone"
-                            app:boxCornerRadiusTopStart="25dp"
-                            app:boxCornerRadiusTopEnd="25dp"
+                            app:boxCornerRadiusBottomEnd="25dp"
                             app:boxCornerRadiusBottomStart="25dp"
-                            app:boxCornerRadiusBottomEnd="25dp">
+                            app:boxCornerRadiusTopEnd="25dp"
+                            app:boxCornerRadiusTopStart="25dp">
+
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_edit_phone"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="phone"/>
+                                android:inputType="phone" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginVertical="6dp"
-                            android:background="#EEEEEE"/>
+                            android:background="#EEEEEE" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
@@ -182,11 +205,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Weight (kg)"
-                                    android:textSize="11sp"/>
+                                    android:textSize="11sp" />
+
                                 <TextView
                                     android:id="@+id/tv_view_weight"
                                     android:layout_width="wrap_content"
@@ -195,6 +220,8 @@
                                     android:text="58 kg"
                                     android:textColor="#000000"
                                     android:textSize="14sp"/>
+                                    android:textColor="#000000"
+                                    android:textSize="14sp" />
                             </LinearLayout>
 
                             <LinearLayout
@@ -202,11 +229,13 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
+
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Date of Birth"
-                                    android:textSize="11sp"/>
+                                    android:textSize="11sp" />
+
                                 <TextView
                                     android:id="@+id/tv_view_dob"
                                     android:layout_width="wrap_content"
@@ -215,6 +244,8 @@
                                     android:text="1998-05-20"
                                     android:textColor="#000000"
                                     android:textSize="14sp"/>
+                                    android:textColor="#000000"
+                                    android:textSize="14sp" />
                             </LinearLayout>
                         </LinearLayout>
 
@@ -223,16 +254,18 @@
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
                             android:visibility="gone"
-                            app:boxCornerRadiusTopStart="25dp"
-                            app:boxCornerRadiusTopEnd="25dp"
+                            app:boxCornerRadiusBottomEnd="25dp"
                             app:boxCornerRadiusBottomStart="25dp"
-                            app:boxCornerRadiusBottomEnd="25dp">
+                            app:boxCornerRadiusTopEnd="25dp"
+                            app:boxCornerRadiusTopStart="25dp">
+
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_edit_weight"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:inputType="number"/>
+                                android:inputType="number" />
                         </com.google.android.material.textfield.TextInputLayout>
 
                         <com.google.android.material.textfield.TextInputLayout
@@ -240,21 +273,22 @@
                             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="5dp"
+                            android:layout_marginTop="8dp"
                             android:visibility="gone"
-                            app:boxCornerRadiusTopStart="25dp"
-                            app:boxCornerRadiusTopEnd="25dp"
-                            app:boxCornerRadiusBottomStart="25dp"
                             app:boxCornerRadiusBottomEnd="25dp"
+                            app:boxCornerRadiusBottomStart="25dp"
+                            app:boxCornerRadiusTopEnd="25dp"
+                            app:boxCornerRadiusTopStart="25dp"
                             app:endIconDrawable="@android:drawable/ic_menu_my_calendar"
                             app:endIconMode="custom">
+
                             <com.google.android.material.textfield.TextInputEditText
                                 android:id="@+id/et_edit_dob"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:clickable="true"
                                 android:focusable="false"
-                                android:inputType="none"/>
+                                android:inputType="none" />
                         </com.google.android.material.textfield.TextInputLayout>
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
@@ -280,13 +314,14 @@
                             android:layout_marginBottom="10dp"
                             android:text="Account Details"
                             android:textColor="@color/pulse_red"
-                            android:textStyle="bold"/>
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="NIC Number"
-                            android:textSize="11sp"/>
+                            android:textSize="11sp" />
+
                         <TextView
                             android:id="@+id/tv_static_nic"
                             android:layout_width="match_parent"
@@ -294,19 +329,20 @@
                             android:paddingVertical="3dp"
                             android:text="200218902500"
                             android:textColor="#757575"
-                            android:textSize="14sp"/>
+                            android:textSize="14sp" />
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
                             android:layout_marginVertical="6dp"
-                            android:background="#EEEEEE"/>
+                            android:background="#EEEEEE" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Email Address"
-                            android:textSize="11sp"/>
+                            android:textSize="11sp" />
+
                         <TextView
                             android:id="@+id/tv_static_email"
                             android:layout_width="match_parent"
@@ -314,22 +350,58 @@
                             android:paddingVertical="3dp"
                             android:text="hashanworld7@gmail.com"
                             android:textColor="#757575"
-                            android:textSize="14sp"/>
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </com.google.android.material.card.MaterialCardView>
+
             </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+        <LinearLayout
+            android:id="@+id/layout_account_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <ProgressBar
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/pulse_red" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Loading profile..."
+                android:textColor="#777"
+                android:textSize="14sp" />
         </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
+
+        <TextView
+            android:id="@+id/tv_account_error"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="Unable to load profile."
+            android:textColor="#777"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+    </FrameLayout>
 
     <LinearLayout
         android:id="@+id/bottom_buttons_container"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="horizontal"
         android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:layout_editor_absoluteX="0dp">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_logout"
@@ -343,9 +415,7 @@
             android:text="Logout"
             android:textColor="#D32F2F"
             app:cornerRadius="25dp"
-            app:icon="@android:drawable/ic_lock_power_off"
-            app:iconTint="#D32F2F"
-            app:strokeColor="#D32F2F"/>
+            app:strokeColor="#D32F2F" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btn_edit_toggle"
@@ -359,7 +429,7 @@
             android:text="Edit Profile"
             android:textColor="@color/white"
             app:cornerRadius="25dp"
-            app:elevation="4dp"/>
+            app:elevation="4dp" />
 
     </LinearLayout>
 

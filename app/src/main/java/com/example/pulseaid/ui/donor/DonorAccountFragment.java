@@ -1,15 +1,18 @@
 package com.example.pulseaid.ui.donor;
 
 import android.app.DatePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -28,10 +31,12 @@ import java.util.Map;
 
 public class DonorAccountFragment extends Fragment {
 
-    private TextView tvViewName, tvViewPhone, tvViewWeight, tvViewDob, tvStaticNic, tvStaticEmail, tvHeaderName, tvHeaderBlood;
+    private TextView tvViewName, tvViewPhone, tvViewWeight, tvViewDob, tvStaticNic, tvStaticEmail, tvHeaderName, tvHeaderBlood, tvAccountError;
     private TextInputLayout tilEditName, tilEditPhone, tilEditWeight, tilEditDob;
     private TextInputEditText etEditName, etEditPhone, etEditWeight, etEditDob;
     private MaterialButton btnEditToggle, btnLogout;
+    private LinearLayout layoutAccountLoading;
+    private NestedScrollView nestedScrollView;
 
     private DonorAccountViewModel viewModel;
     private boolean isEditMode = false;
@@ -48,8 +53,6 @@ public class DonorAccountFragment extends Fragment {
         initViews(view);
         setupObservers();
 
-        viewModel.fetchProfile(userId);
-
         btnEditToggle.setOnClickListener(v -> {
             if (isEditMode) {
                 saveData();
@@ -60,14 +63,27 @@ public class DonorAccountFragment extends Fragment {
 
         btnLogout.setOnClickListener(v -> {
             FirebaseAuth.getInstance().signOut();
-            android.content.Intent intent = new android.content.Intent(getActivity(), LoginActivity.class);
-            intent.setFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK | android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            Intent intent = new Intent(getActivity(), LoginActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             startActivity(intent);
         });
 
         etEditDob.setOnClickListener(v -> showDatePicker());
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        showLoadingState();
+        viewModel.startProfileListener(userId);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        viewModel.stopProfileListener();
     }
 
     private void initViews(View v) {
@@ -79,6 +95,7 @@ public class DonorAccountFragment extends Fragment {
         tvStaticEmail = v.findViewById(R.id.tv_static_email);
         tvHeaderName = v.findViewById(R.id.tv_header_name);
         tvHeaderBlood = v.findViewById(R.id.tv_header_blood_group);
+        tvAccountError = v.findViewById(R.id.tv_account_error);
 
         tilEditName = v.findViewById(R.id.til_edit_name);
         tilEditPhone = v.findViewById(R.id.til_edit_phone);
@@ -92,50 +109,82 @@ public class DonorAccountFragment extends Fragment {
 
         btnEditToggle = v.findViewById(R.id.btn_edit_toggle);
         btnLogout = v.findViewById(R.id.btn_logout);
+
+        layoutAccountLoading = v.findViewById(R.id.layout_account_loading);
+        nestedScrollView = v.findViewById(R.id.nestedScrollView);
     }
 
     private void setupObservers() {
-        viewModel.getUserProfile().observe(getViewLifecycleOwner(), this::updateUI);
+        viewModel.getUserProfile().observe(getViewLifecycleOwner(), doc -> {
+            if (doc != null && doc.exists()) {
+                updateUI(doc);
+                showContentState();
+            }
+        });
 
         viewModel.getUpdateSuccess().observe(getViewLifecycleOwner(), success -> {
             if (success != null && success) {
-                Toast.makeText(getContext(), "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
                 toggleEditMode(false);
                 viewModel.resetUpdateStatus();
             }
         });
 
         viewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
-            if (error != null) {
-                Toast.makeText(getContext(), "Error: " + error, Toast.LENGTH_SHORT).show();
+            if (error != null && !error.trim().isEmpty()) {
+                if (nestedScrollView.getVisibility() != View.VISIBLE) {
+                    showErrorState();
+                }
             }
         });
     }
 
     private void updateUI(DocumentSnapshot doc) {
-        if (doc != null && doc.exists()) {
-            String name = doc.getString("name");
-            String phone = doc.getString("phone");
-            String weight = String.valueOf(doc.get("weight"));
-            String dob = doc.getString("dob");
-            String blood = doc.getString("bloodGroup");
-            String nic = doc.getString("nic");
-            String email = doc.getString("email");
+        String name = safeText(doc.getString("name"));
+        String phone = safePhone(doc);
+        String weight = safeWeight(doc.get("weight"));
+        String dob = safeText(doc.getString("dob"));
+        String blood = safeText(doc.getString("bloodGroup"));
+        String nic = safeText(doc.getString("nic"));
+        String email = safeText(doc.getString("email"));
 
-            tvViewName.setText(name);
-            tvViewPhone.setText(phone);
-            tvViewWeight.setText(weight + " kg");
-            tvViewDob.setText(dob);
-            tvHeaderName.setText(name);
-            tvHeaderBlood.setText(blood);
-            tvStaticNic.setText(nic);
-            tvStaticEmail.setText(email);
+        tvViewName.setText(name);
+        tvViewPhone.setText(phone);
+        tvViewWeight.setText(TextUtils.isEmpty(weight) ? "-" : weight + " kg");
+        tvViewDob.setText(dob);
+        tvHeaderName.setText(name);
+        tvHeaderBlood.setText(blood);
+        tvStaticNic.setText(nic);
+        tvStaticEmail.setText(email);
 
-            etEditName.setText(name);
-            etEditPhone.setText(phone);
-            etEditWeight.setText(weight);
-            etEditDob.setText(dob);
+        etEditName.setText(name);
+        etEditPhone.setText(phone);
+        etEditWeight.setText(weight);
+        etEditDob.setText(dob);
+    }
+
+    private String safeText(String value) {
+        return value == null || value.trim().isEmpty() ? "-" : value.trim();
+    }
+
+    private String safePhone(DocumentSnapshot doc) {
+        String phone = doc.getString("phone");
+        if (phone != null && !phone.trim().isEmpty()) {
+            return phone.trim();
         }
+
+        String phoneNumber = doc.getString("phoneNumber");
+        if (phoneNumber != null && !phoneNumber.trim().isEmpty()) {
+            return phoneNumber.trim();
+        }
+
+        return "-";
+    }
+
+    private String safeWeight(Object weightObj) {
+        if (weightObj == null) {
+            return "";
+        }
+        return String.valueOf(weightObj).trim();
     }
 
     private void toggleEditMode(boolean enable) {
@@ -156,39 +205,64 @@ public class DonorAccountFragment extends Fragment {
         tilEditDob.setVisibility(editVis);
 
         btnEditToggle.setText(enable ? "Save Changes" : "Edit Profile");
-        btnEditToggle.setIconResource(enable ? android.R.drawable.ic_menu_save : android.R.drawable.ic_menu_edit);
     }
 
     private void saveData() {
-        String name = etEditName.getText().toString().trim();
-        String phone = etEditPhone.getText().toString().trim();
-        String weightStr = etEditWeight.getText().toString().trim();
-        String dob = etEditDob.getText().toString().trim();
+        String name = etEditName.getText() != null ? etEditName.getText().toString().trim() : "";
+        String phone = etEditPhone.getText() != null ? etEditPhone.getText().toString().trim() : "";
+        String weightStr = etEditWeight.getText() != null ? etEditWeight.getText().toString().trim() : "";
+        String dob = etEditDob.getText() != null ? etEditDob.getText().toString().trim() : "";
 
         if (name.isEmpty() || phone.isEmpty() || weightStr.isEmpty() || dob.isEmpty()) {
-            Toast.makeText(getContext(), "Please fill all editable fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        int weightValue;
+        try {
+            weightValue = Integer.parseInt(weightStr);
+        } catch (Exception e) {
             return;
         }
 
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("phone", phone);
-        updates.put("weight", Integer.parseInt(weightStr));
+        updates.put("phoneNumber", phone);
+        updates.put("weight", weightValue);
         updates.put("dob", dob);
 
         viewModel.updateProfile(userId, updates);
     }
 
     private void showDatePicker() {
-        final Calendar c = Calendar.getInstance();
+        Calendar c = Calendar.getInstance();
         int year = c.get(Calendar.YEAR);
         int month = c.get(Calendar.MONTH);
         int day = c.get(Calendar.DAY_OF_MONTH);
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, monthOfYear, dayOfMonth) -> {
+        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(), (view, year1, monthOfYear, dayOfMonth) -> {
             String selectedDate = year1 + "-" + (monthOfYear + 1) + "-" + dayOfMonth;
             etEditDob.setText(selectedDate);
         }, year, month, day);
+
         datePickerDialog.show();
+    }
+
+    private void showLoadingState() {
+        layoutAccountLoading.setVisibility(View.VISIBLE);
+        nestedScrollView.setVisibility(View.GONE);
+        tvAccountError.setVisibility(View.GONE);
+    }
+
+    private void showContentState() {
+        layoutAccountLoading.setVisibility(View.GONE);
+        nestedScrollView.setVisibility(View.VISIBLE);
+        tvAccountError.setVisibility(View.GONE);
+    }
+
+    private void showErrorState() {
+        layoutAccountLoading.setVisibility(View.GONE);
+        nestedScrollView.setVisibility(View.GONE);
+        tvAccountError.setVisibility(View.VISIBLE);
     }
 }
