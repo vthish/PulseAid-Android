@@ -1,34 +1,78 @@
 package com.example.pulseaid.ui.hospital;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.pulseaid.R;
-import java.util.ArrayList;
-import java.util.List;
+import com.example.pulseaid.viewmodel.hospital.HospitalActiveRequestsViewModel;
 
 public class ActiveRequestsActivity extends AppCompatActivity {
+
+    private RecyclerView rvActiveRequests;
+    private ProgressBar pbLoadingActive;
+    private ActiveRequestAdapter adapter;
+    private HospitalActiveRequestsViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_active_requests);
 
-        findViewById(R.id.btnBackFromActive).setOnClickListener(v -> finish());
+        // Toolbar Setup
+        Toolbar toolbar = findViewById(R.id.toolbarActive);
+        if (toolbar != null) {
+            setSupportActionBar(toolbar);
+            if (getSupportActionBar() != null) {
+                getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+            toolbar.setNavigationOnClickListener(v -> onBackPressed());
+        } else {
+            Toast.makeText(this, "Toolbar not found", Toast.LENGTH_SHORT).show();
+        }
 
-        RecyclerView rv = findViewById(R.id.rvActiveRequests);
-        rv.setLayoutManager(new LinearLayoutManager(this));
+        // Initialize Views
+        rvActiveRequests = findViewById(R.id.rvActiveRequests);
+        pbLoadingActive = findViewById(R.id.pbLoadingActive);
 
-        List<ActiveRequestModel> list = new ArrayList<>();
+        if (rvActiveRequests == null) {
+            Toast.makeText(this, "Failed to load list view", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        list.add(new ActiveRequestModel("AB+", "02", "07 Mar 2026", "Awaiting Bank Confirmation...", 0));
 
-        list.add(new ActiveRequestModel("B-", "03", "06 Mar 2026", "Accepted by Colombo Bank. Arriving tomorrow.", 1));
+        rvActiveRequests.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ActiveRequestAdapter();
+        rvActiveRequests.setAdapter(adapter);
 
-        list.add(new ActiveRequestModel("O+", "04", "07 Mar 2026", "Dispatched! Check 'Delivery Alert' on dashboard.", 2));
 
-        ActiveRequestAdapter adapter = new ActiveRequestAdapter(list);
-        rv.setAdapter(adapter);
+        viewModel = new ViewModelProvider(this).get(HospitalActiveRequestsViewModel.class);
+
+
+        viewModel.activeRequests.observe(this, requests -> {
+            Log.d("ActiveRequestsActivity", "Observed requests count: " + (requests != null ? requests.size() : 0));
+            adapter.setList(requests);
+        });
+
+        viewModel.isLoading.observe(this, loading -> {
+            if (pbLoadingActive != null) {
+                pbLoadingActive.setVisibility(Boolean.TRUE.equals(loading) ? View.VISIBLE : View.GONE);
+            }
+        });
+
+
+        viewModel.listenToHospitalRequests();
+    }
+
+    @Override
+    public boolean onSupportNavigateUp() {
+        onBackPressed();
+        return true;
     }
 }
