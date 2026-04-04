@@ -3,20 +3,27 @@ package com.example.pulseaid.ui.hospital;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Toast;
+import android.view.Window;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.pulseaid.R;
-import com.example.pulseaid.ui.LoginActivity;
 import com.google.android.material.card.MaterialCardView;
-import com.google.firebase.auth.FirebaseAuth;
 
 public class HospitalDashboard extends AppCompatActivity {
+
+    private MaterialCardView cardRequestBlood;
+    private MaterialCardView cardConfirmDelivery;
+    private View cardActiveStatus;
+    private View cardHistory;
+    private View btnProfile;
+    private View headerSection;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,48 +31,102 @@ public class HospitalDashboard extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_hospital_dashboard);
 
-        MaterialCardView cardRequestBlood = findViewById(R.id.cardHeroRequest);
-        cardRequestBlood.setOnClickListener(v -> {
-            Intent intent = new Intent(HospitalDashboard.this, RequestFormActivity.class);
-            startActivity(intent);
-        });
+        setupStatusBar();
+        initViews();
+        setupInsets();
+        setupClickListeners();
+    }
 
+    private void setupStatusBar() {
+        Window window = getWindow();
+        if (window != null) {
+            window.setStatusBarColor(getColorCompat(R.color.pulse_red_dark));
+            WindowCompat.getInsetsController(window, window.getDecorView())
+                    .setAppearanceLightStatusBars(false);
+        }
+    }
 
+    private void initViews() {
+        headerSection = findViewById(R.id.headerSection);
+        cardRequestBlood = findViewById(R.id.cardHeroRequest);
+        cardConfirmDelivery = findViewById(R.id.cardConfirmDelivery);
+        cardActiveStatus = findViewById(R.id.cardActiveStatus);
+        cardHistory = findViewById(R.id.cardHistory);
+        btnProfile = findViewById(R.id.btnProfile);
+    }
 
-        MaterialCardView cardConfirmDelivery = findViewById(R.id.cardConfirmDelivery);
+    private void setupInsets() {
+        if (headerSection != null) {
+            final int paddingStart = headerSection.getPaddingStart();
+            final int paddingTop = headerSection.getPaddingTop();
+            final int paddingEnd = headerSection.getPaddingEnd();
+            final int paddingBottom = headerSection.getPaddingBottom();
 
-        cardConfirmDelivery.setOnClickListener(v -> {
-            Intent intent = new Intent(HospitalDashboard.this, ConfirmDeliveriesActivity.class);
-            startActivity(intent);
-        });
+            ViewCompat.setOnApplyWindowInsetsListener(headerSection, (v, insets) -> {
+                Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.statusBars());
+                v.setPadding(
+                        paddingStart,
+                        paddingTop + systemBars.top,
+                        paddingEnd,
+                        paddingBottom
+                );
+                return insets;
+            });
+        }
+    }
 
-        findViewById(R.id.cardActiveStatus).setOnClickListener(v -> {
-            startActivity(new Intent(HospitalDashboard.this, ActiveRequestsActivity.class));
-        });
+    private void setupClickListeners() {
+        if (cardRequestBlood != null) {
+            cardRequestBlood.setOnClickListener(v ->
+                    startActivity(new Intent(HospitalDashboard.this, RequestFormActivity.class)));
+        }
 
-        findViewById(R.id.cardHistory).setOnClickListener(v -> {
-            startActivity(new Intent(HospitalDashboard.this, HistoryActivity.class));
-        });
+        if (cardConfirmDelivery != null) {
+            cardConfirmDelivery.setOnClickListener(v ->
+                    startActivity(new Intent(HospitalDashboard.this, ConfirmDeliveriesActivity.class)));
+        }
 
-        View btnProfile = findViewById(R.id.btnProfile);
-        btnProfile.setOnClickListener(v -> {
-            Intent intent = new Intent(HospitalDashboard.this, HospitalProfileActivity.class);
-            startActivity(intent);
-        });
+        if (cardActiveStatus != null) {
+            cardActiveStatus.setOnClickListener(v ->
+                    startActivity(new Intent(HospitalDashboard.this, ActiveRequestsActivity.class)));
+        }
 
-        View btnLogout = findViewById(R.id.btnLogout);
+        if (cardHistory != null) {
+            cardHistory.setOnClickListener(v ->
+                    startActivity(new Intent(HospitalDashboard.this, HospitalHistoryActivity.class)));
+        }
 
-        btnLogout.setOnClickListener(v -> {
+        if (btnProfile != null) {
+            btnProfile.setOnClickListener(v ->
+                    startActivity(new Intent(HospitalDashboard.this, HospitalProfileActivity.class)));
+        }
+    }
 
-            FirebaseAuth.getInstance().signOut();
+    private int getColorCompat(int colorResId) {
+        return androidx.core.content.ContextCompat.getColor(this, colorResId);
+    }
 
-            Toast.makeText(HospitalDashboard.this, "Logged out successfully", Toast.LENGTH_SHORT).show();
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
 
-            Intent intent = new Intent(HospitalDashboard.this, LoginActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-            startActivity(intent);
+        clearClickListener(cardRequestBlood);
+        clearClickListener(cardConfirmDelivery);
+        clearClickListener(cardActiveStatus);
+        clearClickListener(cardHistory);
+        clearClickListener(btnProfile);
 
-            finish();
-        });
+        headerSection = null;
+        cardRequestBlood = null;
+        cardConfirmDelivery = null;
+        cardActiveStatus = null;
+        cardHistory = null;
+        btnProfile = null;
+    }
+
+    private void clearClickListener(View view) {
+        if (view != null) {
+            view.setOnClickListener(null);
+        }
     }
 }

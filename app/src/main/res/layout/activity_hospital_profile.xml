@@ -1,62 +1,88 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F8F9FA">
+    android:background="?attr/colorSurface">
 
-    <LinearLayout
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appBarProfile"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_marginTop="30dp"
+        android:background="?attr/colorSurface"
+        app:elevation="0dp"
+        app:layout_constraintTop_toTopOf="parent">
 
-        <RelativeLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="220dp"
-            android:background="#C62828"
-            android:padding="24dp">
+            android:layout_height="72dp">
 
             <ImageView
                 android:id="@+id/btnBack"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@android:drawable/ic_menu_revert"
-                app:tint="#FFFFFF" />
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:layout_marginStart="8dp"
+                android:padding="8dp"
+                android:src="@drawable/ic_back_arrow"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:tint="?attr/colorOnSurface" />
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/profileImageCard"
-                android:layout_width="100dp"
-                android:layout_height="100dp"
-                android:layout_centerInParent="true"
-                app:cardCornerRadius="50dp"
-                app:cardElevation="4dp"
-                app:strokeWidth="3dp"
-                app:strokeColor="#FFFFFF">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:text="Hospital Profile"
+                android:textColor="?attr/colorOnSurface"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toEndOf="@id/btnBack"
+                app:layout_constraintTop_toTopOf="parent" />
 
-                <ImageView
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:src="@android:drawable/ic_menu_myplaces"
-                    android:padding="20dp"
-                    app:tint="#C62828" />
-            </com.google.android.material.card.MaterialCardView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </RelativeLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <ScrollView
+        android:id="@+id/profileScrollView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/appBarProfile">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="-30dp"
-            android:paddingHorizontal="20dp"
             android:orientation="vertical"
-            android:paddingBottom="40dp">
+            android:padding="18dp">
+
+            <com.google.android.material.card.MaterialCardView
+                android:layout_width="96dp"
+                android:layout_height="96dp"
+                android:layout_gravity="center_horizontal"
+                app:cardCornerRadius="48dp"
+                app:cardElevation="6dp">
+
+                <ImageView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:padding="22dp"
+                    android:src="@drawable/ic_donor_placeholder"
+                    app:tint="@color/pulse_red_dark" />
+            </com.google.android.material.card.MaterialCardView>
 
             <com.google.android.material.card.MaterialCardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:cardCornerRadius="16dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="24dp"
                 app:cardElevation="4dp"
-                app:strokeWidth="0dp">
+                app:strokeColor="@color/ui_border"
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -65,24 +91,32 @@
                     android:padding="20dp">
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:hint="Hospital Name"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etHospitalName"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="text" />
+                            android:enabled="false" />
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Contact Number"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etContactNumber"
@@ -92,57 +126,64 @@
                     </com.google.android.material.textfield.TextInputLayout>
 
                     <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
                         android:hint="Address"
-                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+                        app:boxCornerRadiusBottomEnd="18dp"
+                        app:boxCornerRadiusBottomStart="18dp"
+                        app:boxCornerRadiusTopEnd="18dp"
+                        app:boxCornerRadiusTopStart="18dp">
 
                         <com.google.android.material.textfield.TextInputEditText
                             android:id="@+id/etAddress"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:inputType="textMultiLine"
                             android:lines="2" />
                     </com.google.android.material.textfield.TextInputLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="8dp"
-                        android:text="Current Location"
-                        android:textColor="#C62828"
-                        android:textStyle="bold"
-                        android:textSize="14sp" />
 
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="200dp"
-                        app:cardCornerRadius="12dp"
-                        app:strokeWidth="1dp"
-                        app:strokeColor="#E0E0E0">
+                        android:layout_marginTop="16dp"
+                        app:cardCornerRadius="18dp">
 
                         <fragment
                             android:id="@+id/mapFragment"
                             android:name="com.google.android.gms.maps.SupportMapFragment"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent" />
-
                     </com.google.android.material.card.MaterialCardView>
 
                     <com.google.android.material.button.MaterialButton
                         android:id="@+id/btnSaveProfile"
                         android:layout_width="match_parent"
-                        android:layout_height="56dp"
-                        android:layout_marginTop="24dp"
-                        android:text="SAVE PROFILE"
-                        android:textStyle="bold"
-                        app:cornerRadius="12dp"
-                        app:backgroundTint="#C62828" />
+                        android:layout_height="58dp"
+                        android:layout_marginTop="20dp"
+                        android:text="Save Profile"
+                        android:textAllCaps="false"
+                        android:textColor="@android:color/white"
+                        app:backgroundTint="@color/pulse_red_dark"
+                        app:cornerRadius="20dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnLogout"
+                        android:layout_width="match_parent"
+                        android:layout_height="58dp"
+                        android:layout_marginTop="12dp"
+                        android:text="Logout"
+                        android:textAllCaps="false"
+                        android:textColor="@color/pulse_red_dark"
+                        app:backgroundTint="@android:color/transparent"
+                        app:cornerRadius="20dp"
+                        app:strokeColor="@color/pulse_red_dark"
+                        app:strokeWidth="1dp" />
 
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
+
         </LinearLayout>
-    </LinearLayout>
-</ScrollView>
+    </ScrollView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
