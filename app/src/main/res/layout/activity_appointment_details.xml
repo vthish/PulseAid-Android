@@ -11,8 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="105dp"
         android:background="#D32F2F"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:layout_editor_absoluteX="0dp" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.card.MaterialCardView
         android:id="@+id/btnBack"
@@ -89,7 +88,7 @@
                         android:layout_marginTop="5dp"
                         android:text="Blood Group: O+"
                         android:textSize="17sp"
-                        android:textColor="#424242" />
+                        android:textColor="#737171" />
 
                     <View
                         android:layout_width="match_parent"
@@ -97,9 +96,27 @@
                         android:layout_marginVertical="20dp"
                         android:background="#EEEEEE" />
 
-                    <TextView android:id="@+id/tvDate" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="Date: 2026-04-15" android:textSize="16sp" android:textColor="#616161" />
-                    <TextView android:id="@+id/tvTimeSlot" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Time: 09:00 AM" android:textSize="16sp" android:textColor="#616161" />
-                    <TextView android:id="@+id/tvQueueNo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="6dp" android:text="Queue No: 1" android:textSize="16sp" android:textColor="#616161" />
+                    <TextView android:id="@+id/tvDate"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Date: N/A"
+                        android:textSize="16sp"
+                        android:textColor="#646363" />
+
+                    <TextView android:id="@+id/tvTimeSlot"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Time: N/A" android:textSize="16sp"
+                        android:textColor="#646363" />
+
+                    <TextView android:id="@+id/tvQueueNo"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:text="Queue No: 0"
+                        android:textSize="16sp"
+                        android:textColor="#646363" />
 
                     <TextView
                         android:id="@+id/tvStatus"
@@ -120,34 +137,64 @@
                 android:id="@+id/tilUnits"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="30dp"
                 android:hint="Collected Blood Units"
                 style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
                 app:boxBackgroundColor="#FFFFFF"
-                app:boxStrokeColor="#D32F2F"
-                app:hintTextColor="#D32F2F"
-                android:textColorHint="#757575">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etUnits"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="number"
-                    android:textColor="#000000"
-                    android:textSize="18sp"
-                    android:paddingTop="25dp"
-                    android:paddingBottom="15dp" />
+                app:boxStrokeColor="#388E3C"
+                android:textColorHint="#757575"
+                app:hintTextColor="#388E3C"> <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etUnits"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:background="#FFFFFF"
+                android:textColor="#000000" />
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnComplete"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
-                android:layout_marginTop="35dp"
+                android:layout_marginTop="15dp"
                 android:text="CONFIRM DONATION"
-                android:backgroundTint="#D32F2F"
+                android:backgroundTint="#388E3C"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                app:cornerRadius="16dp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="25dp"
+                android:background="#DDDDDD"/>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/tilRejectReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Reason for Rejection"
+                style="@style/Widget.MaterialComponents.TextInputLayout.FilledBox"
+                app:boxBackgroundColor="#FFFFFF"
+                app:boxStrokeColor="#D32F2F"
+                android:textColorHint="#757575"
+                app:hintTextColor="#D32F2F"> <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/etRejectReason"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="textLongMessage"
+                android:background="#FFFFFF"
+                android:textColor="#000000" />
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnReject"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginTop="15dp"
+                android:text="REJECT APPOINTMENT"
+                android:backgroundTint="#D32F2F"
+                android:textSize="16sp"
                 app:cornerRadius="16dp" />
 
         </LinearLayout>
