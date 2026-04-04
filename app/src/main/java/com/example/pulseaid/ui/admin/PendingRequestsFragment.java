@@ -37,7 +37,6 @@ public class PendingRequestsFragment extends Fragment {
         tvNoPending = view.findViewById(R.id.tvNoPending);
 
         pendingRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-
         viewModel = new ViewModelProvider(requireActivity()).get(ManageRequestsViewModel.class);
 
         progressBar.setVisibility(View.VISIBLE);
@@ -52,14 +51,8 @@ public class PendingRequestsFragment extends Fragment {
 
                 adapter = new BloodRequestAdapter(requests, true, new BloodRequestAdapter.OnRequestActionListener() {
                     @Override
-                    public void onBroadcast(BloodRequest request) {
-                        viewModel.broadcastEmergencyAlert(request);
-                        Toast.makeText(getContext(), "Emergency Alert Broadcasted!", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
                     public void onResolve(BloodRequest request) {
-                        viewModel.markAsResolved(request.getId());
+                        viewModel.resolveRequest(request);
                         Toast.makeText(getContext(), "Request Marked as Resolved!", Toast.LENGTH_SHORT).show();
                     }
                 });
