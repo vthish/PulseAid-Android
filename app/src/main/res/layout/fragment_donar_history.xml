@@ -3,17 +3,17 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="30dp"
     android:background="@color/white"
     android:orientation="vertical"
-    android:layout_marginTop="30dp"
     android:padding="20dp">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Donation History"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="10dp"
+        android:text="Donation History"
         android:textColor="#333"
         android:textSize="22sp"
         android:textStyle="bold" />
@@ -36,16 +36,19 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Total Donations"
                     android:textColor="#FFF"
                     android:textSize="12sp" />
+
                 <TextView
+                    android:id="@+id/tv_total_donations"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="08 Times"
+                    android:text="0"
                     android:textColor="#FFF"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -54,28 +57,32 @@
             <View
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="#80FFFFFF"
-                android:layout_marginHorizontal="15dp"/>
+                android:layout_marginHorizontal="15dp"
+                android:background="#80FFFFFF" />
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
+
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Last Donation"
                     android:textColor="#FFF"
                     android:textSize="12sp" />
+
                 <TextView
+                    android:id="@+id/tv_last_donation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10 Nov 2025"
+                    android:text="-"
                     android:textColor="#FFF"
                     android:textSize="18sp"
                     android:textStyle="bold" />
             </LinearLayout>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
@@ -88,221 +95,51 @@
         android:textColor="#666"
         android:textStyle="bold" />
 
-    <ScrollView
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_marginLeft="3dp"
-        android:layout_marginRight="3dp"
         android:layout_height="match_parent"
-        android:scrollbars="none">
+        android:layout_marginTop="10dp">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvHistory"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:clipToPadding="false"
+            android:visibility="gone" />
 
         <LinearLayout
+            android:id="@+id/layout_history_loading"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:orientation="vertical"
+            android:visibility="visible">
 
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
+            <ProgressBar
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:indeterminate="true"
+                android:indeterminateTint="@color/pulse_red" />
+
+            <TextView
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="30dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <View
-                        android:layout_width="4dp"
-                        android:layout_height="40dp"
-                        android:background="#4CAF50"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="15dp"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Karapitiya Blood Center"
-                            android:textStyle="bold"
-                            android:textColor="#333"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="10 Nov 2025 | 10:30 AM"
-                            android:textSize="12sp"
-                            android:textColor="#888"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="COMPLETED"
-                        android:textColor="#2E7D32"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="30dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <View
-                        android:layout_width="4dp"
-                        android:layout_height="40dp"
-                        android:background="#4CAF50"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="15dp"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Colombo Blood Center"
-                            android:textStyle="bold"
-                            android:textColor="#333"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="12 Aug 2025 | 09:15 AM"
-                            android:textSize="12sp"
-                            android:textColor="#888"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="COMPLETED"
-                        android:textColor="#2E7D32"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="30dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <View
-                        android:layout_width="4dp"
-                        android:layout_height="40dp"
-                        android:background="#4CAF50"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="15dp"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Galle Blood Center"
-                            android:textStyle="bold"
-                            android:textColor="#333"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="10 Feb 2026 | 10:00 AM"
-                            android:textSize="12sp"
-                            android:textColor="#888"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="COMPLETED"
-                        android:textColor="#2E7D32"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                app:cardCornerRadius="30dp"
-                app:cardElevation="2dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_marginLeft="3dp"
-                    android:layout_marginRight="3dp"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:padding="16dp"
-                    android:gravity="center_vertical">
-
-                    <View
-                        android:layout_width="4dp"
-                        android:layout_height="40dp"
-                        android:background="#4CAF50"/>
-
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:layout_marginStart="15dp"
-                        android:orientation="vertical">
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Kaluthara Blood Center"
-                            android:textStyle="bold"
-                            android:textColor="#333"/>
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="10 Jan 2025 | 14:30 AM"
-                            android:textSize="12sp"
-                            android:textColor="#888"/>
-                    </LinearLayout>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="COMPLETED"
-                        android:textColor="#2E7D32"
-                        android:textSize="10sp"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
+                android:layout_marginTop="12dp"
+                android:text="Loading donation history..."
+                android:textColor="#777"
+                android:textSize="14sp" />
         </LinearLayout>
-    </ScrollView>
+
+        <TextView
+            android:id="@+id/tv_no_history"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="No donation history found."
+            android:textColor="#777"
+            android:textSize="15sp"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
 </LinearLayout>

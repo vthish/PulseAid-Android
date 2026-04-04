@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" android:required="true" />
     <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:allowBackup="false"
@@ -14,10 +17,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.PulseAid">
+        android:theme="@style/Theme.PulseAid"
+        tools:ignore="ExtraText">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="PLACEHOLDER_KEY" />
+            android:value="AIzaSyBLt0AgcpyR14S-FZAV57aZAEqFbHz7n4E" />
 
         <activity
             android:name=".ui.bloodBank.StockMonitosActivity"
@@ -41,7 +45,6 @@
             android:name=".ui.donor.DonorBookingActivity"
             android:windowSoftInputMode="adjustResize"
             android:exported="false" />
-            android:exported="false"/>
 
         <activity
             android:name=".ui.hospital.HistoryActivity"

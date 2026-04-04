@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="32dp"
+    android:layout_marginTop="24dp"
+    android:layout_marginRight="32dp"
+    android:layout_marginBottom="24dp"
+    app:cardCornerRadius="28dp"
+    app:cardElevation="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingTop="24dp"
+        android:paddingRight="24dp"
+        android:paddingBottom="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:text="Cancel Appointment?"
+            android:textColor="#222222"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginRight="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Are you sure you want to cancel this appointment?"
+            android:textColor="#666666"
+            android:textSize="14sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="24dp"
+            android:layout_marginRight="10dp"
+            android:orientation="horizontal">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancel_no"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginEnd="10dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="NO"
+                android:textAllCaps="false"
+                android:textColor="#666666"
+                app:cornerRadius="24dp"
+                app:strokeColor="#CCCCCC" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancel_yes"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:maxLines="1"
+                android:text="Yes, Cancel"
+                android:textAllCaps="false"
+                android:textColor="@android:color/white"
+                app:backgroundTint="#D32F2F"
+                app:cornerRadius="24dp" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView>

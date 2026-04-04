@@ -31,7 +31,7 @@
                     android:id="@+id/tv_home_welcome"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Hello, Hashan!"
+                    android:text="Hello, H7!"
                     android:textColor="#333333"
                     android:textSize="26sp"
                     android:textStyle="bold" />
@@ -49,6 +49,9 @@
                 android:layout_width="55dp"
                 android:layout_height="55dp"
                 android:layout_alignParentEnd="true"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_donor_placeholder"
                 app:strokeColor="@color/pulse_red"
                 app:strokeWidth="2dp" />
@@ -57,9 +60,9 @@
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:cardBackgroundColor="@color/pulse_red"
             app:cardCornerRadius="20dp"
-            app:cardElevation="6dp"
-            app:cardBackgroundColor="@color/pulse_red">
+            app:cardElevation="6dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -77,7 +80,7 @@
                         android:id="@+id/tv_lives_saved_count"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="08 Lives Saved"
+                        android:text="00 Lives Saved"
                         android:textColor="@color/white"
                         android:textSize="28sp"
                         android:textStyle="bold" />
@@ -94,6 +97,7 @@
                     android:layout_width="50dp"
                     android:layout_height="50dp"
                     android:layout_gravity="center"
+                    android:src="@android:drawable/btn_star_big_on"
                     app:tint="@color/white" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -125,20 +129,22 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
+
                     <TextView
                         android:id="@+id/tv_eligibility_status"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Eligible in 45 Days"
+                        android:text="Checking Status..."
                         android:textColor="@color/pulse_red"
                         android:textStyle="bold" />
+
                     <TextView
-                        android:id="@+id/tv_eligibility_percent"
+                        android:id="@+id/tv_eligibility_days"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentEnd="true"
-                        android:text="50%"
-                        android:textColor="#888888"/>
+                        android:text="-- Days"
+                        android:textColor="#888888" />
                 </RelativeLayout>
 
                 <ProgressBar
@@ -147,7 +153,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="8dp"
                     android:layout_marginTop="10dp"
-                    android:progress="50"
+                    android:max="90"
+                    android:progress="0"
                     android:progressTint="@color/pulse_red" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -165,11 +172,11 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="12dp"
-            android:columnCount="2"
-            android:alignmentMode="alignMargins">
+            android:alignmentMode="alignMargins"
+            android:columnCount="2">
 
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_find_bank"
+                android:id="@+id/card_appointments"
                 android:layout_width="0dp"
                 android:layout_height="120dp"
                 android:layout_columnWeight="1"
@@ -178,63 +185,97 @@
                 android:focusable="true"
                 app:cardCornerRadius="18dp"
                 app:cardElevation="3dp">
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:gravity="center"
                     android:orientation="vertical">
+
                     <ImageView
+                        android:id="@+id/iv_appointment_icon"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:src="@android:drawable/ic_dialog_map"
+                        android:src="@android:drawable/ic_menu_my_calendar"
                         app:tint="@color/pulse_red" />
+
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="10dp"
-                        android:text="Find Banks"
+                        android:text="Appointments"
                         android:textStyle="bold" />
                 </LinearLayout>
             </com.google.android.material.card.MaterialCardView>
 
-            <com.google.android.material.card.MaterialCardView
-                android:id="@+id/card_emergency_requests"
+            <FrameLayout
                 android:layout_width="0dp"
-                android:layout_height="120dp"
-                android:layout_columnWeight="1"
-                android:layout_margin="6dp"
-                android:clickable="true"
-                android:focusable="true"
-                app:cardCornerRadius="18dp"
-                app:cardElevation="3dp">
-                <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_columnWeight="1">
+
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/card_emergency_requests"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
-                    android:orientation="vertical">
-                    <ImageView
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:src="@android:drawable/ic_dialog_info"
-                        app:tint="@color/pulse_red" />
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="10dp"
-                        android:text="Urgent Needs"
-                        android:textStyle="bold" />
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
+                    android:layout_height="120dp"
+                    android:layout_margin="6dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    app:cardCornerRadius="18dp"
+                    app:cardElevation="3dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <ImageView
+                            android:id="@+id/iv_urgent_icon"
+                            android:layout_width="32dp"
+                            android:layout_height="32dp"
+                            android:src="@android:drawable/ic_dialog_info"
+                            app:tint="@color/pulse_red" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dp"
+                            android:text="Urgent Needs"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </com.google.android.material.card.MaterialCardView>
+
+                <View
+                    android:id="@+id/view_urgent_dot"
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:layout_gravity="top|end"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginEnd="16dp"
+                    android:background="@drawable/bg_urgent_dot"
+                    android:visibility="gone" />
+            </FrameLayout>
         </GridLayout>
+
+        <TextView
+            android:id="@+id/tv_upcoming_section_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="25dp"
+            android:text="Upcoming Appointment"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:textStyle="bold" />
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/card_upcoming_booking"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="10dp"
             android:layout_marginBottom="30dp"
             android:clickable="true"
             android:focusable="true"
+            android:visibility="visible"
             app:cardCornerRadius="20dp"
             app:cardElevation="4dp"
             app:strokeColor="@color/pulse_red"
@@ -254,6 +295,7 @@
                     android:orientation="vertical">
 
                     <TextView
+                        android:id="@+id/tv_upcoming_label"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Upcoming Appointment"
@@ -266,7 +308,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="4dp"
-                        android:text="National Blood Center"
+                        android:text="No Active Appointment"
                         android:textSize="16sp"
                         android:textStyle="bold" />
 
@@ -274,7 +316,7 @@
                         android:id="@+id/tv_booking_time"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="March 15 - 09:30 AM"
+                        android:text="Book your slot today"
                         android:textColor="#666666" />
                 </LinearLayout>
 
