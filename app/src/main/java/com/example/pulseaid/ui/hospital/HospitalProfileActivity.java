@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewTreeObserver;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.ScrollView;
@@ -41,6 +40,7 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
     private MaterialButton btnLogout;
     private TextInputEditText etHospitalName;
     private TextInputEditText etContactNumber;
+    private TextInputEditText etLandLineNumber;
     private TextInputEditText etAddress;
     private ScrollView profileScrollView;
 
@@ -78,7 +78,6 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
         }
     }
 
-
     private void initViews() {
         try {
             btnBack = findViewById(R.id.btnBack);
@@ -86,10 +85,13 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
             btnLogout = findViewById(R.id.btnLogout);
             etHospitalName = findViewById(R.id.etHospitalName);
             etContactNumber = findViewById(R.id.etContactNumber);
+            etLandLineNumber = findViewById(R.id.etLandLineNumber);
             etAddress = findViewById(R.id.etAddress);
             profileScrollView = findViewById(R.id.profileScrollView);
 
-            etHospitalName.setEnabled(false);
+            if (etHospitalName != null) {
+                etHospitalName.setEnabled(false);
+            }
 
             fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
 
@@ -102,6 +104,7 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
         try {
             setupFocusScroll(etHospitalName);
             setupFocusScroll(etContactNumber);
+            setupFocusScroll(etLandLineNumber);
             setupFocusScroll(etAddress);
 
             View content = findViewById(android.R.id.content);
@@ -171,11 +174,13 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
                                 ? etHospitalName.getText().toString().trim() : "";
                         String contact = etContactNumber != null && etContactNumber.getText() != null
                                 ? etContactNumber.getText().toString().trim() : "";
+                        String landLine = etLandLineNumber != null && etLandLineNumber.getText() != null
+                                ? etLandLineNumber.getText().toString().trim() : "";
                         String address = etAddress != null && etAddress.getText() != null
                                 ? etAddress.getText().toString().trim() : "";
 
                         if (hospitalName.isEmpty() || contact.isEmpty() || address.isEmpty()) {
-                            Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, "Please fill all required fields", Toast.LENGTH_SHORT).show();
                             return;
                         }
 
@@ -184,7 +189,7 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
                             return;
                         }
 
-                        saveProfileToFirestore(hospitalName, contact, address);
+                        saveProfileToFirestore(hospitalName, contact, landLine, address);
 
                     } catch (Exception e) {
                         Toast.makeText(this, "Save action failed: " + e.getMessage(), Toast.LENGTH_LONG).show();
@@ -234,6 +239,7 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
 
                             String name = documentSnapshot.getString("name");
                             String contact = documentSnapshot.getString("contactNumber");
+                            String landLine = documentSnapshot.getString("landLine");
                             String address = documentSnapshot.getString("address");
 
                             if (etHospitalName != null) {
@@ -242,6 +248,10 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
 
                             if (etContactNumber != null) {
                                 etContactNumber.setText(contact != null ? contact : "");
+                            }
+
+                            if (etLandLineNumber != null) {
+                                etLandLineNumber.setText(landLine != null ? landLine : "");
                             }
 
                             if (etAddress != null) {
@@ -279,7 +289,7 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
         }
     }
 
-    private void saveProfileToFirestore(String hospitalName, String contact, String address) {
+    private void saveProfileToFirestore(String hospitalName, String contact, String landLine, String address) {
         try {
             if (mAuth.getCurrentUser() == null) {
                 Toast.makeText(this, "User not authenticated", Toast.LENGTH_SHORT).show();
@@ -296,6 +306,7 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
             Map<String, Object> hospitalData = new HashMap<>();
             hospitalData.put("name", hospitalName);
             hospitalData.put("contactNumber", contact);
+            hospitalData.put("landLine", landLine);
             hospitalData.put("address", address);
             hospitalData.put("latitude", currentLocationLatLng.latitude);
             hospitalData.put("longitude", currentLocationLatLng.longitude);

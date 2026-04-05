@@ -98,9 +98,10 @@
                 app:tint="#4CAF50" />
 
             <LinearLayout
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
                 <TextView
@@ -119,6 +120,12 @@
                     android:textColor="#64748B"
                     android:textSize="13sp" />
             </LinearLayout>
+
+            <Button
+                android:id="@+id/btnInfo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Info" />
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
