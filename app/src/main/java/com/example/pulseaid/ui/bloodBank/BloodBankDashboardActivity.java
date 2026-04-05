@@ -9,8 +9,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog; // Dialog box එක සඳහා අලුතින් import කර ඇත
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.lifecycle.ViewModelProvider;
@@ -131,15 +131,14 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
             if (stock != null) {
                 txtTotalStock.setText(stock + " Units");
 
-                // Color change logic
                 try {
                     int count = Integer.parseInt(String.valueOf(stock).trim());
                     if (count <= 5) {
-                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#D32F2F")); // රතු
+                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#D32F2F"));
                     } else if (count <= 10) {
-                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#F57C00")); // තැඹිලි
+                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#F57C00"));
                     } else {
-                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#388E3C")); // කොළ
+                        txtTotalStock.setTextColor(android.graphics.Color.parseColor("#388E3C"));
                     }
                 } catch (NumberFormatException e) {
                     txtTotalStock.setTextColor(android.graphics.Color.parseColor("#D32F2F"));
@@ -181,10 +180,23 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
         }
         @Override public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             ActivityItem item = items.get(position);
-            holder.txtTitle.setText(item.title); holder.txtDesc.setText(item.description); holder.txtTime.setText(item.time); holder.imgIcon.setImageResource(item.iconResource);
+            holder.txtTitle.setText(item.title);
+            holder.txtDesc.setText(item.description);
+            holder.txtTime.setText(item.time);
+            holder.imgIcon.setImageResource(item.iconResource);
+
             if(item.title.contains("Alerts") || item.title.contains("Emergency")) holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#D32F2F"));
             else if(item.title.contains("Orders")) holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#F57C00"));
             else holder.imgIcon.setColorFilter(android.graphics.Color.parseColor("#1976D2"));
+
+            holder.itemView.setOnClickListener(v -> {
+                new AlertDialog.Builder(v.getContext())
+                        .setTitle(item.title)
+                        .setMessage(item.description + "\n\nTime: " + item.time)
+                        .setPositiveButton("Close", (dialog, which) -> dialog.dismiss())
+                        .setIcon(item.iconResource)
+                        .show();
+            });
         }
         @Override public int getItemCount() { return items.size(); }
         class ViewHolder extends RecyclerView.ViewHolder {
