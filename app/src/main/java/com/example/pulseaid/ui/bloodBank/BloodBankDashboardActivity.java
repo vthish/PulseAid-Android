@@ -198,7 +198,9 @@ public class BloodBankDashboardActivity extends AppCompatActivity {
                         .show();
             });
         }
-        @Override public int getItemCount() { return items.size(); }
+        @Override public int getItemCount() {
+            return items.size();
+        }
         class ViewHolder extends RecyclerView.ViewHolder {
             TextView txtTitle, txtDesc, txtTime; ImageView imgIcon;
             ViewHolder(View itemView) {
