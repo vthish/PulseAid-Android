@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class DonorAccountFragment extends Fragment {
 
-    private TextView tvViewName, tvViewPhone, tvViewWeight, tvViewDob, tvStaticNic, tvStaticEmail, tvHeaderName, tvHeaderBlood, tvAccountError;
+    private TextView tvViewName, tvViewPhone, tvViewWeight, tvViewDob, tvStaticNic, tvStaticEmail, tvHeaderName, tvHeaderBlood, tvAccountError ,tvStaticAge;
     private TextInputLayout tilEditName, tilEditPhone, tilEditWeight, tilEditDob;
     private TextInputEditText etEditName, etEditPhone, etEditWeight, etEditDob;
     private MaterialButton btnEditToggle, btnLogout;
@@ -92,6 +92,7 @@ public class DonorAccountFragment extends Fragment {
         tvViewWeight = v.findViewById(R.id.tv_view_weight);
         tvViewDob = v.findViewById(R.id.tv_view_dob);
         tvStaticNic = v.findViewById(R.id.tv_static_nic);
+        tvStaticAge = v.findViewById(R.id.tv_view_age);
         tvStaticEmail = v.findViewById(R.id.tv_static_email);
         tvHeaderName = v.findViewById(R.id.tv_header_name);
         tvHeaderBlood = v.findViewById(R.id.tv_header_blood_group);
@@ -146,6 +147,7 @@ public class DonorAccountFragment extends Fragment {
         String blood = safeText(doc.getString("bloodGroup"));
         String nic = safeText(doc.getString("nic"));
         String email = safeText(doc.getString("email"));
+        String age = safeText(doc.getString("age"));
 
         tvViewName.setText(name);
         tvViewPhone.setText(phone);
@@ -155,11 +157,13 @@ public class DonorAccountFragment extends Fragment {
         tvHeaderBlood.setText(blood);
         tvStaticNic.setText(nic);
         tvStaticEmail.setText(email);
+        tvStaticAge.setText(age);
 
         etEditName.setText(name);
         etEditPhone.setText(phone);
         etEditWeight.setText(weight);
         etEditDob.setText(dob);
+
     }
 
     private String safeText(String value) {
@@ -181,6 +185,12 @@ public class DonorAccountFragment extends Fragment {
     }
 
     private String safeWeight(Object weightObj) {
+        if (weightObj == null) {
+            return "";
+        }
+        return String.valueOf(weightObj).trim();
+    }
+    private String safeAge(Object weightObj) {
         if (weightObj == null) {
             return "";
         }
