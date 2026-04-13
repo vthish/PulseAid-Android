@@ -27,4 +27,4 @@ The app provides specialized interfaces for four different roles:
 
 1. **Clone the Project:**
    ```bash
-   git clone [https://github.com/vthish/PulseAid-Android.git](https://github.com/vthish/PulseAid-Android.git)
+   git clone https://github.com/vthish/PulseAid-Android.git
