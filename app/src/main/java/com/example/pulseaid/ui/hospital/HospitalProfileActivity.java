@@ -306,7 +306,10 @@ public class HospitalProfileActivity extends AppCompatActivity implements OnMapR
                     .update(hospitalData)
                     .addOnSuccessListener(unused -> {
                         Toast.makeText(HospitalProfileActivity.this, "Profile Updated Successfully", Toast.LENGTH_SHORT).show();
-                        loadHospitalData();
+                        Intent intent = new Intent(HospitalProfileActivity.this, HospitalDashboard.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                        finish();
                     })
                     .addOnFailureListener(e ->
                             Toast.makeText(HospitalProfileActivity.this, "Save failed: " + e.getMessage(), Toast.LENGTH_LONG).show());

@@ -22,6 +22,7 @@ import com.example.pulseaid.ui.bloodBank.BloodBankProfileActivity;
 import com.example.pulseaid.ui.donor.DonorDashboardActivity;
 import com.example.pulseaid.ui.donor.DonorRegisterActivity;
 import com.example.pulseaid.ui.hospital.HospitalDashboard;
+import com.example.pulseaid.ui.hospital.HospitalProfileActivity;
 import com.example.pulseaid.viewmodel.LoginViewModel;
 import com.example.pulseaid.data.User;
 import com.example.pulseaid.ui.admin.AdminDashboardActivity;
@@ -78,7 +79,6 @@ public class LoginActivity extends AppCompatActivity {
         forgotPasswordText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // Redirect to ForgotPasswordActivity
                 Intent intent = new Intent(LoginActivity.this, ForgotPasswordActivity.class);
                 startActivity(intent);
             }
@@ -172,7 +172,6 @@ public class LoginActivity extends AppCompatActivity {
                                 if (document.exists()) {
                                     String address = document.getString("address");
 
-                                    // Check if address field exists and is not empty
                                     if (address != null && !address.trim().isEmpty()) {
                                         Toast.makeText(this, "Redirecting to Blood Bank Dashboard...", Toast.LENGTH_SHORT).show();
                                         Intent bloodStaffIntent = new Intent(LoginActivity.this, BloodBankDashboardActivity.class);
@@ -191,10 +190,31 @@ public class LoginActivity extends AppCompatActivity {
                 break;
 
             case "hospital":
-                Toast.makeText(this, "Redirecting to Hospital Dashboard...", Toast.LENGTH_SHORT).show();
-                Intent hospitalIntent = new Intent(LoginActivity.this, HospitalDashboard.class);
-                startActivity(hospitalIntent);
-                finish();
+                FirebaseUser currentHospitalUser = FirebaseAuth.getInstance().getCurrentUser();
+                if (currentHospitalUser != null) {
+                    FirebaseFirestore.getInstance()
+                            .collection("Users")
+                            .document(currentHospitalUser.getUid())
+                            .get()
+                            .addOnSuccessListener(document -> {
+                                if (document.exists()) {
+                                    Boolean isProfileComplete = document.getBoolean("profileComplete");
+
+                                    if (isProfileComplete != null && isProfileComplete) {
+                                        Toast.makeText(this, "Redirecting to Hospital Dashboard...", Toast.LENGTH_SHORT).show();
+                                        Intent hospitalIntent = new Intent(LoginActivity.this, HospitalDashboard.class);
+                                        startActivity(hospitalIntent);
+                                        finish();
+                                    } else {
+                                        Toast.makeText(this, "Please complete your profile first", Toast.LENGTH_SHORT).show();
+                                        Intent profileIntent = new Intent(LoginActivity.this, HospitalProfileActivity.class);
+                                        startActivity(profileIntent);
+                                        finish();
+                                    }
+                                }
+                            })
+                            .addOnFailureListener(e -> Toast.makeText(LoginActivity.this, "Error fetching profile info", Toast.LENGTH_SHORT).show());
+                }
                 break;
 
             case "donor":
