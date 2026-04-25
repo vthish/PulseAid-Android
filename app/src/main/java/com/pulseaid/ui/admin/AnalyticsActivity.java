@@ -3,6 +3,7 @@ package com.pulseaid.ui.admin;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.view.animation.OvershootInterpolator;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -19,6 +20,7 @@ import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.google.android.material.card.MaterialCardView;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -32,6 +34,8 @@ public class AnalyticsActivity extends AppCompatActivity {
     private PieChart pieChartBloodGroups;
     private ProgressBar progressBar;
     private ImageView btnBack;
+
+    private MaterialCardView cardDonors, cardInstitutes, cardChart;
 
     private FirebaseFirestore db;
 
@@ -49,16 +53,59 @@ public class AnalyticsActivity extends AppCompatActivity {
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
 
+        cardDonors = findViewById(R.id.cardDonors);
+        cardInstitutes = findViewById(R.id.cardInstitutes);
+        cardChart = findViewById(R.id.cardChart);
+
         btnBack.setOnClickListener(v -> finish());
+
+        prepareAnimations();
+        animateIn();
 
         setupPieChart();
         fetchAnalyticsData();
     }
 
+    private void prepareAnimations() {
+        cardDonors.setTranslationY(100f);
+        cardDonors.setAlpha(0f);
+        cardInstitutes.setTranslationY(100f);
+        cardInstitutes.setAlpha(0f);
+        cardChart.setTranslationY(150f);
+        cardChart.setAlpha(0f);
+    }
+
+    private void animateIn() {
+        long duration = 600;
+
+        cardDonors.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(100)
+                .start();
+
+        cardInstitutes.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(200)
+                .start();
+
+        cardChart.animate()
+                .translationY(0f).alpha(1f)
+                .setInterpolator(new OvershootInterpolator())
+                .setDuration(duration)
+                .setStartDelay(300)
+                .start();
+    }
+
     private void setupPieChart() {
         pieChartBloodGroups.setUsePercentValues(true);
         pieChartBloodGroups.getDescription().setEnabled(false);
-        pieChartBloodGroups.setExtraOffsets(5, 10, 5, 5);
+        pieChartBloodGroups.setExtraOffsets(5, 10, 5, 20);
+
+        pieChartBloodGroups.setBackgroundColor(Color.WHITE);
 
         pieChartBloodGroups.setDragDecelerationFrictionCoef(0.95f);
 
@@ -66,8 +113,8 @@ public class AnalyticsActivity extends AppCompatActivity {
         pieChartBloodGroups.setHoleColor(Color.WHITE);
         pieChartBloodGroups.setTransparentCircleColor(Color.WHITE);
         pieChartBloodGroups.setTransparentCircleAlpha(110);
-        pieChartBloodGroups.setHoleRadius(58f);
-        pieChartBloodGroups.setTransparentCircleRadius(61f);
+        pieChartBloodGroups.setHoleRadius(55f);
+        pieChartBloodGroups.setTransparentCircleRadius(60f);
 
         pieChartBloodGroups.setDrawCenterText(true);
         pieChartBloodGroups.setCenterText("Blood\nGroups");
@@ -79,15 +126,16 @@ public class AnalyticsActivity extends AppCompatActivity {
         pieChartBloodGroups.setHighlightPerTapEnabled(true);
 
         Legend l = pieChartBloodGroups.getLegend();
-        l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
-        l.setOrientation(Legend.LegendOrientation.VERTICAL);
+        l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
+        l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
+        l.setWordWrapEnabled(true);
         l.setDrawInside(false);
-        l.setXEntrySpace(7f);
-        l.setYEntrySpace(0f);
-        l.setYOffset(0f);
-        l.setTextSize(12f);
-        l.setTextColor(Color.parseColor("#64748B"));
+        l.setXEntrySpace(15f);
+        l.setYEntrySpace(10f);
+        l.setYOffset(10f);
+        l.setTextSize(13f);
+        l.setTextColor(Color.parseColor("#475569"));
     }
 
     private void fetchAnalyticsData() {
@@ -137,21 +185,21 @@ public class AnalyticsActivity extends AppCompatActivity {
             return;
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "Blood Groups");
+        PieDataSet dataSet = new PieDataSet(entries, "");
 
         dataSet.setDrawIcons(false);
-        dataSet.setSliceSpace(3f);
-        dataSet.setSelectionShift(5f);
+        dataSet.setSliceSpace(4f);
+        dataSet.setSelectionShift(6f);
 
         ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#D32F2F")); // Red
-        colors.add(Color.parseColor("#1976D2")); // Blue
-        colors.add(Color.parseColor("#388E3C")); // Green
-        colors.add(Color.parseColor("#FBC02D")); // Yellow
-        colors.add(Color.parseColor("#8E24AA")); // Purple
-        colors.add(Color.parseColor("#F57C00")); // Orange
-        colors.add(Color.parseColor("#0097A7")); // Cyan
-        colors.add(Color.parseColor("#5D4037")); // Brown
+        colors.add(Color.parseColor("#EF4444"));
+        colors.add(Color.parseColor("#3B82F6"));
+        colors.add(Color.parseColor("#10B981"));
+        colors.add(Color.parseColor("#F59E0B"));
+        colors.add(Color.parseColor("#8B5CF6"));
+        colors.add(Color.parseColor("#06B6D4"));
+        colors.add(Color.parseColor("#EC4899"));
+        colors.add(Color.parseColor("#84CC16"));
 
         dataSet.setColors(colors);
 
@@ -164,6 +212,6 @@ public class AnalyticsActivity extends AppCompatActivity {
         pieChartBloodGroups.highlightValues(null);
         pieChartBloodGroups.invalidate();
 
-        pieChartBloodGroups.animateY(1400, Easing.EaseInOutQuad);
+        pieChartBloodGroups.animateY(1500, Easing.EaseInOutQuart);
     }
 }
