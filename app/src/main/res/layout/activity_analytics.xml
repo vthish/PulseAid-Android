@@ -15,8 +15,10 @@
         android:background="#B71C1C"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="24dp"
+        android:paddingStart="16dp"
+        android:paddingTop="48dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="24dp"
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
