@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F7FB"
-    tools:context=".ui.admin.AnalyticsActivity">
+    tools:context="com.pulseaid.ui.admin.AnalyticsActivity">
 
     <LinearLayout
         android:id="@+id/topBar"

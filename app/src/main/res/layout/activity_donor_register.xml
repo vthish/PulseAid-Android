@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:background="#FFF5F2"
     android:fillViewport="true"
-    tools:context=".ui.donor.DonorRegisterActivity">
+    tools:context="com.pulseaid.ui.donor.DonorRegisterActivity">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
