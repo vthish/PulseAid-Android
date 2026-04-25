@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F7F1FB"
-    tools:context=".ui.admin.AdminDashboardActivity">
+    tools:context="com.pulseaid.ui.admin.AdminDashboardActivity">
 
     <View
         android:id="@+id/headerBg"

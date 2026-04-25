@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F7F1FB"
-    tools:context=".ui.bloodBank.ExpiringAlertsActivity">
+    tools:context="com.pulseaid.ui.bloodBank.ExpiringAlertsActivity">
 
     <LinearLayout
         android:id="@+id/topBar"

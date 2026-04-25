@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#B71C1C"
-    tools:context=".ui.hospital.HospitalDashboard">
+    tools:context="com.pulseaid.ui.hospital.HospitalDashboard">
 
     <LinearLayout
         android:layout_width="match_parent"

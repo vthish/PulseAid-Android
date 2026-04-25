@@ -4,13 +4,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.pulseaid"
+    namespace = "com.pulseaid"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.pulseaid"
+        applicationId = "com.pulseaid"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
