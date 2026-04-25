@@ -12,12 +12,13 @@ import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.pulseaid.R;
+import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.utils.ColorTemplate;
+import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -55,18 +56,38 @@ public class AnalyticsActivity extends AppCompatActivity {
     }
 
     private void setupPieChart() {
+        pieChartBloodGroups.setUsePercentValues(true);
+        pieChartBloodGroups.getDescription().setEnabled(false);
+        pieChartBloodGroups.setExtraOffsets(5, 10, 5, 5);
+
+        pieChartBloodGroups.setDragDecelerationFrictionCoef(0.95f);
+
         pieChartBloodGroups.setDrawHoleEnabled(true);
         pieChartBloodGroups.setHoleColor(Color.WHITE);
+        pieChartBloodGroups.setTransparentCircleColor(Color.WHITE);
+        pieChartBloodGroups.setTransparentCircleAlpha(110);
+        pieChartBloodGroups.setHoleRadius(58f);
         pieChartBloodGroups.setTransparentCircleRadius(61f);
-        pieChartBloodGroups.setCenterText("Blood Groups");
-        pieChartBloodGroups.setCenterTextSize(16f);
-        pieChartBloodGroups.getDescription().setEnabled(false);
+
+        pieChartBloodGroups.setDrawCenterText(true);
+        pieChartBloodGroups.setCenterText("Blood\nGroups");
+        pieChartBloodGroups.setCenterTextSize(18f);
+        pieChartBloodGroups.setCenterTextColor(Color.parseColor("#1E293B"));
+
+        pieChartBloodGroups.setRotationAngle(0);
+        pieChartBloodGroups.setRotationEnabled(true);
+        pieChartBloodGroups.setHighlightPerTapEnabled(true);
 
         Legend l = pieChartBloodGroups.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.TOP);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
         l.setOrientation(Legend.LegendOrientation.VERTICAL);
         l.setDrawInside(false);
+        l.setXEntrySpace(7f);
+        l.setYEntrySpace(0f);
+        l.setYOffset(0f);
+        l.setTextSize(12f);
+        l.setTextColor(Color.parseColor("#64748B"));
     }
 
     private void fetchAnalyticsData() {
@@ -116,16 +137,33 @@ public class AnalyticsActivity extends AppCompatActivity {
             return;
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "");
-        dataSet.setColors(ColorTemplate.MATERIAL_COLORS);
+        PieDataSet dataSet = new PieDataSet(entries, "Blood Groups");
+
+        dataSet.setDrawIcons(false);
         dataSet.setSliceSpace(3f);
         dataSet.setSelectionShift(5f);
 
+        ArrayList<Integer> colors = new ArrayList<>();
+        colors.add(Color.parseColor("#D32F2F")); // Red
+        colors.add(Color.parseColor("#1976D2")); // Blue
+        colors.add(Color.parseColor("#388E3C")); // Green
+        colors.add(Color.parseColor("#FBC02D")); // Yellow
+        colors.add(Color.parseColor("#8E24AA")); // Purple
+        colors.add(Color.parseColor("#F57C00")); // Orange
+        colors.add(Color.parseColor("#0097A7")); // Cyan
+        colors.add(Color.parseColor("#5D4037")); // Brown
+
+        dataSet.setColors(colors);
+
         PieData data = new PieData(dataSet);
+        data.setValueFormatter(new PercentFormatter(pieChartBloodGroups));
         data.setValueTextSize(14f);
         data.setValueTextColor(Color.WHITE);
 
         pieChartBloodGroups.setData(data);
+        pieChartBloodGroups.highlightValues(null);
         pieChartBloodGroups.invalidate();
+
+        pieChartBloodGroups.animateY(1400, Easing.EaseInOutQuad);
     }
 }
