@@ -67,11 +67,11 @@ public class AnalyticsActivity extends AppCompatActivity {
     }
 
     private void prepareAnimations() {
-        cardDonors.setTranslationY(100f);
+        cardDonors.setTranslationY(80f);
         cardDonors.setAlpha(0f);
-        cardInstitutes.setTranslationY(100f);
+        cardInstitutes.setTranslationY(80f);
         cardInstitutes.setAlpha(0f);
-        cardChart.setTranslationY(150f);
+        cardChart.setTranslationY(120f);
         cardChart.setAlpha(0f);
     }
 
@@ -103,7 +103,7 @@ public class AnalyticsActivity extends AppCompatActivity {
     private void setupPieChart() {
         pieChartBloodGroups.setUsePercentValues(true);
         pieChartBloodGroups.getDescription().setEnabled(false);
-        pieChartBloodGroups.setExtraOffsets(5, 10, 5, 20);
+        pieChartBloodGroups.setExtraOffsets(5, 5, 5, 15);
 
         pieChartBloodGroups.setBackgroundColor(Color.WHITE);
 
@@ -113,13 +113,13 @@ public class AnalyticsActivity extends AppCompatActivity {
         pieChartBloodGroups.setHoleColor(Color.WHITE);
         pieChartBloodGroups.setTransparentCircleColor(Color.WHITE);
         pieChartBloodGroups.setTransparentCircleAlpha(110);
-        pieChartBloodGroups.setHoleRadius(55f);
-        pieChartBloodGroups.setTransparentCircleRadius(60f);
+        pieChartBloodGroups.setHoleRadius(52f);
+        pieChartBloodGroups.setTransparentCircleRadius(57f);
 
         pieChartBloodGroups.setDrawCenterText(true);
         pieChartBloodGroups.setCenterText("Blood\nGroups");
         pieChartBloodGroups.setCenterTextSize(18f);
-        pieChartBloodGroups.setCenterTextColor(Color.parseColor("#1E293B"));
+        pieChartBloodGroups.setCenterTextColor(Color.parseColor("#334155"));
 
         pieChartBloodGroups.setRotationAngle(0);
         pieChartBloodGroups.setRotationEnabled(true);
@@ -131,11 +131,11 @@ public class AnalyticsActivity extends AppCompatActivity {
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         l.setWordWrapEnabled(true);
         l.setDrawInside(false);
-        l.setXEntrySpace(15f);
-        l.setYEntrySpace(10f);
+        l.setXEntrySpace(12f);
+        l.setYEntrySpace(8f);
         l.setYOffset(10f);
-        l.setTextSize(13f);
-        l.setTextColor(Color.parseColor("#475569"));
+        l.setTextSize(12f);
+        l.setTextColor(Color.parseColor("#64748B"));
     }
 
     private void fetchAnalyticsData() {
@@ -154,8 +154,11 @@ public class AnalyticsActivity extends AppCompatActivity {
                     if ("Donor".equals(role)) {
                         totalDonors++;
                         String bloodGroup = doc.getString("bloodGroup");
+
+                        // NPE Warning fixed here
                         if (bloodGroup != null && !bloodGroup.isEmpty()) {
-                            bloodGroupCounts.put(bloodGroup, bloodGroupCounts.getOrDefault(bloodGroup, 0) + 1);
+                            Integer currentCount = bloodGroupCounts.get(bloodGroup);
+                            bloodGroupCounts.put(bloodGroup, (currentCount == null ? 0 : currentCount) + 1);
                         }
                     } else if ("Hospital".equals(role) || "Blood Bank".equals(role) || "Blood Banks".equals(role)) {
                         totalInstitutions++;
@@ -189,24 +192,26 @@ public class AnalyticsActivity extends AppCompatActivity {
 
         dataSet.setDrawIcons(false);
         dataSet.setSliceSpace(4f);
-        dataSet.setSelectionShift(6f);
+        dataSet.setSelectionShift(7f);
 
         ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#EF4444"));
-        colors.add(Color.parseColor("#3B82F6"));
-        colors.add(Color.parseColor("#10B981"));
-        colors.add(Color.parseColor("#F59E0B"));
-        colors.add(Color.parseColor("#8B5CF6"));
-        colors.add(Color.parseColor("#06B6D4"));
-        colors.add(Color.parseColor("#EC4899"));
-        colors.add(Color.parseColor("#84CC16"));
+        colors.add(Color.parseColor("#F87171")); // Light Coral
+        colors.add(Color.parseColor("#60A5FA")); // Light Blue
+        colors.add(Color.parseColor("#34D399")); // Emerald
+        colors.add(Color.parseColor("#FBBF24")); // Amber
+        colors.add(Color.parseColor("#A78BFA")); // Violet
+        colors.add(Color.parseColor("#22D3EE")); // Cyan
+        colors.add(Color.parseColor("#F472B6")); // Pink
+        colors.add(Color.parseColor("#A3E635")); // Lime
 
         dataSet.setColors(colors);
 
         PieData data = new PieData(dataSet);
         data.setValueFormatter(new PercentFormatter(pieChartBloodGroups));
-        data.setValueTextSize(14f);
+        data.setValueTextSize(13f);
         data.setValueTextColor(Color.WHITE);
+
+        data.setValueTypeface(android.graphics.Typeface.DEFAULT_BOLD);
 
         pieChartBloodGroups.setData(data);
         pieChartBloodGroups.highlightValues(null);
