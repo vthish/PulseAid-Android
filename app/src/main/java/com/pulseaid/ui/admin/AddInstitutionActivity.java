@@ -24,7 +24,7 @@ import java.util.Map;
 
 public class AddInstitutionActivity extends AppCompatActivity {
 
-    private TextInputEditText etName, etEmail, etPassword;
+    private TextInputEditText etName, etEmail, etPassword, etConfirmPassword;
     private MaterialButton btnRegister;
     private ProgressBar progressBar;
     private ImageView btnBack;
@@ -55,6 +55,7 @@ public class AddInstitutionActivity extends AppCompatActivity {
         etName = findViewById(R.id.etName);
         etEmail = findViewById(R.id.etEmail);
         etPassword = findViewById(R.id.etPassword);
+        etConfirmPassword = findViewById(R.id.etConfirmPassword);
         btnRegister = findViewById(R.id.btnRegister);
         progressBar = findViewById(R.id.progressBar);
         btnBack = findViewById(R.id.btnBack);
@@ -76,14 +77,20 @@ public class AddInstitutionActivity extends AppCompatActivity {
         String name = etName.getText().toString().trim();
         String email = etEmail.getText().toString().trim();
         String password = etPassword.getText().toString().trim();
+        String confirmPassword = etConfirmPassword.getText().toString().trim();
 
-        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password)) {
+        if (TextUtils.isEmpty(name) || TextUtils.isEmpty(email) || TextUtils.isEmpty(password) || TextUtils.isEmpty(confirmPassword)) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (password.length() < 6) {
             Toast.makeText(this, "Password must be at least 6 characters", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!password.equals(confirmPassword)) {
+            Toast.makeText(this, "Passwords do not match", Toast.LENGTH_SHORT).show();
             return;
         }
 
@@ -101,7 +108,6 @@ public class AddInstitutionActivity extends AppCompatActivity {
 
         FirebaseAuth secondaryAuth = FirebaseAuth.getInstance(secondaryApp);
 
-        // Use secondaryAuth to create the user
         secondaryAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult().getUser() != null) {
